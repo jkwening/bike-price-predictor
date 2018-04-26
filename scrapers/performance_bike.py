@@ -28,13 +28,6 @@ div class='title>Products:< - start of getting number products displayed
 span class='num_products'>($nbsp; # - # of # $nbsp;)< - range
 """
 
-# r = requests.get(SHOP_BIKES_URL)
-# if r.status_code != 200:
-#   print('Error: ', r.status_code)
-#
-# bikes_frames_soup = BeautifulSoup(r.text, 'lxml')
-# print(bikes_frames_soup.prettify())
-
 
 class PerformanceBikes(object):
     def __init__(self, page_size=72, page_view='list', ):
@@ -93,15 +86,17 @@ class PerformanceBikes(object):
         return self._products
 
     def get_product_listings(self):
-        # refresh product listings array
-        if not self._products:
-            self._products = []
+        # refresh product listings dictionary if not empty
+        if self._products:
+            self._products = {}
 
         page_soup = BeautifulSoup(self._fetch_html(), 'lxml')
         num_prods = self._get_max_num_prods(soup=page_soup)
+        num_pages = int(num_prods / self._page_size)
 
         # iterate through all grid pages
-        for _ in range(num_prods):
+        for _ in range(num_pages):
+            print(_)
             self._get_prods_on_page(soup=page_soup)
             self._update_facet_str(init=False)
 
