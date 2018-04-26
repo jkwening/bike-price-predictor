@@ -51,6 +51,7 @@ class PerformanceBikes(object):
                       f'{self._page_size}{FACET_MOD4_END}'
 
     def _fetch_html(self):
+        """Fetch html page for bikes"""
         response = requests.get(SHOP_BIKES_BASE_URL + self._facet)
 
         # check response status code
@@ -77,6 +78,7 @@ class PerformanceBikes(object):
         return int(num_prods.split()[-2])
 
     def _get_prods_on_page(self, soup):
+        """Get all bike products for the passed html page"""
         div_product_listing_widget = soup.find('div',
                                                class_='productListingWidget')
         div_product_name = div_product_listing_widget.find_all('div',
@@ -85,7 +87,14 @@ class PerformanceBikes(object):
             self._products[name.a['href']] = name.a.string
         return self._products
 
+    def _prod_listings_to_csv(self):
+        pass
+
+    def _prod_details_to_csv(self):
+        pass
+
     def get_product_listings(self):
+        """Get all products currently available from site"""
         # refresh product listings dictionary if not empty
         if self._products:
             self._products = {}
@@ -105,3 +114,7 @@ class PerformanceBikes(object):
             page_soup = BeautifulSoup(self._fetch_html(), 'lxml')
 
         return num_prods, self._products
+
+    def get_product_details(self, prod_name, prod_href):
+        """Get bike details for given bike"""
+        return None
