@@ -50,9 +50,12 @@ class PerformanceBikes(object):
                       f'{FACET_MOD2_VIEW}{self._page_view}{FACET_MOD3_SIZE}' \
                       f'{self._page_size}{FACET_MOD4_END}'
 
-    def _fetch_html(self):
+    def _fetch_html(self, url=None):
         """Fetch html page for bikes"""
-        response = requests.get(SHOP_BIKES_BASE_URL + self._facet)
+        if url is None:
+            response = requests.get(SHOP_BIKES_BASE_URL + self._facet)
+        else:
+            response = requests.get(url)
 
         # check response status code
         if response.status_code != 200:
@@ -87,6 +90,9 @@ class PerformanceBikes(object):
             self._products[name.a['href']] = name.a.string
         return self._products
 
+    def _parse_prod_specs(self, soup):
+        return {}
+
     def _prod_listings_to_csv(self):
         pass
 
@@ -115,6 +121,6 @@ class PerformanceBikes(object):
 
         return num_prods, self._products
 
-    def get_product_details(self, prod_name, prod_href):
-        """Get bike details for given bike"""
+    def get_product_specs(self, prod_name, prod_href):
+        """Get specifications for given bike product"""
         return None
