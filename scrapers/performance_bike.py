@@ -84,14 +84,52 @@ class PerformanceBikes(object):
         """Get all bike products for the passed html page"""
         div_product_listing_widget = soup.find('div',
                                                class_='productListingWidget')
-        div_product_name = div_product_listing_widget.find_all('div',
-                                                        class_='product_name')
-        for name in div_product_name:
-            self._products[name.a['href']] = name.a.string
+        div_product_info = div_product_listing_widget.find_all(
+            'div', class_='product_info')
+
+        counter = 0
+
+        for prod_info in div_product_info:
+            product = dict()
+
+            # get prod_desc, and prod_href
+            div_prod_name = prod_info.find('div', class_='product_name')
+            product['href'] = str(div_prod_name.a['href']).strip()
+            product['desc'] = str(div_prod_name.a.string).strip()
+
+            # get sale price (offer_price)
+            span_price = prod_info.find('span', class_='price')
+            product['price'] = str(span_price.string).strip()
+
+            # get msrp price (list_price)
+            span_old_price = prod_info.find('span', class_='old_price')
+            if span_old_price is None:
+                product['msrp'] = product['price']
+            else:
+                product['msrp'] = str(span_old_price.string).strip().split()[-1]
+
+            # get prod_id
+            input_info_hidden = prod_info.find('input')
+            prod_id = input_info_hidden['id'].split('_')[-1]
+            product['id'] = prod_id
+
+            self._products[product['desc']] = product
+
         return self._products
 
     def _parse_prod_specs(self, soup):
-        return {}
+        prod_spec = {}
+
+        div_spec = soup.find(id='tab2Widget')
+        li_specs = div_spec.ul.find_all('li')
+
+        for spec in li_specs:
+            span_name = spec.span
+            span_value = span_name.find_next_sibling('span')
+            name = str(span_name.string).strip().split(':')[0]
+            value = str(span_value.string).strip()
+            prod_spec[name] = value
+        return prod_spec
 
     def _prod_listings_to_csv(self):
         pass

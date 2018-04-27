@@ -43,14 +43,11 @@ class PerformanceBikesTestCase(unittest.TestCase):
 
     def test_get_prods_on_page(self):
         cases = {
-            "/shop/bikes-frames/fuji-absolute-19-disc-flat-bar-road-bike-2018"
-            "-31-8559": "Fuji Absolute 1.9 Disc Flat Bar Road Bike -2018",
-            "/shop/bikes-frames/breezer-cloud-9-carbon-29er-mountain-bike"
-            "-2018-31-8578": "Breezer Cloud 9 Carbon 29er Mountain Bike - 2018",
-            "/shop/bikes-frames/marin-hawk-hill-275-mountain-bike-2018-31"
-            "-6715": "Marin Hawk Hill 27.5 Mountain Bike - 2018",
-            "/shop/bikes-frames/fuji-finest-10-le-womens-road-bike-2017-31"
-            "-5619": "Fuji Finest 1.0 LE Women's Road Bike - 2017"
+            "Fuji Absolute 1.9 Disc Flat Bar Road Bike -2018":
+                {'href': '/shop/bikes-frames/fuji-absolute-19-disc-flat-bar-road-bike-2018-31-8559', 'desc': 'Fuji Absolute 1.9 Disc Flat Bar Road Bike -2018', 'price': '$449.99', 'msrp': '$499.99', 'id': '7000000000000008209'},
+            "Breezer Cloud 9 Carbon 29er Mountain Bike - 2018": {'href': '/shop/bikes-frames/breezer-cloud-9-carbon-29er-mountain-bike-2018-31-8578', 'desc': 'Breezer Cloud 9 Carbon 29er Mountain Bike - 2018', 'price': '$1,499.99', 'msrp': '$2,999.99', 'id': '7000000000000006408'},
+            "Marin Hawk Hill 27.5 Mountain Bike - 2018": {'href': '/shop/bikes-frames/marin-hawk-hill-275-mountain-bike-2018-31-6715', 'desc': 'Marin Hawk Hill 27.5 Mountain Bike - 2018', 'price': '$1,399.99', 'msrp': '$1,499.99', 'id': '1215816'},
+            "Fuji Finest 1.0 LE Women's Road Bike - 2017": {'href': '/shop/bikes-frames/fuji-finest-10-le-womens-road-bike-2017-31-5619', 'desc': "Fuji Finest 1.0 LE Women's Road Bike - 2017", 'price': '$799.97', 'msrp': '$1,349.00', 'id': '1208310'}
         }
 
         # load test html into memory
@@ -81,7 +78,7 @@ class PerformanceBikesTestCase(unittest.TestCase):
                     'compression and rebound adjustment, alloy tapered steerer,'
                     ' 15mm thru axle',
             'Frame': 'Series 3 6061 aluminum frame, 27.5" wheels, 120mm travel '
-                     'MultiTrac suspension, 135mm QR',
+                     'MultiTrac suspesnion, 135mm QR',
             'Front Derailleur': 'N/A',
             'Grips/Tape': 'Marin Dual Density',
             'Handlebar': 'Marin mini riser, 15mm rise, 780mm width',
@@ -96,6 +93,35 @@ class PerformanceBikesTestCase(unittest.TestCase):
             'Stem': 'Marin 3D forged alloy',
             'Tires': 'Schwalbe Hans Dampf, 27.5"x2.35"',
             'Wheelset': 'Marin Double Wall alloy'''
+        }
+
+        bkestrel_specs = {
+            'Bottom Bracket': 'Praxis M30 BSA Bottom Bracket, '
+                              'Cartridge Bearings',
+            'Brakes': 'Tektro R540 dual-pivot',
+            'Cassette': 'Shimano 105, 11-28T, 11-speed',
+            'Chain': 'KMC X11, 11-speed',
+            'Crankset': 'Oval Concepts 500, forged 6066 arms, M30 spindle, '
+                        'forged Praxis 50/34T rings',
+            'Fork': 'EMH carbon, 1 1/8" - 1 1/4" tapered alloy steerer',
+            'Frame': 'Kestrel Enhanced Modulus Hybrid (EMH) 700K & 800K '
+                     'carbon fiber',
+            'Front Derailleur': 'Shimano 105, braze-on',
+            'Grips/Tape': 'Kestrel padded',
+            'Handlebar': 'Oval Concepts 310 Ergo, 6061 alloy, 31.8mm clamp, '
+                         '133mm drop, 4° sweep',
+            'Headset': 'FSA integrated, 1 1/8" top, 1 1/4" bottom w/ '
+                       '15mm top cover',
+            'Levers': 'Shimano 105 STI',
+            'Pedals': 'N/A',
+            'Rear Derailleur': 'Shimano 105, 11-speed',
+            'Rack Mounts': 'No',
+            'Saddle': 'Oval Concepts 300, steel rail',
+            'Seatpost': 'Kestrel EMS Pro, carbon, Ritchey clamp system',
+            'Shifters': 'Shimano 105 STI, 11-speed',
+            'Stem': 'Oval Concepts 313, 3D-forged 6061 stem body, +/-7°',
+            'Tires': 'Vittoria Zaffiro Pro, 700 x 25c, folding',
+            'Wheelset': 'Oval Concepts 327, 700c 20/24H rims'
         }
 
         # load test prod details into memory
@@ -117,9 +143,9 @@ class PerformanceBikesTestCase(unittest.TestCase):
 
         # case 2: using second data, exact match in components
         result = self.pbs._parse_prod_specs(bkestrel_detail_soup)
-        self.assertEqual(len(marin_specs), len(result))
-        for key in marin_specs.keys():
-            self.assertTrue(key in result.keys())
+        self.assertEqual(len(bkestrel_specs), len(result))
+        for key in bkestrel_specs.keys():
+            self.assertEqual(bkestrel_specs[key], result[key])
 
 
 if __name__ == '__main__':
