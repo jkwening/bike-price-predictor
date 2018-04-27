@@ -1,5 +1,6 @@
 import requests
 import time
+import re
 from bs4 import BeautifulSoup
 
 SHOP_BIKES_BASE_URL = "https://www.performancebike.com/shop/bikes-frames"
@@ -87,8 +88,6 @@ class PerformanceBikes(object):
         div_product_info = div_product_listing_widget.find_all(
             'div', class_='product_info')
 
-        counter = 0
-
         for prod_info in div_product_info:
             product = dict()
 
@@ -121,6 +120,12 @@ class PerformanceBikes(object):
         prod_spec = {}
 
         div_spec = soup.find(id='tab2Widget')
+
+        if div_spec is None:
+            error = soup.find('title')
+            print(f'Error: {error.string}')
+            return prod_spec
+
         li_specs = div_spec.ul.find_all('li')
 
         for spec in li_specs:

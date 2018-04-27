@@ -66,7 +66,7 @@ class PerformanceBikesTestCase(unittest.TestCase):
         num_prods, result = self.pbs.get_product_listings()
         self.assertTrue(num_prods, len(result))
 
-    def test_get_prod_details(self):
+    def test_get_prod_spec(self):
         # example data
         marin_specs = {
             'Bottom Bracket': 'External seal cartridge bearing',
@@ -131,9 +131,13 @@ class PerformanceBikesTestCase(unittest.TestCase):
         with open('bkestrel-talon-105-le-road-bike-2018-31-8721.html') as f:
             bkestrel_prod_detail_text = f.read()
 
+        with open('bike-eli-elliptigo-sub-31-8914.html') as f:
+            generic_error = f.read()
+
         marin_detail_soup = BeautifulSoup(marin_prod_detail_text, 'lxml')
         bkestrel_detail_soup = BeautifulSoup(bkestrel_prod_detail_text,
                                                   'lxml')
+        generic_error_soup = BeautifulSoup(generic_error, 'lxml')
 
         # case 1: exact match per example data
         result = self.pbs._parse_prod_specs(marin_detail_soup)
@@ -146,6 +150,10 @@ class PerformanceBikesTestCase(unittest.TestCase):
         self.assertEqual(len(bkestrel_specs), len(result))
         for key in bkestrel_specs.keys():
             self.assertEqual(bkestrel_specs[key], result[key])
+
+        # case 3: safely handle error
+        result = self.pbs._parse_prod_specs(generic_error_soup)
+        self.assertEqual(0, len(result))
 
 
 if __name__ == '__main__':
