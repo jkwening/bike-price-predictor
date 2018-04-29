@@ -8,38 +8,30 @@ from scrapers import PerformanceBikes
 
 class PerformanceBikesTestCase(unittest.TestCase):
     def setUp(self):
+        # use smaller page_size for testing purposes
         self.pbs = PerformanceBikes(page_size=24)
 
-    def test_update_facet_url(self):
-        # case 1: initialize with default
-        facet_str = '#facet:&productBeginIndex:0&facetLimit:&orderBy:5' \
-                    '&pageView:list&minPrice:&maxPrice:&pageSize:72&'
-        self.pbs._update_facet_str(init=True)
-        self.assertEqual(self.pbs._facet, facet_str)
-
-        # case 2: increment to next range
-        self.pbs._update_facet_str()
-        self.assertNotEqual(self.pbs._facet, facet_str)
-        facet_str = '#facet:&productBeginIndex:71&facetLimit:&orderBy:5' \
-                    '&pageView:list&minPrice:&maxPrice:&pageSize:72&'
-        self.assertEqual(self.pbs._facet, facet_str)
-
-        # case 3: increment twice then check
-        self.pbs._update_facet_str()
-        self.pbs._update_facet_str()
-        self.assertNotEqual(self.pbs._facet, facet_str)
-        facet_str = '#facet:&productBeginIndex:215&facetLimit:&orderBy:5' \
-                    '&pageView:list&minPrice:&maxPrice:&pageSize:72&'
-        self.assertEqual(self.pbs._facet, facet_str)
+    def test_fetch_prod_listing_view(self):
+        text = self.pbs._fetch_prod_listing_view()
+        soup = BeautifulSoup(text, 'lxml')
+        self.pbs._get_prods_on_current_listings_page(soup)
+        self.assertEqual(self.pbs._page_size, len(self.pbs._products))
 
     def test_get_bike_urls(self):
-        response = self.pbs.get_product_listings()
+        # TODO - complete this unit test snippet (FYI - long running)
+        response = self.pbs.get_all_available_prods()
         self.assertEqual(False, response)
 
     def test_get_max_num_products(self):
+        # load test html into memory
+        with open('performance_bike_shop_bikes.html') as f:
+            prod_list_text = f.read()
+
+        prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
+
         expected = 840  # from html file
-        max_num = self.pbs._get_max_num_prods(self.prod_list_soup)
-        self.assertEqual(expected, max_num)
+        self.pbs._get_max_num_prods(prod_list_soup)
+        self.assertEqual(expected, self.pbs._num_bikes)
 
     def test_get_prods_on_page(self):
         cases = {
@@ -55,15 +47,15 @@ class PerformanceBikesTestCase(unittest.TestCase):
             prod_list_text = f.read()
 
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
-        result = self.pbs._get_prods_on_page(prod_list_soup)
-        self.assertEqual(self.pbs._page_size, len(result))
+        self.pbs._get_prods_on_current_listings_page(prod_list_soup)
+        self.assertEqual(self.pbs._page_size, len(self.pbs._products))
         for key in cases:
-            self.assertTrue(key in result)
+            self.assertTrue(key in self.pbs._products)
         for value in cases.values():
-            self.assertTrue(value in result.values())
+            self.assertTrue(value in self.pbs._products.values())
 
     def test_get_prod_listings(self):
-        self.pbs.get_product_listings()
+        self.pbs.get_all_available_prods()
         self.assertTrue(self.pbs._num_bikes, len(self.pbs._products))
 
     def test_get_prod_spec(self):

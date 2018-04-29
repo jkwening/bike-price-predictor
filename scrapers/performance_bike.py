@@ -1,13 +1,9 @@
 import requests
 import time
+import os
+from csv import DictWriter
+from datetime import datetime
 from bs4 import BeautifulSoup
-
-BASE_URL = 'https://www.performancebike.com'
-SHOP_BIKES_BASE_URL = "https://www.performancebike.com/shop/bikes-frames"
-FACET_MOD1_IDX = '#facet:&productBeginIndex:'
-FACET_MOD2_VIEW = '&facetLimit:&orderBy:5&pageView:'
-FACET_MOD3_SIZE = '&minPrice:&maxPrice:&pageSize:'
-FACET_MOD4_END = '&'
 
 """
 base url = https://www.performancebike.com/shop/bikes-frames#facet:&productBeginIndex:0&facetLimit:&orderBy:5&pageView:grid&minPrice:&maxPrice:&pageSize:&
@@ -30,35 +26,39 @@ span class='num_products'>($nbsp; # - # of # $nbsp;)< - range
 """
 
 
+def create_directory_if_missing(file_path):
+    """
+    Ensure there is a directory for given filepath, if doesn't exists it creates ones.
+
+    :param file_path: file path for where to write and save csv file
+    :type file_path: string
+
+    :return: None
+    """
+    directory = os.path.dirname(file_path)
+
+    if not os.path.isdir(directory):
+        os.mkdir(directory)
+
+
 class PerformanceBikes(object):
     def __init__(self, page_size=72, page_view='list', ):
         self._page_size = page_size
         self._page_view = page_view
-        self._product_begin_index = 0
-        self._facet = ''
-        self._update_facet_str(init=True)
-        self._page_count = 1
         self._products = {}  # href, desc key,value pairs
         self._num_bikes = 0
+        self._BASE_URL = 'https://www.performancebike.com'
+        self._module_path = os.path.abspath(os.path.dirname(__file__))
+        self._data_path = os.path.join(self._module_path, os.pardir, 'data')
+        self._timestamp = datetime.now().strftime('%Y%m%d')
 
-    def _update_facet_str(self, init=False):
-        """Updates facet query string with next index range"""
-        if not init:
-            self._product_begin_index =\
-                (self._page_size * self._page_count) - 1
-            self._page_count += 1
-
-        self._facet = f'{FACET_MOD1_IDX}{self._product_begin_index}' \
-                      f'{FACET_MOD2_VIEW}{self._page_view}{FACET_MOD3_SIZE}' \
-                      f'{self._page_size}{FACET_MOD4_END}'
-
-    def _fetch_html(self, url=None):
+    def _fetch_html(self, url, method='GET', params=None, data=None,
+                    headers=None):
         """Fetch html page for bikes"""
-        if url is None:
-            url = SHOP_BIKES_BASE_URL + self._facet
 
-        print(f'Fetching request from: {url}')
-        response = requests.get(url)
+        print(f'Performing {method} request for: {url}')
+        response = requests.request(method=method, url=url, data=data,
+                                    params=params, headers=headers)
 
         # check response status code
         if response.status_code != 200:
@@ -68,11 +68,59 @@ class PerformanceBikes(object):
 
         return response.text
 
+    def _fetch_prod_listing_view(self, product_begin_index=0, store_id=10052,
+                                 catalog_id=10551, lang_id=-1,):
+        req_url = f'https://www.performancebike.com/ProductListingView' \
+                  f'?ajaxStoreImageDir=%2F%2Fwww.performancebike.com%2F' \
+                  f'wcsstore%2FAuroraStorefrontAssetStore%2F&' \
+                  f'advancedSearch=&facet=&searchTermScope=&' \
+                  f'categoryId=400001&' \
+                  f'categoryFacetHierarchyPath=&searchType=1002&filterFacet=&' \
+                  f'resultCatEntryType=&ems' \
+                  f'Name=Widget_CatalogEntryList_Ext_1024819115206104156&' \
+                  f'searchTerm=&filterTerm=&resultsPerPage={self._page_size}&' \
+                  f'manufacturer=&' \
+                  f'sType=SimpleSearch&disableProductCompare=false&' \
+                  f'parent_category_rn=&catalogId=10551&langId=-1&' \
+                  f'gridPosition=&ddkey=ProductListingView_6_' \
+                  f'1024819115206087258_1024819115206104156&' \
+                  f'enableSKUListView=false&storeId=10052&metaData='
+
+        headers = {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+
+        data = {
+            'contentBeginIndex': 0,
+            'productBeginIndex': product_begin_index,
+            'beginIndex': product_begin_index,
+            'orderBy': 5,
+            'pageView': self._page_view,
+            'resultType': 'products',
+            'loadProductsList': 'true',
+            'storeId': store_id,
+            'catalogId': catalog_id,
+            'langId': lang_id,
+            'homePageURL': '/shop',
+            'commandContextCurrency': 'USD',
+            'urlPrefixForHTTPS': 'https://www.performancebike.com',
+            'urlPrefixForHTTP': 'http://www.performancebike.com',
+            'widgetPrefix': '6_1024819115206104156',
+            'showColorSwatches': 'true',
+            'showRatings': 'true',
+            'showDiscounts': 'true',
+            'pgl_widgetId': 1024819115206104156,
+            'objectId': '_6_1024819115206087258_1024819115206104156',
+            'requesttype': 'ajax'
+        }
+
+        return self._fetch_html(url=req_url, method='POST', params=None,
+                                data=data, headers=headers)
+
     def _get_max_num_prods(self, soup):
         """
         Get the total number of produces available in page view.
         :param soup: beautiful soup to search through
-        :return: the max number of products
         """
         # get div tag with class = 'title'
         div_product_listing_widget = soup.find('div',
@@ -81,9 +129,9 @@ class PerformanceBikes(object):
                                                       class_='title')
         div_span = div_product.find('span')
         num_prods = div_span.string
-        return int(num_prods.split()[-2])
+        self._num_bikes = int(num_prods.split()[-2])
 
-    def _get_prods_on_page(self, soup):
+    def _get_prods_on_current_listings_page(self, soup):
         """Get all bike products for the passed html page"""
         div_product_listing_widget = soup.find('div',
                                                class_='productListingWidget')
@@ -117,8 +165,6 @@ class PerformanceBikes(object):
             self._products[product['desc']] = product
             print('New bike: ', product)
 
-        return self._products
-
     def _parse_prod_specs(self, soup):
         prod_spec = {}
 
@@ -139,41 +185,76 @@ class PerformanceBikes(object):
             prod_spec[name] = value
         return prod_spec
 
-    def _prod_listings_to_csv(self):
-        pass
+    def _write_prod_listings_to_csv(self):
+        """Save available bike products to csv file"""
+        time_stamp_folder = os.path.join(self._data_path, self._timestamp)
+        create_directory_if_missing(time_stamp_folder)
+        filename = os.path.join(time_stamp_folder,
+                                f'performancebike_prod_listing_'
+                                f'{self._timestamp}.csv')
 
-    def _prod_details_to_csv(self):
-        pass
+        with open(file=filename, mode='w', newline='') as csvfile:
+            prod_descs = self._products.keys()
+            field_names = self._products[prod_descs[0]].keys()
+            writer = DictWriter(csvfile, fieldnames=field_names)
+            writer.writeheader()
 
-    def get_product_listings(self):
+            for desc in prod_descs:
+                writer.writerow(self._products[desc])
+
+    def _write_prod_specs_to_csv(self, specs_dict):
+        """Save bike product specifications to csv file"""
+        time_stamp_folder = os.path.join(self._data_path, self._timestamp)
+        create_directory_if_missing(time_stamp_folder)
+        filename = os.path.join(time_stamp_folder,
+                                f'performancebike_prod_specs_'
+                                f'{self._timestamp}.csv')
+
+        with open(file=filename, mode='w', newline='') as csvfile:
+            spec_descs = specs_dict.keys()
+            field_names = specs_dict[spec_descs[0]].keys()
+            writer = DictWriter(csvfile, fieldnames=field_names)
+            writer.writeheader()
+
+            for desc in spec_descs:
+                writer.writerow(specs_dict[desc])
+
+    def get_all_available_prods(self, to_csv=False):
         """Get all products currently available from site"""
-        # refresh product listings dictionary if not empty
-        if self._products:
-            self._products = {}
+        # ensure product listings dictionary is empty
+        self._products = {}
 
-        page_soup = BeautifulSoup(self._fetch_html(), 'lxml')
-        self._num_bikes = self._get_max_num_prods(soup=page_soup)
+        # get first product listings view page, total num bikes, total pages
+        page_soup = BeautifulSoup(self._fetch_prod_listing_view(), 'lxml')
+        self._get_max_num_prods(soup=page_soup)
         num_pages = int(self._num_bikes / self._page_size)
+        self._get_prods_on_current_listings_page(soup=page_soup)
+        print(f'Current number of products: {len(self._products)}')
 
-        # iterate through all grid pages
-        for _ in range(num_pages):
-            print('Page: ', _)
-            self._get_prods_on_page(soup=page_soup)
-            self._update_facet_str(init=False)
+        # scrape for all bikes on every product listing pages
+        for page_num in range(num_pages):
+            print('Page: ', page_num + 1)
 
             # wait 1 second then request next page
-            time.sleep(1)
-            page_soup = BeautifulSoup(self._fetch_html(), 'lxml')
-            print(f'Current num of products: {len(self._products)}')
+            if (page_num + 1) <= num_pages:
+                time.sleep(1)
+                product_begin_index = (self._page_size * page_num + 1) - 1
+                page_soup = BeautifulSoup(self._fetch_prod_listing_view(
+                    product_begin_index=product_begin_index), 'lxml')
+                self._get_prods_on_current_listings_page(soup=page_soup)
+                print(f'Current number of products: {len(self._products)}')
 
-    def get_product_specs(self, get_prods=False):
-        """Get specifications for all identified bikes"""
+        if to_csv:
+            self._write_prod_listings_to_csv()
+
+    def get_product_specs(self, get_prods=False, to_csv=False):
+        """Get specifications for all available bikes on web site"""
         # check for data in memory
         if self._products:
             print('Have bike products listing in memory - PROCESSING...')
         elif get_prods:
             print('No bike product listing - SCRAPING SITE...')
-            self.get_product_listings()
+            self.get_all_available_prods()
         else:
             raise ValueError('No products available!')
 
@@ -181,10 +262,10 @@ class PerformanceBikes(object):
 
         # iteratively get specifications page for each bike
         for bike in self._products:
-            print(bike)
+            print(f'Fetching specifications for: {bike}')
             # define bike specifications url
             bike_href = self._products[bike]['href']
-            bike_url = BASE_URL + bike_href
+            bike_url = self._BASE_URL + bike_href
 
             # wait 1 second then get bike specification page
             time.sleep(1)
@@ -192,7 +273,20 @@ class PerformanceBikes(object):
                 bike_spec_soup = BeautifulSoup(self._fetch_html(url=bike_url),
                                                'lxml')
                 specs[bike] = self._parse_prod_specs(bike_spec_soup)
-            except FileNotFoundError as err:
+            except FileNotFoundError:
+                print(f'\tSpecifications page for {bike} not found!')
                 specs[bike] = {}
 
+        if to_csv:
+            self._write_prod_specs_to_csv(specs_dict=specs)
+
         return specs
+
+
+if __name__ == '__main__':
+    pbs = PerformanceBikes()
+    pbs.get_all_available_prods(to_csv=True)
+    specifications = pbs.get_product_specs(get_prods=True)
+
+    if specifications:
+        print('Success!')
