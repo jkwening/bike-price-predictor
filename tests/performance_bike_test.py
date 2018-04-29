@@ -63,8 +63,8 @@ class PerformanceBikesTestCase(unittest.TestCase):
             self.assertTrue(value in result.values())
 
     def test_get_prod_listings(self):
-        num_prods, result = self.pbs.get_product_listings()
-        self.assertTrue(num_prods, len(result))
+        self.pbs.get_product_listings()
+        self.assertTrue(self.pbs._num_bikes, len(self.pbs._products))
 
     def test_get_prod_spec(self):
         # example data
@@ -154,6 +154,19 @@ class PerformanceBikesTestCase(unittest.TestCase):
         # case 3: safely handle error
         result = self.pbs._parse_prod_specs(generic_error_soup)
         self.assertEqual(0, len(result))
+
+    def test_get_product_specs(self):
+        self.assertRaises(ValueError, self.pbs.get_product_specs)
+
+        result = self.pbs.get_product_specs(get_prods=True)
+        self.assertEqual(len(self.pbs._products), len(result))
+        for key in self.pbs._products.keys():
+            self.assertTrue(key in result.keys())
+
+        result = self.pbs.get_product_specs()
+        self.assertEqual(len(self.pbs._products), len(result))
+        for key in self.pbs._products.keys():
+            self.assertTrue(key in result.keys())
 
 
 if __name__ == '__main__':

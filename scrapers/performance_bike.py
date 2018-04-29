@@ -1,8 +1,8 @@
 import requests
 import time
-import re
 from bs4 import BeautifulSoup
 
+BASE_URL = 'https://www.performancebike.com'
 SHOP_BIKES_BASE_URL = "https://www.performancebike.com/shop/bikes-frames"
 FACET_MOD1_IDX = '#facet:&productBeginIndex:'
 FACET_MOD2_VIEW = '&facetLimit:&orderBy:5&pageView:'
@@ -39,6 +39,7 @@ class PerformanceBikes(object):
         self._update_facet_str(init=True)
         self._page_count = 1
         self._products = {}  # href, desc key,value pairs
+        self._num_bikes = 0
 
     def _update_facet_str(self, init=False):
         """Updates facet query string with next index range"""
@@ -54,15 +55,16 @@ class PerformanceBikes(object):
     def _fetch_html(self, url=None):
         """Fetch html page for bikes"""
         if url is None:
-            response = requests.get(SHOP_BIKES_BASE_URL + self._facet)
-        else:
-            response = requests.get(url)
+            url = SHOP_BIKES_BASE_URL + self._facet
+
+        print(f'Fetching request from: {url}')
+        response = requests.get(url)
 
         # check response status code
         if response.status_code != 200:
             print(f'Error - Status Code: {response.status_code}; Reason: '
                   f'{response.reason}')
-            raise Exception(f'HTTPError')
+            raise FileNotFoundError('HTTPError')
 
         return response.text
 
@@ -113,6 +115,7 @@ class PerformanceBikes(object):
             product['id'] = prod_id
 
             self._products[product['desc']] = product
+            print('New bike: ', product)
 
         return self._products
 
@@ -149,21 +152,47 @@ class PerformanceBikes(object):
             self._products = {}
 
         page_soup = BeautifulSoup(self._fetch_html(), 'lxml')
-        num_prods = self._get_max_num_prods(soup=page_soup)
-        num_pages = int(num_prods / self._page_size)
+        self._num_bikes = self._get_max_num_prods(soup=page_soup)
+        num_pages = int(self._num_bikes / self._page_size)
 
         # iterate through all grid pages
         for _ in range(num_pages):
-            print(_)
+            print('Page: ', _)
             self._get_prods_on_page(soup=page_soup)
             self._update_facet_str(init=False)
 
             # wait 1 second then request next page
             time.sleep(1)
             page_soup = BeautifulSoup(self._fetch_html(), 'lxml')
+            print(f'Current num of products: {len(self._products)}')
 
-        return num_prods, self._products
+    def get_product_specs(self, get_prods=False):
+        """Get specifications for all identified bikes"""
+        # check for data in memory
+        if self._products:
+            print('Have bike products listing in memory - PROCESSING...')
+        elif get_prods:
+            print('No bike product listing - SCRAPING SITE...')
+            self.get_product_listings()
+        else:
+            raise ValueError('No products available!')
 
-    def get_product_specs(self, prod_name, prod_href):
-        """Get specifications for given bike product"""
-        return None
+        specs = dict()
+
+        # iteratively get specifications page for each bike
+        for bike in self._products:
+            print(bike)
+            # define bike specifications url
+            bike_href = self._products[bike]['href']
+            bike_url = BASE_URL + bike_href
+
+            # wait 1 second then get bike specification page
+            time.sleep(1)
+            try:
+                bike_spec_soup = BeautifulSoup(self._fetch_html(url=bike_url),
+                                               'lxml')
+                specs[bike] = self._parse_prod_specs(bike_spec_soup)
+            except FileNotFoundError as err:
+                specs[bike] = {}
+
+        return specs
