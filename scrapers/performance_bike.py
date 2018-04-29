@@ -1,8 +1,9 @@
 import requests
 import time
 import os
-from csv import DictWriter
+from csv import DictWriter, DictReader
 from datetime import datetime
+import math
 from bs4 import BeautifulSoup
 
 """
@@ -25,6 +26,13 @@ div class='title>Products:< - start of getting number products displayed
 span class='num_products'>($nbsp; # - # of # $nbsp;)< - range
 """
 
+#######################################
+#  MODULE CONSTANTS
+#######################################
+MODULE_PATH = os.path.abspath(os.path.dirname(__file__))
+DATA_PATH = os.path.abspath(os.path.join(MODULE_PATH, os.pardir, 'data'))
+TIMESTAMP = datetime.now().strftime('%Y%m%d')
+
 
 def create_directory_if_missing(file_path):
     """
@@ -36,21 +44,18 @@ def create_directory_if_missing(file_path):
     :return: None
     """
     directory = os.path.dirname(file_path)
-
-    if not os.path.isdir(directory):
-        os.mkdir(directory)
+    os.makedirs(directory, exist_ok=True)
 
 
 class PerformanceBikes(object):
-    def __init__(self, page_size=72, page_view='list', ):
+    def __init__(self, page_size=72, page_view='list'):
         self._page_size = page_size
         self._page_view = page_view
+
         self._products = {}  # href, desc key,value pairs
         self._num_bikes = 0
         self._BASE_URL = 'https://www.performancebike.com'
-        self._module_path = os.path.abspath(os.path.dirname(__file__))
-        self._data_path = os.path.join(self._module_path, os.pardir, 'data')
-        self._timestamp = datetime.now().strftime('%Y%m%d')
+        self._specs_fieldnames = set()
 
     def _fetch_html(self, url, method='GET', params=None, data=None,
                     headers=None):
@@ -114,6 +119,8 @@ class PerformanceBikes(object):
             'requesttype': 'ajax'
         }
 
+        print(f'begin index: {product_begin_index}')
+
         return self._fetch_html(url=req_url, method='POST', params=None,
                                 data=data, headers=headers)
 
@@ -168,33 +175,39 @@ class PerformanceBikes(object):
     def _parse_prod_specs(self, soup):
         prod_spec = {}
 
-        div_spec = soup.find(id='tab2Widget')
+        try:
+            div_spec = soup.find(id='tab2Widget')
 
-        if div_spec is None:
-            error = soup.find('title')
-            print(f'Error: {error.string}')
-            return prod_spec
+            if div_spec is None:
+                error = soup.find('title')
+                print(f'Error: {error.string}')
+                return prod_spec
 
-        li_specs = div_spec.ul.find_all('li')
+            li_specs = div_spec.ul.find_all('li')
 
-        for spec in li_specs:
-            span_name = spec.span
-            span_value = span_name.find_next_sibling('span')
-            name = str(span_name.string).strip().split(':')[0]
-            value = str(span_value.string).strip()
-            prod_spec[name] = value
+            for spec in li_specs:
+                span_name = spec.span
+                span_value = span_name.find_next_sibling('span')
+                name = str(span_name.string).strip().split(':')[0]
+                value = str(span_value.string).strip()
+                prod_spec[name] = value
+                self._specs_fieldnames.add(name)
+        except AttributeError as err:
+            print(f'\tError: {err}')
+
         return prod_spec
 
-    def _write_prod_listings_to_csv(self):
+    def _write_prod_listings_to_csv(self, path=None):
         """Save available bike products to csv file"""
-        time_stamp_folder = os.path.join(self._data_path, self._timestamp)
-        create_directory_if_missing(time_stamp_folder)
-        filename = os.path.join(time_stamp_folder,
-                                f'performancebike_prod_listing_'
-                                f'{self._timestamp}.csv')
+        if path is None:
+            path = os.path.join(DATA_PATH, TIMESTAMP,
+                                    f'performancebike_prod_listing_'
+                                    f'{TIMESTAMP}.csv')
 
-        with open(file=filename, mode='w', newline='') as csvfile:
-            prod_descs = self._products.keys()
+        create_directory_if_missing(path)
+
+        with open(file=path, mode='w', newline='') as csvfile:
+            prod_descs = list(self._products.keys())
             field_names = self._products[prod_descs[0]].keys()
             writer = DictWriter(csvfile, fieldnames=field_names)
             writer.writeheader()
@@ -202,24 +215,25 @@ class PerformanceBikes(object):
             for desc in prod_descs:
                 writer.writerow(self._products[desc])
 
-    def _write_prod_specs_to_csv(self, specs_dict):
+    def _write_prod_specs_to_csv(self, specs_dict, path=None):
         """Save bike product specifications to csv file"""
-        time_stamp_folder = os.path.join(self._data_path, self._timestamp)
-        create_directory_if_missing(time_stamp_folder)
-        filename = os.path.join(time_stamp_folder,
-                                f'performancebike_prod_specs_'
-                                f'{self._timestamp}.csv')
+        if path is None:
+            path = os.path.join(DATA_PATH, TIMESTAMP,
+                                    f'performancebike_prod_specs_'
+                                    f'{TIMESTAMP}.csv')
 
-        with open(file=filename, mode='w', newline='') as csvfile:
-            spec_descs = specs_dict.keys()
-            field_names = specs_dict[spec_descs[0]].keys()
+        create_directory_if_missing(path)
+
+        with open(file=path, mode='w', newline='') as csvfile:
+            spec_descs = list(specs_dict.keys())
+            field_names = self._specs_fieldnames
             writer = DictWriter(csvfile, fieldnames=field_names)
             writer.writeheader()
 
             for desc in spec_descs:
                 writer.writerow(specs_dict[desc])
 
-    def get_all_available_prods(self, to_csv=False):
+    def get_all_available_prods(self, to_csv=True):
         """Get all products currently available from site"""
         # ensure product listings dictionary is empty
         self._products = {}
@@ -227,7 +241,7 @@ class PerformanceBikes(object):
         # get first product listings view page, total num bikes, total pages
         page_soup = BeautifulSoup(self._fetch_prod_listing_view(), 'lxml')
         self._get_max_num_prods(soup=page_soup)
-        num_pages = int(self._num_bikes / self._page_size)
+        num_pages = math.ceil(self._num_bikes / self._page_size)
         self._get_prods_on_current_listings_page(soup=page_soup)
         print(f'Current number of products: {len(self._products)}')
 
@@ -247,17 +261,34 @@ class PerformanceBikes(object):
         if to_csv:
             self._write_prod_listings_to_csv()
 
-    def get_product_specs(self, get_prods=False, to_csv=False):
+    def get_product_specs(self, get_prods_from='site', to_csv=True):
         """Get specifications for all available bikes on web site"""
-        # check for data in memory
-        if self._products:
+        # determine how to get bike products
+        if self._products and get_prods_from == 'memory':
             print('Have bike products listing in memory - PROCESSING...')
-        elif get_prods:
-            print('No bike product listing - SCRAPING SITE...')
+        elif get_prods_from == 'site':
+            print('Getting bike products from site - SCRAPING SITE...')
             self.get_all_available_prods()
+        elif get_prods_from:  # expecting file path of CSV file to load
+            print(f'Loading products from {get_prods_from} - LOADING...')
+            name, csv = get_prods_from.split('.')
+
+            if csv != 'csv':
+                raise TypeError('Not a CSV file type!')
+
+            with open(file=get_prods_from, mode='r') as csv_file:
+                products = {}
+                reader = DictReader(csv_file)
+
+                for row in reader:
+                    bike = dict(row)
+                    products[bike['desc']] = bike
+
+            self._products = products
         else:
             raise ValueError('No products available!')
 
+        start_timer = datetime.now()  # time how long to scrape all specs
         specs = dict()
 
         # iteratively get specifications page for each bike
@@ -276,6 +307,8 @@ class PerformanceBikes(object):
             except FileNotFoundError:
                 print(f'\tSpecifications page for {bike} not found!')
                 specs[bike] = {}
+        running_time = (datetime.now() - start_timer)
+        print(f'Runtime for scraping specs: {running_time}')
 
         if to_csv:
             self._write_prod_specs_to_csv(specs_dict=specs)
@@ -284,9 +317,22 @@ class PerformanceBikes(object):
 
 
 if __name__ == '__main__':
+    # TODO - command line options
+    csv_file_path = os.path.join(DATA_PATH, TIMESTAMP,
+                                 f'performancebike_prod_listing_'
+                                 f'{TIMESTAMP}.csv')
+    # csv_file_path = 'site'
+    # csv_file_path = 'memory'
+
     pbs = PerformanceBikes()
-    pbs.get_all_available_prods(to_csv=True)
-    specifications = pbs.get_product_specs(get_prods=True)
+    if csv_file_path == 'memory':
+        start = datetime.now()
+        pbs.get_all_available_prods(to_csv=True)
+        end = datetime.now()
+        print(f'\n\nGet all available products: {end - start}')
+
+    specifications = pbs.get_product_specs(get_prods_from=csv_file_path,
+                                           to_csv=True)
 
     if specifications:
         print('Success!')
