@@ -11,9 +11,10 @@ from scrapers import PerformanceBikes
 #  MODULE CONSTANTS
 #######################################
 TIMESTAMP = datetime.now().strftime('%Y%m%d')
-MODULE_PATH = os.path.abspath(os.path.dirname(__file__))
-DATA_PATH = os.path.abspath(os.path.join(MODULE_PATH, 'data'))
+MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
+DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
 TEST_PROD_LISTING_PATH = os.path.join(DATA_PATH, 'test_prod_listing.csv')
+SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'performance_bike_shop_bikes.html'))
 MARIN_SPECS = {
     'Bottom Bracket': 'External seal cartridge bearing',
     'Brakes': 'Shimano BR-M315 hydraulic disc, 180mm/160mm rotor',
@@ -88,7 +89,7 @@ class PerformanceBikesTestCase(unittest.TestCase):
 
     def test_get_max_num_products(self):
         # load test html into memory
-        with open('performance_bike_shop_bikes.html') as f:
+        with open(SHOP_BIKES_HTML_PATH, encoding='utf-8') as f:
             prod_list_text = f.read()
 
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
@@ -107,7 +108,7 @@ class PerformanceBikesTestCase(unittest.TestCase):
         }
 
         # load test html into memory
-        with open('performance_bike_shop_bikes.html') as f:
+        with open(SHOP_BIKES_HTML_PATH, encoding='utf-8') as f:
             prod_list_text = f.read()
 
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
@@ -124,13 +125,16 @@ class PerformanceBikesTestCase(unittest.TestCase):
 
     def test_parse_prod_spec(self):
         # load test prod details into memory
-        with open('marin-hawk-hill-275-mountain-bike-2018-31-6715.html') as f:
+        html_path = os.path.abspath(os.path.join(MODULE_DIR, 'marin-hawk-hill-275-mountain-bike-2018-31-6715.html'))
+        with open(html_path, encoding='utf-8') as f:            
             marin_prod_detail_text = f.read()
 
-        with open('bkestrel-talon-105-le-road-bike-2018-31-8721.html') as f:
+        html_path = os.path.abspath(os.path.join(MODULE_DIR, 'bkestrel-talon-105-le-road-bike-2018-31-8721.html'))
+        with open(html_path, encoding='utf-8') as f:
             bkestrel_prod_detail_text = f.read()
 
-        with open('bike-eli-elliptigo-sub-31-8914.html') as f:
+        html_path = os.path.abspath(os.path.join(MODULE_DIR, 'bike-eli-elliptigo-sub-31-8914.html'))
+        with open(html_path, encoding='utf-8') as f:
             generic_error = f.read()
 
         marin_detail_soup = BeautifulSoup(marin_prod_detail_text, 'lxml')
@@ -154,7 +158,8 @@ class PerformanceBikesTestCase(unittest.TestCase):
         result = self.pbs._parse_prod_specs(generic_error_soup)
         self.assertEqual(0, len(result))
 
-    def test_get_product_specs(self):
+    def test_get_product_specs_scrape(self):
+        """Long running unit test"""
         # case 1: attempt to get from memory when none available
         self.assertRaises(ValueError, self.pbs.get_product_specs,
                           get_prods_from='memory', to_csv=False)
@@ -172,20 +177,21 @@ class PerformanceBikesTestCase(unittest.TestCase):
         for key in self.pbs._products.keys():
             self.assertTrue(key in result.keys())
 
-        # case 4: invalid file path for using products from file
+    def test_get_product_specs_from_file(self):
+        # case 1: invalid file path for using products from file
         self.assertRaises(TypeError, self.pbs.get_product_specs,
                           get_prods_from='dummy/file.txt', to_csv=False)
 
-        # case 5: use products from file
+        # case 2: use products from file
         result = self.pbs.get_product_specs(get_prods_from=TEST_PROD_LISTING_PATH,
-                                            to_csv=False)
+                                            to_csv=True)
         self.assertEqual(len(self.pbs._products), len(result))
         for key in self.pbs._products.keys():
             self.assertTrue(key in result.keys())
 
     def test_write_prod_listings_to_csv(self):
         # load test html into memory
-        with open('performance_bike_shop_bikes.html') as f:
+        with open(SHOP_BIKES_HTML_PATH, encoding='utf-8') as f:
             prod_list_text = f.read()
 
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')

@@ -173,6 +173,7 @@ class PerformanceBikes(object):
             print('New bike: ', product)
 
     def _parse_prod_specs(self, soup):
+        """Return dictionary representation of the product's specification."""
         prod_spec = {}
 
         try:
@@ -188,7 +189,8 @@ class PerformanceBikes(object):
             for spec in li_specs:
                 span_name = spec.span
                 span_value = span_name.find_next_sibling('span')
-                name = str(span_name.string).strip().split(':')[0]
+                name = str(span_name.string).strip().strip(':')  # get clean spec name
+                name = name.strip('1')  # for some reason, some specs end with '1' for spec names
                 value = str(span_value.string).strip()
                 prod_spec[name] = value
                 self._specs_fieldnames.add(name)
@@ -206,7 +208,7 @@ class PerformanceBikes(object):
 
         create_directory_if_missing(path)
 
-        with open(file=path, mode='w', newline='') as csvfile:
+        with open(file=path, mode='w', newline='', encoding='utf-8') as csvfile:
             prod_descs = list(self._products.keys())
             field_names = self._products[prod_descs[0]].keys()
             writer = DictWriter(csvfile, fieldnames=field_names)
@@ -224,7 +226,7 @@ class PerformanceBikes(object):
 
         create_directory_if_missing(path)
 
-        with open(file=path, mode='w', newline='') as csvfile:
+        with open(file=path, mode='w', newline='', encoding='utf-8') as csvfile:
             spec_descs = list(specs_dict.keys())
             field_names = self._specs_fieldnames
             writer = DictWriter(csvfile, fieldnames=field_names)
@@ -276,7 +278,7 @@ class PerformanceBikes(object):
             if csv != 'csv':
                 raise TypeError('Not a CSV file type!')
 
-            with open(file=get_prods_from, mode='r') as csv_file:
+            with open(file=get_prods_from, mode='r', encoding='utf-8') as csv_file:
                 products = {}
                 reader = DictReader(csv_file)
 
@@ -296,10 +298,11 @@ class PerformanceBikes(object):
             print(f'Fetching specifications for: {bike}')
             # define bike specifications url
             bike_href = self._products[bike]['href']
+            bike_id = self._products[bike]['id']
             bike_url = self._BASE_URL + bike_href
 
             # wait 1 second then get bike specification page
-            time.sleep(1)
+            time.sleep(0.10)
             try:
                 bike_spec_soup = BeautifulSoup(self._fetch_html(url=bike_url),
                                                'lxml')
@@ -307,10 +310,15 @@ class PerformanceBikes(object):
             except FileNotFoundError:
                 print(f'\tSpecifications page for {bike} not found!')
                 specs[bike] = {}
+
+            # add bike id for specifications for simple mapping/referencing
+            specs[bike]['id'] = bike_id
+            
         running_time = (datetime.now() - start_timer)
         print(f'Runtime for scraping specs: {running_time}')
 
         if to_csv:
+            self._specs_fieldnames.add('id')  # ensure id is field in specs file
             self._write_prod_specs_to_csv(specs_dict=specs)
 
         return specs
