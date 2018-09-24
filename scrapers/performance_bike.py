@@ -326,20 +326,20 @@ class PerformanceBikes(object):
 
 if __name__ == '__main__':
     # TODO - command line options
-    csv_file_path = os.path.join(DATA_PATH, TIMESTAMP,
+    prod_file_path = os.path.join(DATA_PATH, TIMESTAMP,
                                  f'performancebike_prod_listing_'
                                  f'{TIMESTAMP}.csv')
     # csv_file_path = 'site'
     # csv_file_path = 'memory'
 
+    # Fetch and save products to data folder
     pbs = PerformanceBikes()
-    if csv_file_path == 'memory':
-        start = datetime.now()
-        pbs.get_all_available_prods(to_csv=True)
-        end = datetime.now()
-        print(f'\n\nGet all available products: {end - start}')
+    start = datetime.now()
+    pbs.get_all_available_prods(to_csv=True)
+    end = datetime.now()
+    print(f'\n\nRuntime for getting all available products: {end - start}')
 
-    specifications = pbs.get_product_specs(get_prods_from=csv_file_path,
+    specifications = pbs.get_product_specs(get_prods_from=prod_file_path,
                                            to_csv=True)
 
     if specifications:
