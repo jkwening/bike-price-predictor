@@ -13,7 +13,7 @@ from scrapers import NashBar
 TIMESTAMP = datetime.now().strftime('%Y%m%d')
 MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
-TEST_PROD_LISTING_PATH = os.path.join(DATA_PATH, 'test_prod_listing.csv')
+TEST_PROD_LISTING_PATH = os.path.join(DATA_PATH, 'nashbar_prod_listing_test_data.csv')
 SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'nashbar.html'))
 CAVALO_SPECS = {
     'FRAME': 'C5 high-modulus carbon fiber, Tapered head tube, BB86 bottom bracket shell, Replaceable rear derailleur hanger',
@@ -115,7 +115,7 @@ class NashBarTestCase(unittest.TestCase):
             self.assertTrue(value in self.pbs._products.values())
 
     def test_get_prod_listings(self):
-        self.pbs.get_all_available_prods(to_csv=False)
+        self.pbs.get_all_available_prods(to_csv=True)
         self.assertTrue(self.pbs._num_bikes, len(self.pbs._products))
 
     def test_parse_prod_spec(self):
