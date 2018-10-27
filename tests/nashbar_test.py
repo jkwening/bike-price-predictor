@@ -13,8 +13,9 @@ from scrapers import NashBar
 TIMESTAMP = datetime.now().strftime('%Y%m%d')
 MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
+HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
 TEST_PROD_LISTING_PATH = os.path.join(DATA_PATH, 'nashbar_prod_listing_test_data.csv')
-SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'nashbar.html'))
+SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'nashbar.html'))
 CAVALO_SPECS = {
     'FRAME': 'C5 high-modulus carbon fiber, Tapered head tube, BB86 bottom bracket shell, Replaceable rear derailleur hanger',
     'FORK': 'Full carbon fiber, 1-1/8" - 1-1/2" taper steerer',
@@ -120,16 +121,16 @@ class NashBarTestCase(unittest.TestCase):
 
     def test_parse_prod_spec(self):
         # load test prod details into memory
-        html_path = os.path.abspath(os.path.join(MODULE_DIR, 'Cavalo-Carbon-Road Bike-Nashbar.html'))
+        html_path = os.path.abspath(os.path.join(HTML_PATH, 'Cavalo-Carbon-Road Bike-Nashbar.html'))
         with open(html_path, encoding='utf-8') as f:            
             marin_prod_detail_text = f.read()
 
-        html_path = os.path.abspath(os.path.join(MODULE_DIR, 'FitWell-Road Bike-Nashbar.html'))
+        html_path = os.path.abspath(os.path.join(HTML_PATH, 'FitWell-Road Bike-Nashbar.html'))
         with open(html_path, encoding='utf-8') as f:
             bkestrel_prod_detail_text = f.read()
 
         # TODO - replace with generic error page once I come across one
-        # html_path = os.path.abspath(os.path.join(MODULE_DIR, 'Nashbar-Carbon-Fork-Nashbar.html'))
+        # html_path = os.path.abspath(os.path.join(HTML_PATH, 'Nashbar-Carbon-Fork-Nashbar.html'))
         # with open(html_path, encoding='utf-8') as f:
         #     generic_error = f.read()
 

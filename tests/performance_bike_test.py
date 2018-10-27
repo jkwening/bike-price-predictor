@@ -13,8 +13,9 @@ from scrapers import PerformanceBikes
 TIMESTAMP = datetime.now().strftime('%Y%m%d')
 MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
-TEST_PROD_LISTING_PATH = os.path.join(DATA_PATH, 'performance_prod_lising_test_data.csv')
-SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'performance_bike_shop_bikes.html'))
+HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
+TEST_PROD_LISTING_PATH = os.path.join(DATA_PATH, 'performance_prod_listing_test_data.csv')
+SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'performance_bike_shop_bikes.html'))
 MARIN_SPECS = {
     'Bottom Bracket': 'External seal cartridge bearing',
     'Brakes': 'Shimano BR-M315 hydraulic disc, 180mm/160mm rotor',
@@ -125,15 +126,15 @@ class PerformanceBikesTestCase(unittest.TestCase):
 
     def test_parse_prod_spec(self):
         # load test prod details into memory
-        html_path = os.path.abspath(os.path.join(MODULE_DIR, 'marin-hawk-hill-275-mountain-bike-2018-31-6715.html'))
+        html_path = os.path.abspath(os.path.join(HTML_PATH, 'marin-hawk-hill-275-mountain-bike-2018-31-6715.html'))
         with open(html_path, encoding='utf-8') as f:            
             marin_prod_detail_text = f.read()
 
-        html_path = os.path.abspath(os.path.join(MODULE_DIR, 'bkestrel-talon-105-le-road-bike-2018-31-8721.html'))
+        html_path = os.path.abspath(os.path.join(HTML_PATH, 'bkestrel-talon-105-le-road-bike-2018-31-8721.html'))
         with open(html_path, encoding='utf-8') as f:
             bkestrel_prod_detail_text = f.read()
 
-        html_path = os.path.abspath(os.path.join(MODULE_DIR, 'bike-eli-elliptigo-sub-31-8914.html'))
+        html_path = os.path.abspath(os.path.join(HTML_PATH, 'bike-eli-elliptigo-sub-31-8914.html'))
         with open(html_path, encoding='utf-8') as f:
             generic_error = f.read()
 
