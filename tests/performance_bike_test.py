@@ -12,9 +12,10 @@ from scrapers import PerformanceBikes
 #######################################
 TIMESTAMP = datetime.now().strftime('%Y%m%d')
 MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
-DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
+DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
+TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
 HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
-TEST_PROD_LISTING_PATH = os.path.join(DATA_PATH, 'performance_prod_listing_test_data.csv')
+TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH, 'performance_prod_listing_test_data.csv')
 SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'performance_bike_shop_bikes.html'))
 MARIN_SPECS = {
     'Bottom Bracket': 'External seal cartridge bearing',
