@@ -206,11 +206,11 @@ class NashBarTestCase(unittest.TestCase):
             'bkestrel_bike_spec': FITWELL_SPECS
         }
         fieldnames = [
-            'Bottom Bracket', 'Brakes', 'Cassette', 'Chain',
-            'Crankset', 'Fork', 'Frame', 'Front Derailleur',
-            'Grips/Tape', 'Handlebar', 'Headset', 'Levers',
-            'Pedals', 'Rear Derailleur', 'Rear Shock', 'Saddle', 'Seatpost',
-            'Shifters', 'Stem', 'Tires', 'Wheelset', 'Rack Mounts'
+            'BOTTOM BRACKET', 'BRAKES', 'CASSETTE', 'CHAIN',
+            'CRANKSET', 'FORK', 'FRAME', 'FRONT DERAILLEUR',
+            'GRIPS/TAPE', 'HANDLEBAR', 'HEADSET', 'LEVERS',
+            'PEDALS', 'REAR DERAILLEUR', 'REAR SHOCK', 'SADDLE', 'SEATPOST',
+            'SHIFTERS', 'STEM', 'TIRES', 'WHEELSET', 'RACK MOUNTS'
         ]
         self.pbs._specs_fieldnames = set(fieldnames)
 
