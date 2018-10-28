@@ -5,8 +5,8 @@ from csv import DictWriter, DictReader
 from datetime import datetime
 import math
 from bs4 import BeautifulSoup
-from .scraper_utils import create_directory_if_missing, MODULE_PATH
-from .scraper_utils import DATA_PATH, TIMESTAMP
+from scraper_utils import create_directory_if_missing, MODULE_PATH
+from scraper_utils import DATA_PATH, TIMESTAMP
 from abc import ABC, abstractmethod
 
 
@@ -70,8 +70,8 @@ class Scraper(ABC):
     def _write_prod_listings_to_csv(self, path=None):
         """Save available bike products to csv file"""
         if path is None:
-            path = os.path.join(DATA_PATH, TIMESTAMP, self._PROD_LISTING_FNAME,
-                                    f'_{TIMESTAMP}.csv')
+            path = os.path.join(DATA_PATH, TIMESTAMP,
+                f'{self._PROD_LISTING_FNAME}_{TIMESTAMP}.csv')
 
         create_directory_if_missing(path)
 
@@ -87,8 +87,8 @@ class Scraper(ABC):
     def _write_prod_specs_to_csv(self, specs_dict, path=None):
         """Save bike product specifications to csv file"""
         if path is None:
-            path = os.path.join(DATA_PATH, TIMESTAMP, self._PROD_SPEC_FNAME,
-                                    f'_{TIMESTAMP}.csv')
+            path = os.path.join(DATA_PATH, TIMESTAMP,
+                f'{self._PROD_SPEC_FNAME}_{TIMESTAMP}.csv')
 
         create_directory_if_missing(path)
 

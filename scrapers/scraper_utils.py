@@ -3,7 +3,7 @@ from datetime import datetime
 
 MODULE_PATH = os.path.abspath(os.path.dirname(__file__))
 DATA_PATH = os.path.abspath(os.path.join(MODULE_PATH, os.pardir, 'data'))
-TIMESTAMP = datetime.now().strftime('%Y%m%d')
+TIMESTAMP = datetime.now().strftime('%m%d%Y')
 
 def create_directory_if_missing(file_path):
     """
