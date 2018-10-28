@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 # package modules
-from scrapers import CompetitiveCyclist
+from scrapers.competitive_cyclist import CompetitiveCyclist
 
 #######################################
 #  MODULE CONSTANTS
@@ -17,59 +17,61 @@ TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
 HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
 TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH, 'performance_prod_listing_test_data.csv')
 SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'Competitive-Cyclist.html'))
-MARIN_SPECS = {
-    'Bottom Bracket': 'External seal cartridge bearing',
-    'Brakes': 'Shimano BR-M315 hydraulic disc, 180mm/160mm rotor',
-    'Cassette': 'Sunrace 10-speed, 11-42T',
-    'Chain': 'KMC X10',
-    'Crankset': 'Marin Forged Alloy 1x10, 32T, 76 BCD',
-    'Fork': 'RockShox Recon Silver RL 27.5" fork, 120mm travel, '
-            'compression and rebound adjustment, alloy tapered steerer,'
-            ' 15mm thru axle',
-    'Frame': 'Series 3 6061 aluminum frame, 27.5" wheels, 120mm travel '
-             'MultiTrac suspesnion, 135mm QR',
-    'Front Derailleur': 'N/A',
-    'Grips/Tape': 'Marin Dual Density',
-    'Handlebar': 'Marin mini riser, 15mm rise, 780mm width',
-    'Headset': 'FSA Orbit',
-    'Levers': 'Shimano BR-M315',
-    'Pedals': 'N/A',
-    'Rear Derailleur': 'Shimano Deore Shadow Plus, 10-speed',
-    'Rear Shock': 'X Fusion O2 Pro R, 190x50mm, 120mm travel, Tube-B',
-    'Saddle': 'Marin Speed Concept',
-    'Seatpost': 'Marin, two bolt alloy',
-    'Shifters': 'Shimano Deore, 10-speed',
-    'Stem': 'Marin 3D forged alloy',
-    'Tires': 'Schwalbe Hans Dampf, 27.5"x2.35"',
-    'Wheelset': 'Marin Double Wall alloy'''
+PINARELLO_SPECS = {
+    'Frame Material': 'Toray T1100 1K Dream Carbon Fiber',
+    'Fork': 'Onda',
+    'Fork Material': 'Toray T1100 1K Dream Carbon Fiber',
+    'Headset': '1-1/8 - 1-1/2 in',
+    'Shifters': 'SRAM Red eTap',
+    'Front Derailleur': 'SRAM Red eTap',
+    'Rear Derailleur': 'SRAM Red eTap',
+    'Crankset': '53 / 39 t SRAM Red GXP, 52 / 36 t SRAM Red GXP, 50 / 34 t SRAM Red GXP',
+    'Bottom Bracket': '[shell] Italian threaded, [adapter] SRAM GXP Team',
+    'Crank Arm Length': '170 mm, 172.5 mm, 175 mm',
+    'Cassette': '11 - 25 t SRAM XG-1190',
+    'Chain': 'SRAM PC-Red',
+    'Brakeset': 'SRAM Red Aero Link',
+    'Brake Type': 'rim',
+    'Handlebar': 'Zipp SL-70 Aero Carbon',
+    'Handlebar Width': '[42cm, 44cm, 46.5cm] 38 cm, [50cm, 51.5cm] 40 cm, [sizes 53cm, 54cm] 42 cm, [sizes 55cm, 56cm, 57.5cm, 59.5cm, 62cm] 44 cm',
+    'Bar Tape': 'Arundel cork',
+    'Stem': 'Zipp SL Sprint Carbon',
+    'Saddle': 'Fizik Aliante R7',
+    'Seatpost': 'Dogma Aero',
+    'Seat Collar': 'TwinForce (integrated)',
+    'Wheelset': 'Zipp 404 NSW Carbon Clincher',
+    'Hubs': 'Zipp Cognition',
+    'Skewers': '9mm quick-release',
+    'Tires': 'Vittoria Corsa G Plus',
+    'Tire Size': '700 c x 25 mm',
+    'Pedals': 'not included',
+    'Recommended Use': 'cycling',
+    'Manufacturer Warranty': '2 years on frame'
     }
-BKESTREL_SPECS = {
-    'Bottom Bracket': 'Praxis M30 BSA Bottom Bracket, '
-                      'Cartridge Bearings',
-    'Brakes': 'Tektro R540 dual-pivot',
-    'Cassette': 'Shimano 105, 11-28T, 11-speed',
-    'Chain': 'KMC X11, 11-speed',
-    'Crankset': 'Oval Concepts 500, forged 6066 arms, M30 spindle, '
-                'forged Praxis 50/34T rings',
-    'Fork': 'EMH carbon, 1 1/8" - 1 1/4" tapered alloy steerer',
-    'Frame': 'Kestrel Enhanced Modulus Hybrid (EMH) 700K & 800K '
-             'carbon fiber',
-    'Front Derailleur': 'Shimano 105, braze-on',
-    'Grips/Tape': 'Kestrel padded',
-    'Handlebar': 'Oval Concepts 310 Ergo, 6061 alloy, 31.8mm clamp, '
-                 '133mm drop, 4° sweep',
-    'Headset': 'FSA integrated, 1 1/8" top, 1 1/4" bottom w/ '
-               '15mm top cover',
-    'Levers': 'Shimano 105 STI',
-    'Pedals': 'N/A',
-    'Rear Derailleur': 'Shimano 105, 11-speed',
-    'Rack Mounts': 'No',
-    'Saddle': 'Oval Concepts 300, steel rail',
-    'Seatpost': 'Kestrel EMS Pro, carbon, Ritchey clamp system',
-    'Shifters': 'Shimano 105 STI, 11-speed',
-    'Stem': 'Oval Concepts 313, 3D-forged 6061 stem body, +/-7°',
-    'Tires': 'Vittoria Zaffiro Pro, 700 x 25c, folding',
-    'Wheelset': 'Oval Concepts 327, 700c 20/24H rims'
+RIDLEY_SPECS = {
+    'Frame Material': '30t and 24t high-modulus carbon fiber',
+    'Fork': 'Oryx Disc 12TA, carbon steerer',
+    'Fork Material': 'carbon fiber',
+    'Shifters': 'Shimano ST-R685',
+    'Front Derailleur': 'Shimano Ultegra 6800',
+    'Rear Derailleur': 'Shimano Ultegra 6800',
+    'Crankset': '46 / 36 t Shimano Ultegra 6800',
+    'Bottom Bracket': 'PF30',
+    'Cassette': '11 - 28 t Shimano 105 5800',
+    'Chain': 'KMC X11',
+    'Brakeset': 'Shimano BR-RS805/BR-RS785 Hydraulic',
+    'Rotors': '[front] 60 mm, [rear] 140 mm',
+    'Handlebar': '4ZA Cirrus E.2',
+    'Stem': '4ZA Cirrus',
+    'Saddle': '4ZA Cirrus Pro Cr/Ti rails',
+    'Seatpost': '4ZA Cirrus Carbon 27.2 x 350mm',
+    'Wheelset': 'DT Swiss R23 Spline DB',
+    'Front Axle': '12TA',
+    'Tires': 'Clement MXP Tubeless Ready',
+    'Tire Size': '700 c x 33 mm',
+    'Pedals': 'not included',
+    'Recommended Use': 'cyclocross',
+    'Manufacturer Warranty': '5 years on frame'
 }
 
 
@@ -127,34 +129,36 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
 
     def test_parse_prod_spec(self):
         # load test prod details into memory
-        html_path = os.path.abspath(os.path.join(HTML_PATH, 'marin-hawk-hill-275-mountain-bike-2018-31-6715.html'))
+        html_path = os.path.abspath(os.path.join(HTML_PATH,
+            'Pinarello F10 Dura-Ace Di2 Complete Road Bike - 2018 _ Competitive Cyclist.html'))
         with open(html_path, encoding='utf-8') as f:            
-            marin_prod_detail_text = f.read()
+            pinarello_prod_detail_text = f.read()
 
-        html_path = os.path.abspath(os.path.join(HTML_PATH, 'bkestrel-talon-105-le-road-bike-2018-31-8721.html'))
+        html_path = os.path.abspath(os.path.join(HTML_PATH,
+            'Ridley X-Night Disc Rival 1 Complete Cyclocross Bike - 2018 _ Competitive Cyclist.html'))
         with open(html_path, encoding='utf-8') as f:
-            bkestrel_prod_detail_text = f.read()
+            ridley_prod_detail_text = f.read()
 
         html_path = os.path.abspath(os.path.join(HTML_PATH, 'bike-eli-elliptigo-sub-31-8914.html'))
         with open(html_path, encoding='utf-8') as f:
             generic_error = f.read()
 
-        marin_detail_soup = BeautifulSoup(marin_prod_detail_text, 'lxml')
-        bkestrel_detail_soup = BeautifulSoup(bkestrel_prod_detail_text,
+        marin_detail_soup = BeautifulSoup(pinarello_prod_detail_text, 'lxml')
+        bkestrel_detail_soup = BeautifulSoup(ridley_prod_detail_text,
                                                   'lxml')
         generic_error_soup = BeautifulSoup(generic_error, 'lxml')
 
         # case 1: exact match per example data
         result = self._cc._parse_prod_specs(marin_detail_soup)
-        self.assertEqual(len(MARIN_SPECS), len(result))
-        for key in MARIN_SPECS.keys():
-            self.assertEqual(MARIN_SPECS[key], result[key])
+        self.assertEqual(len(PINARELLO_SPECS), len(result))
+        for key in PINARELLO_SPECS.keys():
+            self.assertEqual(PINARELLO_SPECS[key], result[key])
 
         # case 2: using second data, exact match in components
         result = self._cc._parse_prod_specs(bkestrel_detail_soup)
-        self.assertEqual(len(BKESTREL_SPECS), len(result))
-        for key in BKESTREL_SPECS.keys():
-            self.assertEqual(BKESTREL_SPECS[key], result[key])
+        self.assertEqual(len(RIDLEY_SPECS), len(result))
+        for key in RIDLEY_SPECS.keys():
+            self.assertEqual(RIDLEY_SPECS[key], result[key])
 
         # case 3: safely handle error
         result = self._cc._parse_prod_specs(generic_error_soup)
@@ -206,8 +210,8 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
 
     def test_write_prod_specs_to_csv(self):
         test_specs_dict = {
-            'marin_bike_spec': MARIN_SPECS,
-            'bkestrel_bike_spec': BKESTREL_SPECS
+            'marin_bike_spec': PINARELLO_SPECS,
+            'bkestrel_bike_spec': RIDLEY_SPECS
         }
         fieldnames = [
             'Bottom Bracket', 'Brakes', 'Cassette', 'Chain',
