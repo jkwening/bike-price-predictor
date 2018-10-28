@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 # package modules
-from scrapers import PerformanceBikes
+from scrapers import CompetitiveCyclist
 
 #######################################
 #  MODULE CONSTANTS
@@ -16,7 +16,7 @@ DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
 TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
 HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
 TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH, 'performance_prod_listing_test_data.csv')
-SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'performance_bike_shop_bikes.html'))
+SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'Competitive-Cyclist.html'))
 MARIN_SPECS = {
     'Bottom Bracket': 'External seal cartridge bearing',
     'Brakes': 'Shimano BR-M315 hydraulic disc, 180mm/160mm rotor',
@@ -73,32 +73,32 @@ BKESTREL_SPECS = {
 }
 
 
-class PerformanceBikesTestCase(unittest.TestCase):
+class CompetitiveCyclistTestCase(unittest.TestCase):
     def setUp(self):
         # use smaller page_size for testing purposes
-        self.pbs = PerformanceBikes(page_size=24)
+        self._cc = CompetitiveCyclist()
 
     def test_fetch_prod_listing_view(self):
-        text = self.pbs._fetch_prod_listing_view()
+        text = self._cc._fetch_prod_listing_view()
         soup = BeautifulSoup(text, 'lxml')
-        self.pbs._get_prods_on_current_listings_page(soup)
-        self.assertEqual(self.pbs._page_size, len(self.pbs._products))
+        self._cc._get_prods_on_current_listings_page(soup)
+        self.assertEqual(42, len(self._cc._products))
 
     def test_get_bike_urls(self):
         # TODO - complete this unit test snippet (FYI - long running)
-        response = self.pbs.get_all_available_prods()
+        response = self._cc.get_all_available_prods()
         self.assertEqual(False, response)
 
-    def test_get_max_num_products(self):
+    def test_get_num_pages(self):
         # load test html into memory
         with open(SHOP_BIKES_HTML_PATH, encoding='utf-8') as f:
             prod_list_text = f.read()
 
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
 
-        expected = 840  # from html file
-        self.pbs._get_max_num_prods(prod_list_soup)
-        self.assertEqual(expected, self.pbs._num_bikes)
+        expected = 3  # from html file
+        result = self._cc._get_num_pages(prod_list_soup)
+        self.assertEqual(expected, result)
 
     def test_get_prods_on_page(self):
         cases = {
@@ -114,16 +114,16 @@ class PerformanceBikesTestCase(unittest.TestCase):
             prod_list_text = f.read()
 
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
-        self.pbs._get_prods_on_current_listings_page(prod_list_soup)
-        self.assertEqual(self.pbs._page_size, len(self.pbs._products))
+        self._cc._get_prods_on_current_listings_page(prod_list_soup)
+        self.assertEqual(self._cc._page_size, len(self._cc._products))
         for key in cases:
-            self.assertTrue(key in self.pbs._products)
+            self.assertTrue(key in self._cc._products)
         for value in cases.values():
-            self.assertTrue(value in self.pbs._products.values())
+            self.assertTrue(value in self._cc._products.values())
 
     def test_get_prod_listings(self):
-        self.pbs.get_all_available_prods(to_csv=False)
-        self.assertTrue(self.pbs._num_bikes, len(self.pbs._products))
+        self._cc.get_all_available_prods(to_csv=False)
+        self.assertTrue(self._cc._num_bikes, len(self._cc._products))
 
     def test_parse_prod_spec(self):
         # load test prod details into memory
@@ -145,50 +145,50 @@ class PerformanceBikesTestCase(unittest.TestCase):
         generic_error_soup = BeautifulSoup(generic_error, 'lxml')
 
         # case 1: exact match per example data
-        result = self.pbs._parse_prod_specs(marin_detail_soup)
+        result = self._cc._parse_prod_specs(marin_detail_soup)
         self.assertEqual(len(MARIN_SPECS), len(result))
         for key in MARIN_SPECS.keys():
             self.assertEqual(MARIN_SPECS[key], result[key])
 
         # case 2: using second data, exact match in components
-        result = self.pbs._parse_prod_specs(bkestrel_detail_soup)
+        result = self._cc._parse_prod_specs(bkestrel_detail_soup)
         self.assertEqual(len(BKESTREL_SPECS), len(result))
         for key in BKESTREL_SPECS.keys():
             self.assertEqual(BKESTREL_SPECS[key], result[key])
 
         # case 3: safely handle error
-        result = self.pbs._parse_prod_specs(generic_error_soup)
+        result = self._cc._parse_prod_specs(generic_error_soup)
         self.assertEqual(0, len(result))
 
     def test_get_product_specs_scrape(self):
         """Long running unit test"""
         # case 1: attempt to get from memory when none available
-        self.assertRaises(ValueError, self.pbs.get_product_specs,
+        self.assertRaises(ValueError, self._cc.get_product_specs,
                           get_prods_from='memory', to_csv=False)
 
         # case 2: scrape site to get available products but don't write to file
-        result = self.pbs.get_product_specs(get_prods_from='site', to_csv=False)
-        self.assertEqual(len(self.pbs._products), len(result))
-        for key in self.pbs._products.keys():
+        result = self._cc.get_product_specs(get_prods_from='site', to_csv=False)
+        self.assertEqual(len(self._cc._products), len(result))
+        for key in self._cc._products.keys():
             self.assertTrue(key in result.keys())
 
         # case 3: successfully get from memory now it is available
-        result = self.pbs.get_product_specs(get_prods_from='memory',
+        result = self._cc.get_product_specs(get_prods_from='memory',
                                             to_csv=False)
-        self.assertEqual(len(self.pbs._products), len(result))
-        for key in self.pbs._products.keys():
+        self.assertEqual(len(self._cc._products), len(result))
+        for key in self._cc._products.keys():
             self.assertTrue(key in result.keys())
 
     def test_get_product_specs_from_file(self):
         # case 1: invalid file path for using products from file
-        self.assertRaises(TypeError, self.pbs.get_product_specs,
+        self.assertRaises(TypeError, self._cc.get_product_specs,
                           get_prods_from='dummy/file.txt', to_csv=False)
 
         # case 2: use products from file
-        result = self.pbs.get_product_specs(get_prods_from=TEST_PROD_LISTING_PATH,
+        result = self._cc.get_product_specs(get_prods_from=TEST_PROD_LISTING_PATH,
                                             to_csv=True)
-        self.assertEqual(len(self.pbs._products), len(result))
-        for key in self.pbs._products.keys():
+        self.assertEqual(len(self._cc._products), len(result))
+        for key in self._cc._products.keys():
             self.assertTrue(key in result.keys())
 
     def test_write_prod_listings_to_csv(self):
@@ -197,12 +197,12 @@ class PerformanceBikesTestCase(unittest.TestCase):
             prod_list_text = f.read()
 
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
-        self.pbs._get_prods_on_current_listings_page(prod_list_soup)
+        self._cc._get_prods_on_current_listings_page(prod_list_soup)
 
         path = os.path.join(DATA_PATH,
                             f'test_performancebike_prod_listing_'
                             f'{TIMESTAMP}.csv')
-        self.pbs._write_prod_listings_to_csv(path=path)
+        self._cc._write_prod_listings_to_csv(path=path)
 
     def test_write_prod_specs_to_csv(self):
         test_specs_dict = {
@@ -216,12 +216,12 @@ class PerformanceBikesTestCase(unittest.TestCase):
             'Pedals', 'Rear Derailleur', 'Rear Shock', 'Saddle', 'Seatpost',
             'Shifters', 'Stem', 'Tires', 'Wheelset', 'Rack Mounts'
         ]
-        self.pbs._specs_fieldnames = set(fieldnames)
+        self._cc._specs_fieldnames = set(fieldnames)
 
         path = os.path.join(DATA_PATH,
                             f'test_performancebike_prod_specs_'
                             f'{TIMESTAMP}.csv')
-        self.pbs._write_prod_specs_to_csv(specs_dict=test_specs_dict,
+        self._cc._write_prod_specs_to_csv(specs_dict=test_specs_dict,
                                           path=path)
 
 

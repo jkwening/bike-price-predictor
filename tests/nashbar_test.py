@@ -12,9 +12,10 @@ from scrapers import NashBar
 #######################################
 TIMESTAMP = datetime.now().strftime('%Y%m%d')
 MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
-DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
+DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
+TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
 HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
-TEST_PROD_LISTING_PATH = os.path.join(DATA_PATH, 'nashbar_prod_listing_test_data.csv')
+TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH, 'nashbar_prod_listing_test_data.csv')
 SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'nashbar.html'))
 CAVALO_SPECS = {
     'FRAME': 'C5 high-modulus carbon fiber, Tapered head tube, BB86 bottom bracket shell, Replaceable rear derailleur hanger',
@@ -195,7 +196,7 @@ class NashBarTestCase(unittest.TestCase):
         self.pbs._get_prods_on_current_listings_page(prod_list_soup)
 
         path = os.path.join(DATA_PATH,
-                            f'test_performancebike_prod_listing_'
+                            f'test_nashbar_prod_listing_'
                             f'{TIMESTAMP}.csv')
         self.pbs._write_prod_listings_to_csv(path=path)
 
@@ -205,16 +206,16 @@ class NashBarTestCase(unittest.TestCase):
             'bkestrel_bike_spec': FITWELL_SPECS
         }
         fieldnames = [
-            'Bottom Bracket', 'Brakes', 'Cassette', 'Chain',
-            'Crankset', 'Fork', 'Frame', 'Front Derailleur',
-            'Grips/Tape', 'Handlebar', 'Headset', 'Levers',
-            'Pedals', 'Rear Derailleur', 'Rear Shock', 'Saddle', 'Seatpost',
-            'Shifters', 'Stem', 'Tires', 'Wheelset', 'Rack Mounts'
+            'BOTTOM BRACKET', 'BRAKES', 'CASSETTE', 'CHAIN',
+            'CRANKSET', 'FORK', 'FRAME', 'FRONT DERAILLEUR',
+            'GRIPS/TAPE', 'HANDLEBAR', 'HEADSET', 'LEVERS',
+            'PEDALS', 'REAR DERAILLEUR', 'REAR SHOCK', 'SADDLE', 'SEATPOST',
+            'SHIFTERS', 'STEM', 'TIRES', 'WHEELSET', 'RACK MOUNTS'
         ]
         self.pbs._specs_fieldnames = set(fieldnames)
 
         path = os.path.join(DATA_PATH,
-                            f'test_performancebike_prod_specs_'
+                            f'test_nashbar_prod_specs_'
                             f'{TIMESTAMP}.csv')
         self.pbs._write_prod_specs_to_csv(specs_dict=test_specs_dict,
                                           path=path)
