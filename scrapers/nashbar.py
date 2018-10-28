@@ -107,7 +107,7 @@ class NashBar(Scraper):
             prod_id = input_info_hidden['id'].split('_')[-1]
             product['id'] = prod_id
 
-            self._products[product['id']] = product
+            self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
 
     def _parse_prod_specs(self, soup):
