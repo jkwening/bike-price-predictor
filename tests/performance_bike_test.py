@@ -5,12 +5,12 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 # package modules
-from scrapers import PerformanceBikes
+from scrapers.performance_bike import PerformanceBikes
 
 #######################################
 #  MODULE CONSTANTS
 #######################################
-TIMESTAMP = datetime.now().strftime('%Y%m%d')
+TIMESTAMP = datetime.now().strftime('%m%d%Y')
 MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
 TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))

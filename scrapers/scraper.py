@@ -5,8 +5,8 @@ from csv import DictWriter, DictReader
 from datetime import datetime
 import math
 from bs4 import BeautifulSoup
-from scraper_utils import create_directory_if_missing, MODULE_PATH
-from scraper_utils import DATA_PATH, TIMESTAMP
+from .scraper_utils import create_directory_if_missing, MODULE_PATH
+from .scraper_utils import DATA_PATH, TIMESTAMP
 from abc import ABC, abstractmethod
 
 

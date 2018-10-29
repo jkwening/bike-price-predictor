@@ -3,8 +3,8 @@ from datetime import datetime
 import os
 import math
 from bs4 import BeautifulSoup
-from scraper_utils import MODULE_PATH, DATA_PATH, TIMESTAMP
-from scraper import Scraper
+from .scraper_utils import MODULE_PATH, DATA_PATH, TIMESTAMP
+from .scraper import Scraper
 
 """
 base url = https://www.bikenashbar.com/cycling/bikes-frames#facet:&productBeginIndex:0&facetLimit:&orderBy:&pageView:grid&minPrice:&maxPrice:&pageSize:&

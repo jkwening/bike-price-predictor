@@ -10,7 +10,7 @@ from scrapers.competitive_cyclist import CompetitiveCyclist
 #######################################
 #  MODULE CONSTANTS
 #######################################
-TIMESTAMP = datetime.now().strftime('%Y%m%d')
+TIMESTAMP = datetime.now().strftime('%m%d%Y')
 MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
 DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
 TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
@@ -204,8 +204,7 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
         self._cc._get_prods_on_current_listings_page(prod_list_soup)
 
         path = os.path.join(DATA_PATH,
-                            f'test_performancebike_prod_listing_'
-                            f'{TIMESTAMP}.csv')
+                            f'test_performancebike_prod_listing_{TIMESTAMP}.csv')
         self._cc._write_prod_listings_to_csv(path=path)
 
     def test_write_prod_specs_to_csv(self):
@@ -223,8 +222,7 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
         self._cc._specs_fieldnames = set(fieldnames)
 
         path = os.path.join(DATA_PATH,
-                            f'test_performancebike_prod_specs_'
-                            f'{TIMESTAMP}.csv')
+                            f'test_performancebike_prod_specs_{TIMESTAMP}.csv')
         self._cc._write_prod_specs_to_csv(specs_dict=test_specs_dict,
                                           path=path)
 
