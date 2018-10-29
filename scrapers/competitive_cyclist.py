@@ -1,7 +1,7 @@
 import os
 from bs4 import BeautifulSoup
-from scraper import Scraper
-from scraper_utils import DATA_PATH, TIMESTAMP
+from .scraper import Scraper
+from .scraper_utils import DATA_PATH, TIMESTAMP
 
 
 class CompetitiveCyclist(Scraper):
@@ -75,7 +75,24 @@ class CompetitiveCyclist(Scraper):
       print(f'[{len(self._products)}] New bike: ', product)
   
   def _parse_prod_specs(self, soup):
-    pass
+    """Return dictionary representation of the product's specification."""
+    div_tech_specs_section = soup.find('div', class_='tech-specs__section')
+    tech_spec_rows = div_tech_specs_section.find_all('div', class_='tech-specs__row')
+
+    # Get each spec_name, value pairing for bike product
+    prod_specs = dict()
+
+    try:
+      for spec_row in tech_spec_rows:
+        spec_name = spec_row.find('b', class_='tech-specs__name').contents[0]
+        spec_value = spec_row.find('span', class_='tech-specs__value').contents[0]
+        prod_specs[spec_name] = spec_value
+        self._specs_fieldnames.add(spec_name)
+    except AttributeError as err:
+      print(f'\tError: {err}')
+
+    print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
+    return prod_specs
 
   def get_all_available_prods(self, to_csv=True):
     # Ensure product listings dict is empty
@@ -103,5 +120,5 @@ if __name__ == "__main__":
     f'competitive_prod_listing_{TIMESTAMP}.csv')
   
   cc = CompetitiveCyclist()
-  cc.get_all_available_prods()
-  # cc.get_product_specs(get_prods_from=prod_file_path)
+  # cc.get_all_available_prods()
+  cc.get_product_specs(get_prods_from=prod_file_path)
