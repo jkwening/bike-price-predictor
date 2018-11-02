@@ -1,0 +1,3 @@
+source,prod/spec,bike_type,filename,timestamp,loaded,date_loaded
+nashbar,prod,road_bike,'nashbar_prod_listing_test_data.csv',10302018,,
+performance,prod,any,'performance_prod_listing_test_data.csv',10282018,,
