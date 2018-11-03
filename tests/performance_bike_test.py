@@ -76,7 +76,7 @@ BKESTREL_SPECS = {
 class PerformanceBikesTestCase(unittest.TestCase):
     def setUp(self):
         # use smaller page_size for testing purposes
-        self.pbs = PerformanceBikes(page_size=24)
+        self.pbs = PerformanceBikes(save_data_path=DATA_PATH, page_size=24)
 
     def test_fetch_prod_listing_view(self):
         text = self.pbs._fetch_prod_listing_view()
@@ -122,7 +122,7 @@ class PerformanceBikesTestCase(unittest.TestCase):
             self.assertTrue(value in self.pbs._products.values())
 
     def test_get_prod_listings(self):
-        self.pbs.get_all_available_prods(to_csv=False)
+        self.pbs.get_all_available_prods(to_csv=True)
         self.assertTrue(self.pbs._num_bikes, len(self.pbs._products))
 
     def test_parse_prod_spec(self):

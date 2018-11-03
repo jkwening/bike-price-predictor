@@ -7,10 +7,10 @@ from utils.utils import DATA_PATH
 
 class Manifest(object):
   """Manifest is used to track state and path of raw data files."""
-  def __init__(self, path=DATA_PATH):
-    self._MANIFEST_PATH = path
+  def __init__(self, path=DATA_PATH, filename='manifest.csv'):
+    self._MANIFEST_PATH = os.path.join(path, filename)
     self._HEADERS = [
-      'source', 'prod/specs', 'bike_type', 'filename', 'timestamp',
+      'source', 'tablename', 'bike_type', 'filename', 'timestamp',
       'loaded', 'date_loaded'
     ]
 

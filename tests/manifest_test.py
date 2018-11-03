@@ -8,16 +8,17 @@ from tests.unit_test_utils import DATA_PATH
 
 class ManifestTestCase(unittest.TestCase):
   def setUp(self):
-    self._MANIFEST_PATH = os.path.join(DATA_PATH, 'test_manifest.csv')
-    self._manifest = Manifest(path=self._MANIFEST_PATH)
+    self._FILENAME = 'test_manifest.csv'
+    self._MANIFEST_PATH = os.path.join(DATA_PATH, self._FILENAME)
+    self._manifest = Manifest(path=DATA_PATH, filename=self._FILENAME)
     self._DUMMY_DATA = [
       {
-        'source': 'nashbar', 'prod/specs': 'prod', 'bike_type': 'road_bike',
+        'source': 'nashbar', 'tablename': 'prod', 'bike_type': 'road_bike',
         'filename': 'nashbar_prod_listing_test_data.csv',
         'timestamp': '10302018', 'loaded': '', 'date_loaded': ''
       },
       {
-        'source': 'performance', 'prod/specs': 'specs', 'bike_type': 'any',
+        'source': 'performance', 'tablename': 'specs', 'bike_type': 'any',
         'filename': 'performance_prod_listing_test_data.csv',
         'timestamp': '10282018', 'loaded': '', 'date_loaded': ''
       }
@@ -81,12 +82,12 @@ class ManifestTestCase(unittest.TestCase):
       msg='Failed to create/overwrite existing test_manifest.csv')
 
     data1 = {
-      'source': 'nashbar', 'prod/specs': 'prod', 'bike_type': 'road_bike',
+      'source': 'nashbar', 'tablename': 'prod', 'bike_type': 'road_bike',
       'filename': 'nashbar_prod_listing_test_data.csv',
       'timestamp': '12252018', 'loaded': 'yes', 'date_loaded': ''
     }
     data2 = {
-      'source': 'competitive', 'prod/specs': 'specs', 'bike_type': 'cyclocross',
+      'source': 'competitive', 'tablename': 'specs', 'bike_type': 'cyclocross',
       'filename': 'competitive_prod_specs_test_data.csv',
       'timestamp': '10302018', 'loaded': '', 'date_loaded': ''
     }
@@ -127,12 +128,12 @@ class ManifestTestCase(unittest.TestCase):
     """Test case for manifest._vilidate_from_list()."""
     # case 1: Raise ValueError for missing or extra fieldnames
     data1 = {
-      'source': 'nashbar', 'prod/specs': 'prod', 'bike_type': 'road_bike',
+      'source': 'nashbar', 'tablename': 'prod', 'bike_type': 'road_bike',
       'filename': 'nashbar_prod_listing_test_data.csv',
       'timestamp': '12252018', 'hello_world': 'yes', 'date_loaded': ''
     }
     data2 = {
-      'source': 'competitive', 'prod/specs': 'specs', 'bike_type': 'cyclocross',
+      'source': 'competitive', 'tablename': 'specs', 'bike_type': 'cyclocross',
       'filename': 'competitive_prod_specs_test_data.csv',
       'loaded': '', 'date_loaded': ''
     }

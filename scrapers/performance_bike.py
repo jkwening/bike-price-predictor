@@ -28,12 +28,11 @@ span class='num_products'>($nbsp; # - # of # $nbsp;)< - range
 
 
 class PerformanceBikes(Scraper):
-    def __init__(self, page_size=72, page_view='list'):
+    def __init__(self, save_data_path=DATA_PATH, page_size=72, page_view='list'):
         self._page_size = page_size
         self._page_view = page_view
         super().__init__(base_url='https://www.performancebike.com',
-            prod_spec_fname='performance_prod_specs',
-            prod_listing_fname='performance_prod_listing')
+            source='performance', save_data_path=save_data_path)
 
     def _fetch_prod_listing_view(self, product_begin_index=0, store_id=10052,
                                  catalog_id=10551, lang_id=-1,):
@@ -150,7 +149,7 @@ class PerformanceBikes(Scraper):
 
         return prod_spec
 
-    def get_all_available_prods(self, to_csv=True):
+    def get_all_available_prods(self, to_csv=True, get_specs=False):
         """Get all products currently available from site"""
         # ensure product listings dictionary is empty
         self._products = {}
@@ -177,6 +176,9 @@ class PerformanceBikes(Scraper):
 
         if to_csv:
             self._write_prod_listings_to_csv()
+
+        if get_specs:
+            self.get_product_specs(get_prods_from='memory')
 
 
 if __name__ == '__main__':
