@@ -1,6 +1,8 @@
-from csv import DictWriter
+from csv import DictWriter, DictReader
+import pandas as pd
+import os
 
-from utils.utils import *
+from utils.utils import DATA_PATH
 
 
 class Manifest(object):
@@ -12,11 +14,11 @@ class Manifest(object):
       'loaded', 'date_loaded'
     ]
 
-  def getFieldnames(self):
+  def get_fieldnames(self):
     """Return column headers for manifest.csv."""
     return self._HEADERS
 
-  def create(self, from_data=False, from_list=[], overwrite=False):
+  def update(self, from_data=False, from_list=[], overwrite=False):
     """Create manifest CSV file.
 
     Can create populate manifest from raw data or list of values not both.
@@ -46,21 +48,56 @@ class Manifest(object):
     if not os.path.exists(self._MANIFEST_PATH):
       raise FileNotFoundError(self._MANIFEST_PATH)
 
+    manifest = dict()
+    with open(self._MANIFEST_PATH) as f:
+      reader = DictReader(f)
+      for row in reader:
+        manifest[row['filename']] = row
+
+    # Process add from_list option
+    if from_list and self._validate_from_list(from_list):
+      for data in from_list:
+        manifest[data['filename']] = data
+      
+      self._to_csv(manifest)
+      return True
+    
+    # Process add from_data option
+    if from_data:
+      pass
+
     return True    
 
-  def update(self, from_data=True, how_many_days=5, from_list=[]):
-    """Update manifest CSV file.
-
-    Can update manifest by default from available raw data or optionally from
-    list of values - not both.
-    Note: Will create manifest.csv if it doesn't already exist.
+  def _validate_from_list(self, data_list):
+    """Validate that the passed data has appropriate fieldnames.
 
     Args:
-      from_data (bool): use available data files (default True)
-      from_list (:obj: list of :obj: dict): update from list of dicts
-        (default [])
+      data_list (:obj: list of :obj: dict): fieldname, value representation of
+        the data file
 
     Returns:
-      True if successful, False otherwise
+      True if all passed data have appropriate manifest fieldnames, else
+        raises ValueError
     """
-    pass
+    for data in data_list:
+      # check keys in data are fielnames
+      for key in data.keys():
+        if key not in self._HEADERS:
+          raise ValueError(f'Not a valid manifest fieldname: {key}')
+
+      # check all manifest fieldnames are in key in data
+      for fieldname in self._HEADERS:
+        if fieldname not in data.keys():
+          raise ValueError(f'Data missing manifest fieldname: {fieldname}')
+
+    return True
+
+  def _to_csv(self, manifest):
+    """Write manifest to csv."""
+    with open(self._MANIFEST_PATH, 'w') as f:
+      writer = DictWriter(f, fieldnames=self._HEADERS)
+      writer.writeheader()
+
+      for data in manifest.values():
+        writer.writerow(data)
+  
