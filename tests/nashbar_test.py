@@ -68,7 +68,7 @@ FITWELL_SPECS = {
 class NashBarTestCase(unittest.TestCase):
     def setUp(self):
         # use smaller page_size for testing purposes
-        self.pbs = NashBar(page_size=24)
+        self.pbs = NashBar(save_data_path=DATA_PATH, page_size=24)
 
     def test_fetch_prod_listing_view(self):
         text = self.pbs._fetch_prod_listing_view()

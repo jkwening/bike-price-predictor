@@ -5,9 +5,9 @@ from .scraper_utils import DATA_PATH, TIMESTAMP
 
 
 class CompetitiveCyclist(Scraper):
-  def __init__(self, page_size=42):
+  def __init__(self, save_data_path=DATA_PATH, page_size=42):
     self._page_size = page_size
-    self._bike_endpoints = {
+    self._BIKE_ENDPOINTS = {
       'road': 'road-bikes',
       'mountain': 'mountain-bikes',
       'cyclocross': 'cyclocross-bikes',
@@ -16,11 +16,10 @@ class CompetitiveCyclist(Scraper):
       'kids': 'kids-bikes'
     }
     super().__init__(base_url='https://www.competitivecyclist.com',
-      prod_spec_fname='competitive_prod_specs',
-      prod_listing_fname='competitive_prod_listing')
+      source='competitive', save_data_path=save_data_path)
   
   def _fetch_prod_listing_view(self, bike_type='road', page=0, page_size=42):
-    req_url = f'{self._BASE_URL}/{self._bike_endpoints[bike_type]}?page={page}&pagesize={page_size}'
+    req_url = f'{self._BASE_URL}/{self._BIKE_ENDPOINTS[bike_type]}?page={page}&pagesize={page_size}'
     return self._fetch_html(req_url)
 
   def _get_num_pages(self, soup):
@@ -94,12 +93,31 @@ class CompetitiveCyclist(Scraper):
     print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
     return prod_specs
 
-  def get_all_available_prods(self, to_csv=True):
-    # Ensure product listings dict is empty
+  def get_all_available_prods(self, bike_type_list=[], to_csv=True):
+    """Collect raw data for each bike type.
+
+    Args:
+      bike_type_list (:obj: list of str): list of bike types to scrape.
+        Note: Must be match key values in self._BIKE_ENDPOINTS in this class
+    """
+    if bike_type_list:
+      for bike_type in bike_type_list:
+        self._get_prods(bike_type=bike_type)
+    else:
+      for bike_type in self._BIKE_ENDPOINTS:
+        self._get_prods(bike_type=bike_type)
+
+  def _get_prods(self, bike_type, get_specs=False, to_csv=True):
+    """Scrape competitive cyclist site for prods."""
+    # Reset scraper related variables
     self._products = dict()
+    self._num_bikes = 0
+    self._bike_type = bike_type
 
     # Get initial page and determine total number of products pages to scrape
-    page_soup = BeautifulSoup(self._fetch_prod_listing_view(), 'lxml')
+    page_soup = BeautifulSoup(
+      self._fetch_prod_listing_view(bike_type=bike_type),
+      'lxml')
     num_pages = self._get_num_pages(soup=page_soup)
 
     # Scrape first page while its in memory then fetch and scrape the remaining pages
@@ -107,12 +125,18 @@ class CompetitiveCyclist(Scraper):
     print(f'Current number of products: {len(self._products)}')
 
     for page_num in range(1, num_pages):
-      page_soup = BeautifulSoup(self._fetch_prod_listing_view(page=page_num), 'lxml')
-      self._get_prods_on_current_listings_page(soup=page_soup)   
-      print(f'Current number of products: {len(self._products)}')
+      page_soup = BeautifulSoup(
+        self._fetch_prod_listing_view(bike_type=bike_type, page=page_num),
+        'lxml')
+      self._get_prods_on_current_listings_page(soup=page_soup)
+      self._num_bikes = len(self._products)
+      print(f'Current number of products: {self._num_bikes}')
 
     if to_csv:
       self._write_prod_listings_to_csv()
+
+    if get_specs:
+      self.get_product_specs(get_prods_from='memory')
 
 
 if __name__ == "__main__":

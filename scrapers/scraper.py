@@ -4,21 +4,25 @@ import os
 from csv import DictWriter, DictReader
 from datetime import datetime
 import math
+from abc import ABC, abstractmethod
+
 from bs4 import BeautifulSoup
+
 from .scraper_utils import create_directory_if_missing, MODULE_PATH
 from .scraper_utils import DATA_PATH, TIMESTAMP
-from abc import ABC, abstractmethod
+from ingestion.manifest import Manifest
 
 
 class Scraper(ABC):
-    def __init__(self, base_url, prod_spec_fname='*_prod_specs',
-        prod_listing_fname='*_prod_listing'):
-            self._BASE_URL = base_url
-            self._PROD_SPEC_FNAME = prod_spec_fname
-            self._PROD_LISTING_FNAME = prod_listing_fname
-            self._products = {}  # href, desc key,value pairs
-            self._num_bikes = 0
-            self._specs_fieldnames = set()
+    def __init__(self, base_url, source, save_data_path=DATA_PATH):
+        self._BASE_URL = base_url
+        self._SOURCE = source
+        self._DATA_PATH = save_data_path
+        self._TIMESTAMP = TIMESTAMP
+        self._products = {}  # href, desc key,value pairs
+        self._num_bikes = 0
+        self._specs_fieldnames = set()
+        self._bike_type = 'all'
 
     def _fetch_html(self, url, method='GET', params=None, data=None,
                     headers=None):
@@ -67,11 +71,10 @@ class Scraper(ABC):
         """Return dictionary representation of the product's specification."""
         pass
 
-    def _write_prod_listings_to_csv(self, path=None):
+    def _write_prod_listings_to_csv(self):
         """Save available bike products to csv file"""
-        if path is None:
-            path = os.path.join(DATA_PATH, TIMESTAMP,
-                f'{self._PROD_LISTING_FNAME}_{TIMESTAMP}.csv')
+        fname = f'{self._SOURCE}_prods_{self._bike_type}.csv'
+        path = os.path.join(self._DATA_PATH, self._TIMESTAMP, fname)
 
         create_directory_if_missing(path)
 
@@ -84,11 +87,13 @@ class Scraper(ABC):
             for desc in prod_descs:
                 writer.writerow(self._products[desc])
 
-    def _write_prod_specs_to_csv(self, specs_dict, path=None):
-        """Save bike product specifications to csv file"""
-        if path is None:
-            path = os.path.join(DATA_PATH, TIMESTAMP,
-                f'{self._PROD_SPEC_FNAME}_{TIMESTAMP}.csv')
+        # TODO: handle errors appropriately - simple: print, feature: logger
+        self._update_manifest(tablename='prods', filename=fname)
+
+    def _write_prod_specs_to_csv(self, specs_dict):
+        """Save bike product specifications to csv file."""
+        fname = f'{self._SOURCE}_specs_{self._bike_type}.csv'
+        path = os.path.join(self._DATA_PATH, self._TIMESTAMP, fname)
 
         create_directory_if_missing(path)
 
@@ -100,6 +105,9 @@ class Scraper(ABC):
 
             for desc in spec_descs:
                 writer.writerow(specs_dict[desc])
+        
+        # TODO: handle errors appropriately - simple: print, feature: logger
+        self._update_manifest(tablename='specs', filename=fname)
 
     @abstractmethod
     def get_all_available_prods(self, to_csv=True):
@@ -165,3 +173,15 @@ class Scraper(ABC):
             self._write_prod_specs_to_csv(specs_dict=specs)
 
         return specs
+
+    def _update_manifest(self, tablename, filename):
+        """Update manifest.csv with most current raw data information."""
+        # NOTE: Keys must match values in manifest module self._HEADERS!
+        row_data = {
+            'source': self._SOURCE, 'tablename': tablename,
+            'bike_type': self._bike_type, 'filename': filename,
+            'timestamp': self._TIMESTAMP, 'loaded': 'no',
+            'date_loaded': None
+        }
+        manifest = Manifest(path=self._DATA_PATH)
+        return manifest.update(from_list=[row_data])
