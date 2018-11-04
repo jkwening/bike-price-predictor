@@ -21,7 +21,7 @@ class Scraper(ABC):
         self._TIMESTAMP = TIMESTAMP
         self._products = {}  # href, desc key,value pairs
         self._num_bikes = 0
-        self._specs_fieldnames = set()
+        self._specs_fieldnames = set(['source'])
         self._bike_type = 'all'
 
     def _fetch_html(self, url, method='GET', params=None, data=None,

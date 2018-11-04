@@ -87,6 +87,7 @@ class NashBar(Scraper):
 
         for prod_info in div_product_info:
             product = dict()
+            product['source'] = self._SOURCE
 
             # get prod_desc, and prod_href
             div_prod_name = prod_info.find('div', class_='product_name')
@@ -119,7 +120,8 @@ class NashBar(Scraper):
 
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
-        prod_spec = {}
+        prod_spec = dict()
+        prod_spec['source'] = self._SOURCE
 
         try:
             div_spec = soup.find(id='tab2Widget')

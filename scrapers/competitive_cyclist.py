@@ -46,6 +46,7 @@ class CompetitiveCyclist(Scraper):
     for prod_info in div_products_list:
       product = dict()
       product['bike_type'] = self._bike_type
+      product['source'] = self._SOURCE
 
       # get id
       prod_id = prod_info['data-product-id']
@@ -92,6 +93,7 @@ class CompetitiveCyclist(Scraper):
 
     # Get each spec_name, value pairing for bike product
     prod_specs = dict()
+    prod_specs['source'] = self._SOURCE
 
     try:
       for spec_row in tech_spec_rows:
