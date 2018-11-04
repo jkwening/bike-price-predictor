@@ -125,7 +125,7 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
             self.assertTrue(value in self._cc._products.values())
 
     def test_get_prod_listings(self):
-        self._cc.get_all_available_prods(bike_type_list=['road'], to_csv=False)
+        self._cc.get_all_available_prods(bike_type_list=['kid'], to_csv=True)
         self.assertTrue(self._cc._num_bikes, len(self._cc._products))
 
     def test_parse_prod_spec(self):

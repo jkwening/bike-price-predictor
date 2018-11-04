@@ -2,8 +2,11 @@ import time
 from datetime import datetime
 import os
 import math
+
 from bs4 import BeautifulSoup
+
 from .scraper_utils import MODULE_PATH, DATA_PATH, TIMESTAMP
+from .scraper_utils import get_bike_type_from_desc
 from .scraper import Scraper
 
 """
@@ -101,7 +104,12 @@ class PerformanceBikes(Scraper):
             # get prod_desc, and prod_href
             div_prod_name = prod_info.find('div', class_='product_name')
             product['href'] = str(div_prod_name.a['href']).strip()
-            product['desc'] = str(div_prod_name.a.string).strip()
+            desc = str(div_prod_name.a.string).strip()
+            product['desc'] = desc
+
+            # Parse brand and bike_type from desc
+            product['brand'] = desc.split()[0]
+            product['bike_type'] = get_bike_type_from_desc(desc)
 
             # get sale price (offer_price)
             span_price = prod_info.find('span', class_='price')

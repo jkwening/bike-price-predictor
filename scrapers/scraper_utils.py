@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime
 
 MODULE_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -16,3 +17,16 @@ def create_directory_if_missing(file_path):
     """
     directory = os.path.dirname(file_path)
     os.makedirs(directory, exist_ok=True)
+
+def get_bike_type_from_desc(desc):
+  BIKE_TYPES_LIST = [ # order matters for fork, frame, kid, girl, and bmx as qualifiers
+    'frame', 'fork', 'kid', 'girl', 'e-bike', 'bmx', 'city', 'commuter', 'comfort',
+    'cruiser', 'fat', 'triathlon', 'road', 'mountain', 'cyclocross', 'hybrid',
+    'gravel'
+  ]
+
+  for bike_type in BIKE_TYPES_LIST:
+    if re.search(re.escape(bike_type), desc, re.IGNORECASE):
+      return bike_type
+  
+  return None

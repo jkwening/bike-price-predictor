@@ -1,5 +1,7 @@
 import os
+
 from bs4 import BeautifulSoup
+
 from .scraper import Scraper
 from .scraper_utils import DATA_PATH, TIMESTAMP
 
@@ -13,7 +15,7 @@ class CompetitiveCyclist(Scraper):
       'cyclocross': 'cyclocross-bikes',
       'triathlon': 'triathlon-bike',
       'fat': 'fat-bikes',
-      'kids': 'kids-bikes'
+      'kid': 'kid-bikes'
     }
     super().__init__(base_url='https://www.competitivecyclist.com',
       source='competitive', save_data_path=save_data_path)
@@ -25,8 +27,12 @@ class CompetitiveCyclist(Scraper):
   def _get_num_pages(self, soup):
     """Get number of result pages for products listsing."""
     page_num_links = soup.find_all('li', 'page-number')
-    last_page_num_link = page_num_links.pop()
-    return int(last_page_num_link.a.contents[0])
+
+    if page_num_links:
+      last_page_num_link = page_num_links.pop()
+      return int(last_page_num_link.a.contents[0])
+    
+    return 1  # implies no additional pages available
 
 
   def _get_max_num_prods(self, soup):
@@ -39,6 +45,7 @@ class CompetitiveCyclist(Scraper):
 
     for prod_info in div_products_list:
       product = dict()
+      product['bike_type'] = self._bike_type
 
       # get id
       prod_id = prod_info['data-product-id']
@@ -57,18 +64,23 @@ class CompetitiveCyclist(Scraper):
       product['desc'] = prod_desc
       
       # get current and msrp price
-      prod_retail = prod_info.find('span', class_='price-retail')
+      try: # handle possible "TEMPORARILY OUT OF STOCK" scenario
+        prod_retail = prod_info.find('span', class_='price-retail')
 
-      if prod_retail is not None:
-        retail = prod_retail.contents[0]
-        prod_price = retail
-        prod_msrp = prod_price
-      else:
-        prod_price = prod_info.find('span', class_='ui-pl-pricing-low-price').contents[0]
-        prod_msrp = prod_info.find('span', class_='ui-pl-pricing-high-price').contents[0]
+        if prod_retail is not None:
+          retail = prod_retail.contents[0]
+          prod_price = retail
+          prod_msrp = prod_price
+        else:
+          prod_price = prod_info.find('span', class_='ui-pl-pricing-low-price').contents[0]
+          prod_msrp = prod_info.find('span', class_='ui-pl-pricing-high-price').contents[0]
 
-      product['price'] = prod_price
-      product['msrp'] = prod_msrp
+        product['price'] = prod_price
+        product['msrp'] = prod_msrp
+      except AttributeError:
+        print("TEMPORARILY OUT OF STOCK")
+        product['price'] = -1
+        product['msrp'] = -1
 
       self._products[prod_id] = product
       print(f'[{len(self._products)}] New bike: ', product)
@@ -93,7 +105,7 @@ class CompetitiveCyclist(Scraper):
     print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
     return prod_specs
 
-  def get_all_available_prods(self, bike_type_list=[], to_csv=True):
+  def get_all_available_prods(self, bike_type_list=[], to_csv=True, get_specs=False):
     """Collect raw data for each bike type.
 
     Args:
@@ -102,10 +114,10 @@ class CompetitiveCyclist(Scraper):
     """
     if bike_type_list:
       for bike_type in bike_type_list:
-        self._get_prods(bike_type=bike_type)
+        self._get_prods(bike_type=bike_type, get_specs=get_specs)
     else:
       for bike_type in self._BIKE_ENDPOINTS:
-        self._get_prods(bike_type=bike_type)
+        self._get_prods(bike_type=bike_type, get_specs=get_specs)
 
   def _get_prods(self, bike_type, get_specs=False, to_csv=True):
     """Scrape competitive cyclist site for prods."""
@@ -122,6 +134,7 @@ class CompetitiveCyclist(Scraper):
 
     # Scrape first page while its in memory then fetch and scrape the remaining pages
     self._get_prods_on_current_listings_page(soup=page_soup)
+    self._num_bikes = len(self._products)
     print(f'Current number of products: {len(self._products)}')
 
     for page_num in range(1, num_pages):
