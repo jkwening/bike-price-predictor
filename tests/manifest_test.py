@@ -3,7 +3,7 @@ import os
 from csv import DictReader, DictWriter
 
 from ingestion.manifest import Manifest
-from tests.unit_test_utils import DATA_PATH
+from tests.unit_test_utils import DATA_PATH, TEST_DATA_PATH
 
 
 class ManifestTestCase(unittest.TestCase):
@@ -144,6 +144,11 @@ class ManifestTestCase(unittest.TestCase):
     self.assertTrue(self._manifest._validate_from_list(self._DUMMY_DATA),
       msg="Should pass fieldname validation")
 
+  def test_get_unique_spec_fieldnames(self):
+    """Test manifest.get_unique_spec_fieldnames() return non-empty set."""
+    self._manifest = Manifest(path=TEST_DATA_PATH)
+    fieldnames = self._manifest.get_unique_spec_fieldnames()
+    self.assertTrue(fieldnames)
 
 if __name__ == '__main__':
     unittest.main()

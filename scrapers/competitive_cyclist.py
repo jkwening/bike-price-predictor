@@ -2,8 +2,8 @@ import os
 
 from bs4 import BeautifulSoup
 
-from .scraper import Scraper
-from .scraper_utils import DATA_PATH, TIMESTAMP
+from scrapers.scraper import Scraper
+from scrapers.scraper_utils import DATA_PATH, TIMESTAMP
 
 
 class CompetitiveCyclist(Scraper):
@@ -50,7 +50,7 @@ class CompetitiveCyclist(Scraper):
 
       # get id
       prod_id = prod_info['data-product-id']
-      product['id'] = prod_id
+      product['product_id'] = prod_id
       
       # get page href
       prod_href = prod_info.a['href']
@@ -98,6 +98,7 @@ class CompetitiveCyclist(Scraper):
     try:
       for spec_row in tech_spec_rows:
         spec_name = spec_row.find('b', class_='tech-specs__name').contents[0]
+        spec_name = spec_name.lower().replace(' ','_')  # normalize: lowercase and no spaces
         spec_value = spec_row.find('span', class_='tech-specs__value').contents[0]
         prod_specs[spec_name] = spec_value
         self._specs_fieldnames.add(spec_name)
@@ -152,12 +153,3 @@ class CompetitiveCyclist(Scraper):
 
     if get_specs:
       self.get_product_specs(get_prods_from='memory')
-
-
-if __name__ == "__main__":
-  prod_file_path = os.path.join(DATA_PATH, TIMESTAMP,
-    f'competitive_prod_listing_{TIMESTAMP}.csv')
-  
-  cc = CompetitiveCyclist()
-  # cc.get_all_available_prods()
-  cc.get_product_specs(get_prods_from=prod_file_path)

@@ -101,3 +101,56 @@ class Manifest(object):
       for data in manifest.values():
         writer.writerow(data)
   
+  def get_all_rows(self):
+    """Return list of dict objects representing all rows in manifest.csv."""
+    rows = list()
+    with open(self._MANIFEST_PATH, encoding='utf-8') as f:
+      reader = DictReader(f)
+
+      for row in reader:
+        rows.append(row)
+    
+    return rows
+
+  def get_each_row(self):
+    """Returns an iterator object for getting each row in manifest.csv."""
+    rows = self.get_all_rows()
+    return iter(rows)
+
+  def get_unique_spec_fieldnames(self):
+    """Return set of fieldnames used in all spec files in manifest.csv."""
+    rows = self.get_all_rows()
+    spec_fieldnames = set()
+
+    for row in rows:
+      if row['tablename'] == 'product_specs':
+        filepath = os.path.join(DATA_PATH, row['timestamp'], row['filename'])
+        with open(filepath, encoding='utf-8') as f:
+          fieldnames = DictReader(f).fieldnames
+          
+          for fieldname in fieldnames:
+            spec_fieldnames.add(fieldname)
+
+    return spec_fieldnames
+
+  def get_product_rows(self):
+    """Get rows for products raw files in manifest.csv."""
+    prod_rows = list()
+    rows = self.get_all_rows()
+
+    for row in rows:
+      if row['tablename'] == 'products':
+        prod_rows.append(row)
+
+    return prod_rows
+
+  def get_specs_rows(self):
+    """Get rows for product specs raw files in manifest.csv."""
+    specs_rows = list()
+    rows = self.get_all_rows()
+
+    for row in rows:
+      if row['tablename'] == 'product_specs':
+        specs_rows.append(row)
+
+    return specs_rows

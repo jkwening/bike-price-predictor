@@ -8,8 +8,8 @@ from abc import ABC, abstractmethod
 
 from bs4 import BeautifulSoup
 
-from .scraper_utils import create_directory_if_missing, MODULE_PATH
-from .scraper_utils import DATA_PATH, TIMESTAMP
+from scrapers.scraper_utils import create_directory_if_missing, MODULE_PATH
+from scrapers.scraper_utils import DATA_PATH, TIMESTAMP
 from ingestion.manifest import Manifest
 
 
@@ -68,7 +68,10 @@ class Scraper(ABC):
 
     @abstractmethod
     def _parse_prod_specs(self, soup):
-        """Return dictionary representation of the product's specification."""
+        """Return dictionary representation of the product's specification.
+        
+        Note: fieldnames should be stored as lowercase strings.
+        """
         pass
 
     def _write_prod_listings_to_csv(self):
@@ -88,7 +91,15 @@ class Scraper(ABC):
                 writer.writerow(self._products[desc])
 
         # TODO: handle errors appropriately - simple: print, feature: logger
-        self._update_manifest(tablename='prods', filename=fname)
+        self._update_manifest(tablename='products', filename=fname)
+
+    # def _normalize_spec_fieldname(self, fieldname):
+    #     """Normalize fieldnames across all source files."""
+    #     result = set()
+    #     for s in fieldnames:
+    #         result.add(s.lower().replace(' ','_'))
+
+    #     return result
 
     def _write_prod_specs_to_csv(self, specs_dict):
         """Save bike product specifications to csv file."""
@@ -99,15 +110,14 @@ class Scraper(ABC):
 
         with open(file=path, mode='w', newline='', encoding='utf-8') as csvfile:
             spec_descs = list(specs_dict.keys())
-            field_names = self._specs_fieldnames
-            writer = DictWriter(csvfile, fieldnames=field_names)
+            writer = DictWriter(csvfile, fieldnames=self._specs_fieldnames)
             writer.writeheader()
 
             for desc in spec_descs:
                 writer.writerow(specs_dict[desc])
         
         # TODO: handle errors appropriately - simple: print, feature: logger
-        self._update_manifest(tablename='specs', filename=fname)
+        self._update_manifest(tablename='product_specs', filename=fname)
 
     @abstractmethod
     def get_all_available_prods(self, to_csv=True):
@@ -135,7 +145,7 @@ class Scraper(ABC):
 
                 for row in reader:
                     bike = dict(row)
-                    products[bike['id']] = bike
+                    products[bike['product_id']] = bike
 
             self._products = products
         else:
@@ -149,7 +159,7 @@ class Scraper(ABC):
             print(f'Fetching specifications for: {bike}')
             # define bike specifications url
             bike_href = self._products[bike]['href']
-            bike_id = self._products[bike]['id']
+            bike_id = self._products[bike]['product_id']
             bike_url = self._BASE_URL + bike_href
 
             # wait 1 second then get bike specification page
@@ -163,13 +173,13 @@ class Scraper(ABC):
                 specs[bike] = {}
 
             # add bike id for specifications for simple mapping/referencing
-            specs[bike]['id'] = bike_id
+            specs[bike]['product_id'] = bike_id
             
         running_time = (datetime.now() - start_timer)
         print(f'Runtime for scraping specs: {running_time}')
 
         if to_csv:
-            self._specs_fieldnames.add('id')  # ensure id is field in specs file
+            self._specs_fieldnames.add('product_id')  # ensure id is field in specs file
             self._write_prod_specs_to_csv(specs_dict=specs)
 
         return specs
