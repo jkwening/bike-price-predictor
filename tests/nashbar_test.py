@@ -18,50 +18,50 @@ HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
 TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH, 'nashbar_prod_listing_test_data.csv')
 SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'nashbar.html'))
 CAVALO_SPECS = {
-    'FRAME': 'C5 high-modulus carbon fiber, Tapered head tube, BB86 bottom bracket shell, Replaceable rear derailleur hanger',
-    'FORK': 'Full carbon fiber, 1-1/8" - 1-1/2" taper steerer',
-    'HEADSET': 'FSA NO.42 integrated, 1-1/8" upper - 1-1/2" lower',
-    'CRANKSET': 'Shimano Ultegra 6800, 52/36T chainrings, Crank arm length: 47cm=170mm, 50cm/53cm=172.5mm, 55cm/58cm=175mm',
-    'BOTTOM BRACKET': 'Shimano SM-BB72-41B, BB86 Press Fit for road',
-    'SHIFTERS': 'Shimano Ultegra 6800 shift/brake levers, 2x11-speed',
-    'SEATPOST': 'Ritchey Comp alloy, 31.6mm x 300mm',
-    'LEVERS': 'Shimano Ultegra 6800',
-    'FRONT DERAILLEUR': 'Shimano Ultegra 6800, Braze-on',
-    'HANDLEBAR': 'Ritchey Comp Logic II alloy, 31.8mm diameter, 132mm drop, 78mm reach, Width: 47cm=40cm, 50cm/53cm=42cm, 55cm/58cm=44cm',
-    'STEM': 'Ritchey Comp 4-Axis alloy, 31.8mm clamp, 84/6-degree rise, Length: 47cm=90mm, 50cm/53cm=100mm, 55cm/58cm=120mm',
-    'REAR DERAILLEUR': 'Shimano Ultegra 6800 SS, 11-speed',
-    'CASSETTE': 'Shimano 105 5800 11-speed, 11-28T',
-    'BRAKES': 'Shimano Ultegra 6800',
-    'WHEELSET': 'Shimano RS010 aluminum, 24mm rim height, 20 spokes front w/ radial lace pattern, 24 spokes rear w/ 2x lace pattern',
-    'TIRES': 'Vittoria Zaffiro, 700x25, 26 TPI casing',
-    'PEDALS': 'Not included',
-    'SADDLE': 'Prologo K3 w/ steel rails',
-    'CHAIN': 'KMC X11',
-    'GRIPS/TAPE': 'Velo suede',
-    'RACK MOUNTS': 'None'
+    'frame': 'C5 high-modulus carbon fiber, Tapered head tube, BB86 bottom bracket shell, Replaceable rear derailleur hanger',
+    'fork': 'Full carbon fiber, 1-1/8" - 1-1/2" taper steerer',
+    'headset': 'FSA NO.42 integrated, 1-1/8" upper - 1-1/2" lower',
+    'crankset': 'Shimano Ultegra 6800, 52/36T chainrings, Crank arm length: 47cm=170mm, 50cm/53cm=172.5mm, 55cm/58cm=175mm',
+    'bottom_bracket': 'Shimano SM-BB72-41B, BB86 Press Fit for road',
+    'shifters': 'Shimano Ultegra 6800 shift/brake levers, 2x11-speed',
+    'seatpost': 'Ritchey Comp alloy, 31.6mm x 300mm',
+    'levers': 'Shimano Ultegra 6800',
+    'front_derailleur': 'Shimano Ultegra 6800, Braze-on',
+    'handlebar': 'Ritchey Comp Logic II alloy, 31.8mm diameter, 132mm drop, 78mm reach, Width: 47cm=40cm, 50cm/53cm=42cm, 55cm/58cm=44cm',
+    'stem': 'Ritchey Comp 4-Axis alloy, 31.8mm clamp, 84/6-degree rise, Length: 47cm=90mm, 50cm/53cm=100mm, 55cm/58cm=120mm',
+    'rear_derailleur': 'Shimano Ultegra 6800 SS, 11-speed',
+    'cassette': 'Shimano 105 5800 11-speed, 11-28T',
+    'brakes': 'Shimano Ultegra 6800',
+    'wheelset': 'Shimano RS010 aluminum, 24mm rim height, 20 spokes front w/ radial lace pattern, 24 spokes rear w/ 2x lace pattern',
+    'tires': 'Vittoria Zaffiro, 700x25, 26 TPI casing',
+    'pedals': 'Not included',
+    'saddle': 'Prologo K3 w/ steel rails',
+    'chain': 'KMC X11',
+    'grips/tape': 'Velo suede',
+    'rack_mounts': 'None'
     }
 FITWELL_SPECS = {
-    'FRAME': 'FitWell double-butted seamless weld aluminum, replaceable derailleur hanger, English thread bottom bracket, clearance for 30mm width tires, 3 sets of water bottle braze-ons',
-    'FORK': 'A-Pro full carbon fiber, tapered 1-1/8" to 1.5" steerer tube',
-    'HEADSET': 'VP sealed cartridge IS for tapered',
-    'CRANKSET': 'Shimano R565, 50/34T compact chainrings',
-    'BOTTOM BRACKET': 'Shimano 105 5700',
-    'SHIFTERS': 'Shimano 105 5700, 2x10-speed',
-    'SEATPOST': 'FitWell alloy, 27.2mm',
-    'LEVERS': 'Shimano 105 5700',
-    'FRONT DERAILLEUR': 'Shimano 105 5700, 31.8mm clamp',
-    'HANDLEBAR': 'FitWell alloy modern radius, 31.8mm diameter',
-    'STEM': 'FitWell 3D forged alloy, 31.8mm clamp',
-    'REAR DERAILLEUR': 'Shimano 105 5700-GS 10-speed',
-    'CASSETTE': 'Shimano HG62 10-speed, 11-32T',
-    'BRAKES': 'Shimano R561',
-    'WHEELSET': 'Rims: Weinman DNZ18 aluminum, 23mm wide; Hubs: Novatec A171 aluminum, sealed cartridge, 24h (F), Novatec F172 aluminum, quad sealed cartridge, 28h (R); Spokes: 14g stainless steel',
-    'TIRES': 'Maxxis Detonator, 700x28',
-    'PEDALS': 'Not included',
-    'SADDLE': 'FitWell road saddle, chromoly rails',
-    'CHAIN': 'Shimano Tiagra 4600',
-    'GRIPS/TAPE': 'Velo Vexgel, anti-slip',
-    'RACK MOUNTS': 'Yes'
+    'frame': 'FitWell double-butted seamless weld aluminum, replaceable derailleur hanger, English thread bottom bracket, clearance for 30mm width tires, 3 sets of water bottle braze-ons',
+    'fork': 'A-Pro full carbon fiber, tapered 1-1/8" to 1.5" steerer tube',
+    'headset': 'VP sealed cartridge IS for tapered',
+    'crankset': 'Shimano R565, 50/34T compact chainrings',
+    'bottom_bracket': 'Shimano 105 5700',
+    'shifters': 'Shimano 105 5700, 2x10-speed',
+    'seatpost': 'FitWell alloy, 27.2mm',
+    'levers': 'Shimano 105 5700',
+    'front_derailleur': 'Shimano 105 5700, 31.8mm clamp',
+    'handlebar': 'FitWell alloy modern radius, 31.8mm diameter',
+    'stem': 'FitWell 3D forged alloy, 31.8mm clamp',
+    'rear_derailleur': 'Shimano 105 5700-GS 10-speed',
+    'cassette': 'Shimano HG62 10-speed, 11-32T',
+    'brakes': 'Shimano R561',
+    'wheelset': 'Rims: Weinman DNZ18 aluminum, 23mm wide; Hubs: Novatec A171 aluminum, sealed cartridge, 24h (F), Novatec F172 aluminum, quad sealed cartridge, 28h (R); Spokes: 14g stainless steel',
+    'tires': 'Maxxis Detonator, 700x28',
+    'pedals': 'Not included',
+    'saddle': 'FitWell road saddle, chromoly rails',
+    'chain': 'Shimano Tiagra 4600',
+    'grips/tape': 'Velo Vexgel, anti-slip',
+    'rack_mounts': 'Yes'
 }
 
 
@@ -194,31 +194,22 @@ class NashBarTestCase(unittest.TestCase):
 
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
         self.pbs._get_prods_on_current_listings_page(prod_list_soup)
-
-        path = os.path.join(DATA_PATH,
-                            f'test_nashbar_prod_listing_'
-                            f'{TIMESTAMP}.csv')
-        self.pbs._write_prod_listings_to_csv(path=path)
+        self.pbs._write_prod_listings_to_csv()
 
     def test_write_prod_specs_to_csv(self):
         test_specs_dict = {
             'marin_bike_spec': CAVALO_SPECS,
             'bkestrel_bike_spec': FITWELL_SPECS
-        }
+            }
         fieldnames = [
-            'BOTTOM BRACKET', 'BRAKES', 'CASSETTE', 'CHAIN',
-            'CRANKSET', 'FORK', 'FRAME', 'FRONT DERAILLEUR',
-            'GRIPS/TAPE', 'HANDLEBAR', 'HEADSET', 'LEVERS',
-            'PEDALS', 'REAR DERAILLEUR', 'REAR SHOCK', 'SADDLE', 'SEATPOST',
-            'SHIFTERS', 'STEM', 'TIRES', 'WHEELSET', 'RACK MOUNTS'
+            'bottom_bracket', 'brakes', 'cassette', 'chain',
+            'crankset', 'fork', 'frame', 'front_derailleur',
+            'grips/tape', 'handlebar', 'headset', 'levers',
+            'pedals', 'rear_derailleur', 'rear_shock', 'saddle', 'seatpost',
+            'shifters', 'stem', 'tires', 'wheelset', 'rack_mounts'
         ]
         self.pbs._specs_fieldnames = set(fieldnames)
-
-        path = os.path.join(DATA_PATH,
-                            f'test_nashbar_prod_specs_'
-                            f'{TIMESTAMP}.csv')
-        self.pbs._write_prod_specs_to_csv(specs_dict=test_specs_dict,
-                                          path=path)
+        self.pbs._write_prod_specs_to_csv(specs_dict=test_specs_dict)
 
 
 if __name__ == '__main__':

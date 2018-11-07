@@ -2,9 +2,12 @@ import time
 from datetime import datetime
 import os
 import math
+
 from bs4 import BeautifulSoup
-from .scraper_utils import MODULE_PATH, DATA_PATH, TIMESTAMP
-from .scraper import Scraper
+
+from scrapers.scraper_utils import MODULE_PATH, DATA_PATH, TIMESTAMP
+from scrapers.scraper_utils import get_bike_type_from_desc
+from scrapers.scraper import Scraper
 
 """
 base url = https://www.performancebike.com/shop/bikes-frames#facet:&productBeginIndex:0&facetLimit:&orderBy:5&pageView:grid&minPrice:&maxPrice:&pageSize:&
@@ -97,11 +100,17 @@ class PerformanceBikes(Scraper):
 
         for prod_info in div_product_info:
             product = dict()
+            product['source'] = self._SOURCE
 
             # get prod_desc, and prod_href
             div_prod_name = prod_info.find('div', class_='product_name')
             product['href'] = str(div_prod_name.a['href']).strip()
-            product['desc'] = str(div_prod_name.a.string).strip()
+            desc = str(div_prod_name.a.string).strip()
+            product['desc'] = desc
+
+            # Parse brand and bike_type from desc
+            product['brand'] = desc.split()[0]
+            product['bike_type'] = get_bike_type_from_desc(desc)
 
             # get sale price (offer_price)
             span_price = prod_info.find('span', class_='price')
@@ -117,14 +126,15 @@ class PerformanceBikes(Scraper):
             # get prod_id
             input_info_hidden = prod_info.find('input')
             prod_id = input_info_hidden['id'].split('_')[-1]
-            product['id'] = prod_id
+            product['product_id'] = prod_id
 
-            self._products[product['id']] = product
+            self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
 
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
-        prod_spec = {}
+        prod_spec = dict()
+        prod_spec['source'] = self._SOURCE
 
         try:
             div_spec = soup.find(id='tab2Widget')
@@ -142,6 +152,7 @@ class PerformanceBikes(Scraper):
                 name = str(span_name.string).strip().strip(':')  # get clean spec name
                 name = name.strip('1')  # for some reason, some specs end with '1' for spec names
                 value = str(span_value.string).strip()
+                name = name.lower().replace(' ','_')  # normalize: lowercase and no spaces
                 prod_spec[name] = value
                 self._specs_fieldnames.add(name)
         except AttributeError as err:
@@ -179,25 +190,3 @@ class PerformanceBikes(Scraper):
 
         if get_specs:
             self.get_product_specs(get_prods_from='memory')
-
-
-if __name__ == '__main__':
-    # TODO - command line options
-    prod_file_path = os.path.join(DATA_PATH, TIMESTAMP,
-                                 f'performancebike_prod_listing_'
-                                 f'{TIMESTAMP}.csv')
-    # csv_file_path = 'site'
-    # csv_file_path = 'memory'
-
-    # Fetch and save products to data folder
-    pbs = PerformanceBikes()
-    start = datetime.now()
-    pbs.get_all_available_prods(to_csv=True)
-    end = datetime.now()
-    print(f'\n\nRuntime for getting all available products: {end - start}')
-
-    specifications = pbs.get_product_specs(get_prods_from=prod_file_path,
-                                           to_csv=True)
-
-    if specifications:
-        print('Success!')

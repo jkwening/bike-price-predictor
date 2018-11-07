@@ -18,58 +18,58 @@ HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
 TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH, 'performance_prod_listing_test_data.csv')
 SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'performance_bike_shop_bikes.html'))
 MARIN_SPECS = {
-    'Bottom Bracket': 'External seal cartridge bearing',
-    'Brakes': 'Shimano BR-M315 hydraulic disc, 180mm/160mm rotor',
-    'Cassette': 'Sunrace 10-speed, 11-42T',
-    'Chain': 'KMC X10',
-    'Crankset': 'Marin Forged Alloy 1x10, 32T, 76 BCD',
-    'Fork': 'RockShox Recon Silver RL 27.5" fork, 120mm travel, '
+    'bottom_bracket': 'External seal cartridge bearing',
+    'brakes': 'Shimano BR-M315 hydraulic disc, 180mm/160mm rotor',
+    'cassette': 'Sunrace 10-speed, 11-42T',
+    'chain': 'KMC X10',
+    'crankset': 'Marin Forged Alloy 1x10, 32T, 76 BCD',
+    'fork': 'RockShox Recon Silver RL 27.5" fork, 120mm travel, '
             'compression and rebound adjustment, alloy tapered steerer,'
             ' 15mm thru axle',
-    'Frame': 'Series 3 6061 aluminum frame, 27.5" wheels, 120mm travel '
+    'frame': 'Series 3 6061 aluminum frame, 27.5" wheels, 120mm travel '
              'MultiTrac suspesnion, 135mm QR',
-    'Front Derailleur': 'N/A',
-    'Grips/Tape': 'Marin Dual Density',
-    'Handlebar': 'Marin mini riser, 15mm rise, 780mm width',
-    'Headset': 'FSA Orbit',
-    'Levers': 'Shimano BR-M315',
-    'Pedals': 'N/A',
-    'Rear Derailleur': 'Shimano Deore Shadow Plus, 10-speed',
-    'Rear Shock': 'X Fusion O2 Pro R, 190x50mm, 120mm travel, Tube-B',
-    'Saddle': 'Marin Speed Concept',
-    'Seatpost': 'Marin, two bolt alloy',
-    'Shifters': 'Shimano Deore, 10-speed',
-    'Stem': 'Marin 3D forged alloy',
-    'Tires': 'Schwalbe Hans Dampf, 27.5"x2.35"',
-    'Wheelset': 'Marin Double Wall alloy'''
+    'front_derailleur': 'N/A',
+    'grips/tape': 'Marin Dual Density',
+    'handlebar': 'Marin mini riser, 15mm rise, 780mm width',
+    'headset': 'FSA Orbit',
+    'levers': 'Shimano BR-M315',
+    'pedals': 'N/A',
+    'rear_derailleur': 'Shimano Deore Shadow Plus, 10-speed',
+    'rear_shock': 'X Fusion O2 Pro R, 190x50mm, 120mm travel, Tube-B',
+    'saddle': 'Marin Speed Concept',
+    'seatpost': 'Marin, two bolt alloy',
+    'shifters': 'Shimano Deore, 10-speed',
+    'stem': 'Marin 3D forged alloy',
+    'tires': 'Schwalbe Hans Dampf, 27.5"x2.35"',
+    'wheelset': 'Marin Double Wall alloy'''
     }
 BKESTREL_SPECS = {
-    'Bottom Bracket': 'Praxis M30 BSA Bottom Bracket, '
+    'bottom_bracket': 'Praxis M30 BSA Bottom Bracket, '
                       'Cartridge Bearings',
-    'Brakes': 'Tektro R540 dual-pivot',
-    'Cassette': 'Shimano 105, 11-28T, 11-speed',
-    'Chain': 'KMC X11, 11-speed',
-    'Crankset': 'Oval Concepts 500, forged 6066 arms, M30 spindle, '
+    'brakes': 'Tektro R540 dual-pivot',
+    'cassette': 'Shimano 105, 11-28T, 11-speed',
+    'chain': 'KMC X11, 11-speed',
+    'crankset': 'Oval Concepts 500, forged 6066 arms, M30 spindle, '
                 'forged Praxis 50/34T rings',
-    'Fork': 'EMH carbon, 1 1/8" - 1 1/4" tapered alloy steerer',
-    'Frame': 'Kestrel Enhanced Modulus Hybrid (EMH) 700K & 800K '
+    'fork': 'EMH carbon, 1 1/8" - 1 1/4" tapered alloy steerer',
+    'frame': 'Kestrel Enhanced Modulus Hybrid (EMH) 700K & 800K '
              'carbon fiber',
-    'Front Derailleur': 'Shimano 105, braze-on',
-    'Grips/Tape': 'Kestrel padded',
-    'Handlebar': 'Oval Concepts 310 Ergo, 6061 alloy, 31.8mm clamp, '
+    'front_derailleur': 'Shimano 105, braze-on',
+    'grips/tape': 'Kestrel padded',
+    'handlebar': 'Oval Concepts 310 Ergo, 6061 alloy, 31.8mm clamp, '
                  '133mm drop, 4° sweep',
-    'Headset': 'FSA integrated, 1 1/8" top, 1 1/4" bottom w/ '
+    'headset': 'FSA integrated, 1 1/8" top, 1 1/4" bottom w/ '
                '15mm top cover',
-    'Levers': 'Shimano 105 STI',
-    'Pedals': 'N/A',
-    'Rear Derailleur': 'Shimano 105, 11-speed',
-    'Rack Mounts': 'No',
-    'Saddle': 'Oval Concepts 300, steel rail',
-    'Seatpost': 'Kestrel EMS Pro, carbon, Ritchey clamp system',
-    'Shifters': 'Shimano 105 STI, 11-speed',
-    'Stem': 'Oval Concepts 313, 3D-forged 6061 stem body, +/-7°',
-    'Tires': 'Vittoria Zaffiro Pro, 700 x 25c, folding',
-    'Wheelset': 'Oval Concepts 327, 700c 20/24H rims'
+    'levers': 'Shimano 105 STI',
+    'pedals': 'N/A',
+    'rear_derailleur': 'Shimano 105, 11-speed',
+    'rack_mounts': 'No',
+    'saddle': 'Oval Concepts 300, steel rail',
+    'seatpost': 'Kestrel EMS Pro, carbon, Ritchey clamp system',
+    'shifters': 'Shimano 105 STI, 11-speed',
+    'stem': 'Oval Concepts 313, 3D-forged 6061 stem body, +/-7°',
+    'tires': 'Vittoria Zaffiro Pro, 700 x 25c, folding',
+    'wheelset': 'Oval Concepts 327, 700c 20/24H rims'
 }
 
 
@@ -198,11 +198,7 @@ class PerformanceBikesTestCase(unittest.TestCase):
 
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
         self.pbs._get_prods_on_current_listings_page(prod_list_soup)
-
-        path = os.path.join(DATA_PATH,
-                            f'test_performancebike_prod_listing_'
-                            f'{TIMESTAMP}.csv')
-        self.pbs._write_prod_listings_to_csv(path=path)
+        self.pbs._write_prod_listings_to_csv()
 
     def test_write_prod_specs_to_csv(self):
         test_specs_dict = {
@@ -210,19 +206,14 @@ class PerformanceBikesTestCase(unittest.TestCase):
             'bkestrel_bike_spec': BKESTREL_SPECS
         }
         fieldnames = [
-            'Bottom Bracket', 'Brakes', 'Cassette', 'Chain',
-            'Crankset', 'Fork', 'Frame', 'Front Derailleur',
-            'Grips/Tape', 'Handlebar', 'Headset', 'Levers',
-            'Pedals', 'Rear Derailleur', 'Rear Shock', 'Saddle', 'Seatpost',
-            'Shifters', 'Stem', 'Tires', 'Wheelset', 'Rack Mounts'
+            'bottom_bracket', 'brakes', 'cassette', 'chain',
+            'crankset', 'fork', 'frame', 'front_derailleur',
+            'grips/tape', 'handlebar', 'headset', 'levers',
+            'pedals', 'rear_derailleur', 'rear_shock', 'saddle', 'seatpost',
+            'shifters', 'stem', 'tires', 'wheelset', 'rack_mounts'
         ]
         self.pbs._specs_fieldnames = set(fieldnames)
-
-        path = os.path.join(DATA_PATH,
-                            f'test_performancebike_prod_specs_'
-                            f'{TIMESTAMP}.csv')
-        self.pbs._write_prod_specs_to_csv(specs_dict=test_specs_dict,
-                                          path=path)
+        self.pbs._write_prod_specs_to_csv(specs_dict=test_specs_dict)
 
 
 if __name__ == '__main__':

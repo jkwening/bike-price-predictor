@@ -18,4 +18,4 @@ __pycache__/
 # Project files
 #########################################################
 data/
-tests/test_data/test_performancebike_*.csv
+tests/test_data/

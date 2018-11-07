@@ -18,60 +18,60 @@ HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
 TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH, 'performance_prod_listing_test_data.csv')
 SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'Competitive-Cyclist.html'))
 PINARELLO_SPECS = {
-    'Frame Material': 'Toray T1100 1K Dream Carbon Fiber',
-    'Fork': 'Onda',
-    'Fork Material': 'Toray T1100 1K Dream Carbon Fiber',
-    'Headset': '1-1/8 - 1-1/2 in',
-    'Shifters': 'SRAM Red eTap',
-    'Front Derailleur': 'SRAM Red eTap',
-    'Rear Derailleur': 'SRAM Red eTap',
-    'Crankset': '53 / 39 t SRAM Red GXP, 52 / 36 t SRAM Red GXP, 50 / 34 t SRAM Red GXP',
-    'Bottom Bracket': '[shell] Italian threaded, [adapter] SRAM GXP Team',
-    'Crank Arm Length': '170 mm, 172.5 mm, 175 mm',
-    'Cassette': '11 - 25 t SRAM XG-1190',
-    'Chain': 'SRAM PC-Red',
-    'Brakeset': 'SRAM Red Aero Link',
-    'Brake Type': 'rim',
-    'Handlebar': 'Zipp SL-70 Aero Carbon',
-    'Handlebar Width': '[42cm, 44cm, 46.5cm] 38 cm, [50cm, 51.5cm] 40 cm, [sizes 53cm, 54cm] 42 cm, [sizes 55cm, 56cm, 57.5cm, 59.5cm, 62cm] 44 cm',
-    'Bar Tape': 'Arundel cork',
-    'Stem': 'Zipp SL Sprint Carbon',
-    'Saddle': 'Fizik Aliante R7',
-    'Seatpost': 'Dogma Aero',
-    'Seat Collar': 'TwinForce (integrated)',
-    'Wheelset': 'Zipp 404 NSW Carbon Clincher',
-    'Hubs': 'Zipp Cognition',
-    'Skewers': '9mm quick-release',
-    'Tires': 'Vittoria Corsa G Plus',
-    'Tire Size': '700 c x 25 mm',
-    'Pedals': 'not included',
-    'Recommended Use': 'cycling',
-    'Manufacturer Warranty': '2 years on frame'
+    'frame_material': 'Toray T1100 1K Dream Carbon Fiber',
+    'fork': 'Onda',
+    'fork_material': 'Toray T1100 1K Dream Carbon Fiber',
+    'headset': '1-1/8 - 1-1/2 in',
+    'shifters': 'SRAM Red eTap',
+    'front_derailleur': 'SRAM Red eTap',
+    'rear_derailleur': 'SRAM Red eTap',
+    'crankset': '53 / 39 t SRAM Red GXP, 52 / 36 t SRAM Red GXP, 50 / 34 t SRAM Red GXP',
+    'bottom_bracket': '[shell] Italian threaded, [adapter] SRAM GXP Team',
+    'crank_arm_length': '170 mm, 172.5 mm, 175 mm',
+    'cassette': '11 - 25 t SRAM XG-1190',
+    'chain': 'SRAM PC-Red',
+    'brakeset': 'SRAM Red Aero Link',
+    'brake_type': 'rim',
+    'handlebar': 'Zipp SL-70 Aero Carbon',
+    'handlebar_width': '[42cm, 44cm, 46.5cm] 38 cm, [50cm, 51.5cm] 40 cm, [sizes 53cm, 54cm] 42 cm, [sizes 55cm, 56cm, 57.5cm, 59.5cm, 62cm] 44 cm',
+    'bar_tape': 'Arundel cork',
+    'stem': 'Zipp SL Sprint Carbon',
+    'saddle': 'Fizik Aliante R7',
+    'seatpost': 'Dogma Aero',
+    'seat_collar': 'TwinForce (integrated)',
+    'wheelset': 'Zipp 404 NSW Carbon Clincher',
+    'hubs': 'Zipp Cognition',
+    'skewers': '9mm quick-release',
+    'tires': 'Vittoria Corsa G Plus',
+    'tire_size': '700 c x 25 mm',
+    'pedals': 'not included',
+    'recommended_use': 'cycling',
+    'manufacturer_warranty': '2 years on frame'
     }
 RIDLEY_SPECS = {
-    'Frame Material': '30t and 24t high-modulus carbon fiber',
-    'Fork': 'Oryx Disc 12TA, carbon steerer',
-    'Fork Material': 'carbon fiber',
-    'Shifters': 'Shimano ST-R685',
-    'Front Derailleur': 'Shimano Ultegra 6800',
-    'Rear Derailleur': 'Shimano Ultegra 6800',
-    'Crankset': '46 / 36 t Shimano Ultegra 6800',
-    'Bottom Bracket': 'PF30',
-    'Cassette': '11 - 28 t Shimano 105 5800',
-    'Chain': 'KMC X11',
-    'Brakeset': 'Shimano BR-RS805/BR-RS785 Hydraulic',
-    'Rotors': '[front] 60 mm, [rear] 140 mm',
-    'Handlebar': '4ZA Cirrus E.2',
-    'Stem': '4ZA Cirrus',
-    'Saddle': '4ZA Cirrus Pro Cr/Ti rails',
-    'Seatpost': '4ZA Cirrus Carbon 27.2 x 350mm',
-    'Wheelset': 'DT Swiss R23 Spline DB',
-    'Front Axle': '12TA',
-    'Tires': 'Clement MXP Tubeless Ready',
-    'Tire Size': '700 c x 33 mm',
-    'Pedals': 'not included',
-    'Recommended Use': 'cyclocross',
-    'Manufacturer Warranty': '5 years on frame'
+    'frame_material': '30t and 24t high-modulus carbon fiber',
+    'fork': 'Oryx Disc 12TA, carbon steerer',
+    'fork_material': 'carbon fiber',
+    'shifters': 'Shimano ST-R685',
+    'front_derailleur': 'Shimano Ultegra 6800',
+    'rear_derailleur': 'Shimano Ultegra 6800',
+    'crankset': '46 / 36 t Shimano Ultegra 6800',
+    'bottom_bracket': 'PF30',
+    'cassette': '11 - 28 t Shimano 105 5800',
+    'chain': 'KMC X11',
+    'brakeset': 'Shimano BR-RS805/BR-RS785 Hydraulic',
+    'rotors': '[front] 60 mm, [rear] 140 mm',
+    'handlebar': '4ZA Cirrus E.2',
+    'stem': '4ZA Cirrus',
+    'saddle': '4ZA Cirrus Pro Cr/Ti rails',
+    'seatpost': '4ZA Cirrus Carbon 27.2 x 350mm',
+    'wheelset': 'DT Swiss R23 Spline DB',
+    'front_axle': '12TA',
+    'tires': 'Clement MXP Tubeless Ready',
+    'tire_size': '700 c x 33 mm',
+    'pedals': 'not included',
+    'recommended_use': 'cyclocross',
+    'manufacturer_warranty': '5 years on frame'
 }
 
 
@@ -86,8 +86,8 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
         self._cc._get_prods_on_current_listings_page(soup)
         self.assertEqual(42, len(self._cc._products))
 
+    # TODO - complete this unit test snippet (FYI - long running)
     def test_get_bike_urls(self):
-        # TODO - complete this unit test snippet (FYI - long running)
         response = self._cc.get_all_available_prods()
         self.assertEqual(False, response)
 
@@ -125,7 +125,7 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
             self.assertTrue(value in self._cc._products.values())
 
     def test_get_prod_listings(self):
-        self._cc.get_all_available_prods(bike_type_list=['road'], to_csv=False)
+        self._cc.get_all_available_prods(bike_type_list=['road'], to_csv=True)
         self.assertTrue(self._cc._num_bikes, len(self._cc._products))
 
     def test_parse_prod_spec(self):
@@ -203,29 +203,23 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
 
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
         self._cc._get_prods_on_current_listings_page(prod_list_soup)
+        self._cc._write_prod_listings_to_csv()
 
-        path = os.path.join(DATA_PATH,
-                            f'test_performancebike_prod_listing_{TIMESTAMP}.csv')
-        self._cc._write_prod_listings_to_csv(path=path)
-
+    #TODO: update unit test to use competitive source data
     def test_write_prod_specs_to_csv(self):
         test_specs_dict = {
             'marin_bike_spec': PINARELLO_SPECS,
             'bkestrel_bike_spec': RIDLEY_SPECS
         }
         fieldnames = [
-            'Bottom Bracket', 'Brakes', 'Cassette', 'Chain',
-            'Crankset', 'Fork', 'Frame', 'Front Derailleur',
-            'Grips/Tape', 'Handlebar', 'Headset', 'Levers',
-            'Pedals', 'Rear Derailleur', 'Rear Shock', 'Saddle', 'Seatpost',
-            'Shifters', 'Stem', 'Tires', 'Wheelset', 'Rack Mounts'
+            'bottom_bracket', 'brakes', 'cassette', 'chain',
+            'crankset', 'fork', 'frame', 'front_derailleur',
+            'grips/tape', 'handlebar', 'headset', 'levers',
+            'pedals', 'rear_derailleur', 'rear shock', 'saddle', 'seatpost',
+            'shifters', 'stem', 'tires', 'wheelset', 'rack mounts'
         ]
         self._cc._specs_fieldnames = set(fieldnames)
-
-        path = os.path.join(DATA_PATH,
-                            f'test_performancebike_prod_specs_{TIMESTAMP}.csv')
-        self._cc._write_prod_specs_to_csv(specs_dict=test_specs_dict,
-                                          path=path)
+        self._cc._write_prod_specs_to_csv(specs_dict=test_specs_dict)
 
 
 if __name__ == '__main__':
