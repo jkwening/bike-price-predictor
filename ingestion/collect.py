@@ -21,24 +21,24 @@ def _get_class_instance(source):
   else:
     raise ValueError(f'Invalid source: {source} value.')
 
-def collect_all(get_specs=True):
+def collect_all_products(get_specs=True):
   """Collect raw data file from all sources."""
   for source in SOURCES:
-    collect_from_source(source, get_specs=get_specs)
+    collect_products_from_source(source, get_specs=get_specs)
 
-def collect_from_source(source, get_specs=True):
+def collect_products_from_source(source, get_specs=True):
   """Collect raw data file for specified source."""
   class_ = _get_class_instance(source)
   class_.get_all_available_prods(get_specs=get_specs)
 
 #FIXME: think through how to handle multiple competitive sources
-def get_all_specs(to_csv=True):
+def collect_all_specs(to_csv=True):
   manifest = Manifest()
   for source in SOURCES:
-    get_specs_for_source(source, manifest=manifest, to_csv=to_csv)
+    collect_specs_for_source(source, manifest=manifest, to_csv=to_csv)
 
 #FIXME: think through how to handle multiple competitive sources
-def get_specs_for_source(source, manifest=None, to_csv=True):
+def collect_specs_for_source(source, manifest=None, to_csv=True):
   """Get specs for ..."""
   if manifest is None:
     manifest = Manifest()

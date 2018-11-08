@@ -30,16 +30,20 @@ SPEC_FIELDNAMES = {
   'seatpost_diameter', 'seatpost', 'frame_headset_size',
   'frame_front_derailleur', 'disc_mount'
   }
+COPY_FROM_STATEMENT = """
+  COPY %s FROM STDIN WITH CSV HEADER DELIMITER AS ','
+  """
 
 def connect():
   """Connect to PostgreSQL database server. """
   try:
-    _CONN = psycopg2.connect('host=localhost dbname=bike_pricer user=postgres')
-    return _CONN
+    conn = psycopg2.connect('host=localhost dbname=bike_pricer user=postgres')
+    return conn
   except (Exception, psycopg2.DatabaseError) as e:
     print(e)
     return None
 
+#TODO: seems unnecesary - remove once confirmed
 def close():
   """Close database server connection."""
   if _CONN is not None:
@@ -48,17 +52,24 @@ def close():
   else:
     print('Not connected to database.')
 
-def create_table(db_conn=None, tablenames=['products']):
-  """Create tables in database."""
-  if db_conn is None:
-    db_conn = connect()
+def _generate_specs_create_table_sql_statement(fieldnames):
+  """Generate the appropriate SQL statement for product_specs table."""
+  statement = 'CREATE TABLE products_specs ('
+
+  for fieldname in fieldnames:
+    statement = (statement + '\n{} VARCHAR(500),').format(fieldname)
   
+  return statement[:-1] + ')'
+  
+def create_table(conn, tablenames=['products']):
+  """Create tables in database."""
   commands = list()  # list of create table commands to execute
 
   if 'products' in tablenames:
     commands.append(
       """
       CREATE TABLE products (
+        bike_type VARCHAR(50),
         source VARCHAR(100) NOT NULL,
         product_id VARCHAR(100) NOT NULL,
         PRIMARY KEY (source, product_id),
@@ -72,16 +83,26 @@ def create_table(db_conn=None, tablenames=['products']):
     )
 
   if 'products_specs' in tablenames:
-    #TODO: figure out unique headers and populate table
-    pass
+    commands.append(_generate_specs_create_table_sql_statement(SPEC_FIELDNAMES))
   
   try:
-    cur = db_conn.cursor()
+    cur = conn.cursor()
     for command in commands:
       cur.execute(command)
-    cur.close()
-    db_conn.commit()
+    conn.commit()
   except (Exception, psycopg2.DatabaseError) as e:
     print(e)
   finally:
-    db_conn.close()
+    cur.close()
+
+def process_file(conn, tablename, filepath):
+  """Load file into database."""
+  with open(filepath, encoding='utf-8') as f:
+    try:
+      cur = conn.cursor()
+      cur.copy_expert(sql=COPY_FROM_STATEMENT % tablename, file=f)
+      conn.commit()
+    except (Exception, psycopg2.DatabaseError) as e:
+      print(e)
+    finally:
+      cur.close()

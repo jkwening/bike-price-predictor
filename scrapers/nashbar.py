@@ -93,7 +93,7 @@ class NashBar(Scraper):
             div_prod_name = prod_info.find('div', class_='product_name')
             product['href'] = str(div_prod_name.a['href']).strip()
             desc = str(div_prod_name.a.string).strip()
-            product['desc'] = desc
+            product['description'] = desc
 
             # Parse brand and bike_type from desc
             product['brand'] = desc.split()[0]
@@ -101,14 +101,14 @@ class NashBar(Scraper):
 
             # get sale price (offer_price)
             span_price = prod_info.find('span', class_='price')
-            product['price'] = str(span_price.string).strip()
+            product['price'] = float(str(span_price.string).strip().strip('$').replace(',', ''))
 
             # get msrp price (list_price)
             span_old_price = prod_info.find('span', class_='old_price')
             if span_old_price is None:
                 product['msrp'] = product['price']
             else:
-                product['msrp'] = str(span_old_price.string).strip().split()[-1]
+                product['msrp'] = float(str(span_old_price.string).strip().split()[-1].strip('$').replace(',', ''))
 
             # get prod_id
             input_info_hidden = prod_info.find('input')

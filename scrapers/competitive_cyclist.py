@@ -62,7 +62,7 @@ class CompetitiveCyclist(Scraper):
       
       # get desc
       prod_desc = prod_info.find('span', class_='ui-pl-name-title').contents[0]
-      product['desc'] = prod_desc
+      product['description'] = prod_desc
       
       # get current and msrp price
       try: # handle possible "TEMPORARILY OUT OF STOCK" scenario
@@ -76,8 +76,8 @@ class CompetitiveCyclist(Scraper):
           prod_price = prod_info.find('span', class_='ui-pl-pricing-low-price').contents[0]
           prod_msrp = prod_info.find('span', class_='ui-pl-pricing-high-price').contents[0]
 
-        product['price'] = prod_price
-        product['msrp'] = prod_msrp
+        product['price'] = float(prod_price.strip('$').replace(',', ''))
+        product['msrp'] = float(prod_msrp.strip('$').replace(',', ''))
       except AttributeError:
         print("TEMPORARILY OUT OF STOCK")
         product['price'] = -1
