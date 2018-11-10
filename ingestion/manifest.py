@@ -7,10 +7,12 @@ from utils.utils import DATA_PATH
 
 class Manifest(object):
   """Manifest is used to track state and path of raw data files."""
-  def __init__(self, path=DATA_PATH, filename='manifest.csv'):
+  def __init__(self, mediator, path=DATA_PATH, filename='manifest.csv'):
+    self._mediator = mediator
+    self._DATA_PATH = path
     self._MANIFEST_PATH = os.path.join(path, filename)
     self._HEADERS = [
-      'source', 'tablename', 'bike_type', 'filename', 'timestamp',
+      'site', 'tablename', 'bike_type', 'filename', 'timestamp',
       'loaded', 'date_loaded'
     ]
 
@@ -18,7 +20,7 @@ class Manifest(object):
     """Return column headers for manifest.csv."""
     return self._HEADERS
 
-  def update(self, from_data=False, from_list=[], overwrite=False):
+  def update(self, from_data=False, from_list=[], overwrite=False) -> bool:
     """Create manifest CSV file.
 
     Can create populate manifest from raw data or list of values not both.
@@ -66,7 +68,7 @@ class Manifest(object):
     if from_data:
       pass
 
-    return True    
+    return False    
 
   def _validate_from_list(self, data_list):
     """Validate that the passed data has appropriate fieldnames.
@@ -79,6 +81,7 @@ class Manifest(object):
       True if all passed data have appropriate manifest fieldnames, else
         raises ValueError
     """
+    print(f'[Manifest._validate_from_list()]')
     for data in data_list:
       # check keys in data are fielnames
       for key in data.keys():
@@ -94,14 +97,14 @@ class Manifest(object):
 
   def _to_csv(self, manifest):
     """Write manifest to csv."""
-    with open(self._MANIFEST_PATH, 'w') as f:
+    with open(self._MANIFEST_PATH, 'w', encoding='utf-8') as f:
       writer = DictWriter(f, fieldnames=self._HEADERS)
       writer.writeheader()
 
       for data in manifest.values():
         writer.writerow(data)
   
-  def get_all_rows(self):
+  def get_all_rows(self) -> list:
     """Return list of dict objects representing all rows in manifest.csv."""
     rows = list()
     with open(self._MANIFEST_PATH, encoding='utf-8') as f:
@@ -112,6 +115,7 @@ class Manifest(object):
     
     return rows
 
+  #TODO - remove? Doesn't actually seem useful since will loop over
   def get_each_row(self):
     """Returns an iterator object for getting each row in manifest.csv."""
     rows = self.get_all_rows()
@@ -119,6 +123,7 @@ class Manifest(object):
 
   def get_unique_spec_fieldnames(self):
     """Return set of fieldnames used in all spec files in manifest.csv."""
+    exclude_fieldnames = ['site', 'product_id']
     rows = self.get_all_rows()
     spec_fieldnames = set()
 
@@ -129,6 +134,8 @@ class Manifest(object):
           fieldnames = DictReader(f).fieldnames
           
           for fieldname in fieldnames:
+            if fieldname in exclude_fieldnames:
+              continue
             spec_fieldnames.add(fieldname)
 
     return spec_fieldnames
@@ -154,3 +161,32 @@ class Manifest(object):
         specs_rows.append(row)
 
     return specs_rows
+
+  def get_rows_matching(self, sources: list=[], tablenames: list=[],
+    bike_types: list=[], loaded: list=[]) -> list:
+    """Return list of manifest rows matching provided arguments."""
+    matching_rows = list()
+    with open(self._MANIFEST_PATH, encoding='utf-8') as f:
+      reader = DictReader(f)
+
+      for row in reader:
+        if sources and row['site'] not in sources:
+          continue
+
+        if tablenames and row['tablename'] not in tablenames:
+          continue
+
+        if bike_types and row['bike_type'] not in bike_types:
+          continue
+
+        if loaded and row['loaded'] not in loaded:
+          continue
+        
+        matching_rows.append(row)
+    
+    return matching_rows
+
+  def get_filepath_for_row(self, row: dict) -> str:
+    """Returns the absolute filepath for the data in manifest row."""
+    return os.path.join(self._DATA_PATH, row['timestamp'], row['filename'])
+  

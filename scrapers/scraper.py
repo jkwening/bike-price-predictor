@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 
 from scrapers.scraper_utils import create_directory_if_missing, MODULE_PATH
 from scrapers.scraper_utils import DATA_PATH, TIMESTAMP
-from ingestion.manifest import Manifest
 
 
 class Scraper(ABC):
@@ -21,7 +20,7 @@ class Scraper(ABC):
         self._TIMESTAMP = TIMESTAMP
         self._products = {}  # href, desc key,value pairs
         self._num_bikes = 0
-        self._specs_fieldnames = set(['source'])
+        self._specs_fieldnames = set(['site'])
         self._bike_type = 'all'
 
     def _fetch_html(self, url, method='GET', params=None, data=None,
@@ -34,9 +33,9 @@ class Scraper(ABC):
 
         # check response status code
         if response.status_code != 200:
-            print(f'Error - Status Code: {response.status_code}; Reason: '
-                  f'{response.reason}')
-            raise FileNotFoundError('HTTPError')
+            raise FileNotFoundError(
+                f'HTTPError - Status Code: {response.status_code}; Reason: '
+                f'{response.reason}')
 
         return response.text
 
@@ -74,8 +73,8 @@ class Scraper(ABC):
         """
         pass
 
-    def _write_prod_listings_to_csv(self):
-        """Save available bike products to csv file"""
+    def _write_prod_listings_to_csv(self) -> dict:
+        """Save available bike products to csv file."""
         fname = f'{self._SOURCE}_prods_{self._bike_type}.csv'
         path = os.path.join(self._DATA_PATH, self._TIMESTAMP, fname)
 
@@ -90,42 +89,53 @@ class Scraper(ABC):
             for desc in prod_descs:
                 writer.writerow(self._products[desc])
 
-        # TODO: handle errors appropriately - simple: print, feature: logger
-        self._update_manifest(tablename='products', filename=fname)
+        # return manifest row object of csv data
+        return {
+            'site': self._SOURCE, 'tablename': 'products',
+            'bike_type': self._bike_type, 'filename': fname,
+            'timestamp': self._TIMESTAMP, 'loaded': False,
+            'date_loaded': None
+        }
 
-    # def _normalize_spec_fieldname(self, fieldname):
-    #     """Normalize fieldnames across all source files."""
-    #     result = set()
-    #     for s in fieldnames:
-    #         result.add(s.lower().replace(' ','_'))
-
-    #     return result
-
-    def _write_prod_specs_to_csv(self, specs_dict):
+    def _write_prod_specs_to_csv(self, specs: dict,
+            bike_type:str = '') -> dict:
         """Save bike product specifications to csv file."""
-        fname = f'{self._SOURCE}_specs_{self._bike_type}.csv'
+        if not bike_type:
+            bike_type = self._bike_type
+
+        fname = f'{self._SOURCE}_specs_{bike_type}.csv'
         path = os.path.join(self._DATA_PATH, self._TIMESTAMP, fname)
 
         create_directory_if_missing(path)
 
         with open(file=path, mode='w', newline='', encoding='utf-8') as csvfile:
-            spec_descs = list(specs_dict.keys())
+            spec_descs = list(specs.keys())
             writer = DictWriter(csvfile, fieldnames=self._specs_fieldnames)
             writer.writeheader()
 
             for desc in spec_descs:
-                writer.writerow(specs_dict[desc])
+                writer.writerow(specs[desc])
         
-        # TODO: handle errors appropriately - simple: print, feature: logger
-        self._update_manifest(tablename='product_specs', filename=fname)
+        # return manifest row object of csv data
+        return {
+            'site': self._SOURCE, 'tablename': 'product_specs',
+            'bike_type': self._bike_type, 'filename': fname,
+            'timestamp': self._TIMESTAMP, 'loaded': False,
+            'date_loaded': None
+        }
 
     @abstractmethod
-    def get_all_available_prods(self, to_csv=True):
+    def get_all_available_prods(self, to_csv=True) -> list:
         """Get all products currently available from site"""
         pass
 
-    def get_product_specs(self, get_prods_from='site', to_csv=True):
-        """Get specifications for all available bikes on web site"""
+    def get_product_specs(self, get_prods_from='site', bike_type:str = '',
+            to_csv=True) -> dict:
+        """Get specifications for all available bikes on web site.
+        
+        Returns:
+            manifest row data if written to csv, else specs dict object.
+        """
         # determine how to get bike products
         if self._products and get_prods_from == 'memory':
             print('Have bike products listing in memory - PROCESSING...')
@@ -140,11 +150,11 @@ class Scraper(ABC):
                 raise TypeError('Not a CSV file type!')
 
             with open(file=get_prods_from, mode='r', encoding='utf-8') as csv_file:
-                products = {}
+                products = dict()
                 reader = DictReader(csv_file)
 
                 for row in reader:
-                    bike = dict(row)
+                    bike = dict(row)  #TODO: isn't row already dict, seems unnecessary
                     products[bike['product_id']] = bike
 
             self._products = products
@@ -180,18 +190,16 @@ class Scraper(ABC):
 
         if to_csv:
             self._specs_fieldnames.add('product_id')  # ensure id is field in specs file
-            self._write_prod_specs_to_csv(specs_dict=specs)
+            return self._write_prod_specs_to_csv(specs=specs,
+                bike_type=bike_type)
 
         return specs
 
-    def _update_manifest(self, tablename, filename):
-        """Update manifest.csv with most current raw data information."""
-        # NOTE: Keys must match values in manifest module self._HEADERS!
-        row_data = {
-            'source': self._SOURCE, 'tablename': tablename,
-            'bike_type': self._bike_type, 'filename': filename,
-            'timestamp': self._TIMESTAMP, 'loaded': 'no',
-            'date_loaded': None
-        }
-        manifest = Manifest(path=self._DATA_PATH)
-        return manifest.update(from_list=[row_data])
+    def _normalize_spec_fieldnames(self, fieldname: str) -> str:
+        """Remove invalid chars and normalize as lowercase and no spaces."""
+        fieldname = fieldname.replace(' / ', '_')
+        fieldname = fieldname.replace('-', '_')
+        fieldname = fieldname.replace('(', '')
+        fieldname = fieldname.replace(')', '')
+        fieldname = fieldname.replace('/', '_')
+        return fieldname.lower().replace(' ','_')  # normalize: lowercase and no spaces

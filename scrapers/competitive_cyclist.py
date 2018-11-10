@@ -46,7 +46,7 @@ class CompetitiveCyclist(Scraper):
     for prod_info in div_products_list:
       product = dict()
       product['bike_type'] = self._bike_type
-      product['source'] = self._SOURCE
+      product['site'] = self._SOURCE
 
       # get id
       prod_id = prod_info['data-product-id']
@@ -93,12 +93,12 @@ class CompetitiveCyclist(Scraper):
 
     # Get each spec_name, value pairing for bike product
     prod_specs = dict()
-    prod_specs['source'] = self._SOURCE
+    prod_specs['site'] = self._SOURCE
 
     try:
       for spec_row in tech_spec_rows:
         spec_name = spec_row.find('b', class_='tech-specs__name').contents[0]
-        spec_name = spec_name.lower().replace(' ','_')  # normalize: lowercase and no spaces
+        spec_name = self._normalize_spec_fieldnames(spec_name)
         spec_value = spec_row.find('span', class_='tech-specs__value').contents[0]
         prod_specs[spec_name] = spec_value
         self._specs_fieldnames.add(spec_name)
@@ -108,21 +108,23 @@ class CompetitiveCyclist(Scraper):
     print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
     return prod_specs
 
-  def get_all_available_prods(self, bike_type_list=[], to_csv=True, get_specs=False):
+  def get_all_available_prods(self, bike_type_list=[], to_csv=True) -> list:
     """Collect raw data for each bike type.
 
     Args:
       bike_type_list (:obj: list of str): list of bike types to scrape.
         Note: Must be match key values in self._BIKE_ENDPOINTS in this class
     """
+    manifest_row_datas = list()
     if bike_type_list:
       for bike_type in bike_type_list:
-        self._get_prods(bike_type=bike_type, get_specs=get_specs)
+        manifest_row_datas.append(self._get_prods(bike_type=bike_type))
     else:
       for bike_type in self._BIKE_ENDPOINTS:
-        self._get_prods(bike_type=bike_type, get_specs=get_specs)
+        manifest_row_datas.append(self._get_prods(bike_type=bike_type))
+    return manifest_row_datas
 
-  def _get_prods(self, bike_type, get_specs=False, to_csv=True):
+  def _get_prods(self, bike_type, to_csv=True) -> dict:
     """Scrape competitive cyclist site for prods."""
     # Reset scraper related variables
     self._products = dict()
@@ -149,7 +151,8 @@ class CompetitiveCyclist(Scraper):
       print(f'Current number of products: {self._num_bikes}')
 
     if to_csv:
-      self._write_prod_listings_to_csv()
+      return self._write_prod_listings_to_csv()
 
-    if get_specs:
-      self.get_product_specs(get_prods_from='memory')
+    return {}
+    # if get_specs: #TODO: remove
+    #   self.get_product_specs(get_prods_from='memory')

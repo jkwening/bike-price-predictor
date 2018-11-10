@@ -100,7 +100,7 @@ class PerformanceBikes(Scraper):
 
         for prod_info in div_product_info:
             product = dict()
-            product['source'] = self._SOURCE
+            product['site'] = self._SOURCE
 
             # get prod_desc, and prod_href
             div_prod_name = prod_info.find('div', class_='product_name')
@@ -137,7 +137,7 @@ class PerformanceBikes(Scraper):
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
         prod_spec = dict()
-        prod_spec['source'] = self._SOURCE
+        prod_spec['site'] = self._SOURCE
 
         try:
             div_spec = soup.find(id='tab2Widget')
@@ -155,7 +155,7 @@ class PerformanceBikes(Scraper):
                 name = str(span_name.string).strip().strip(':')  # get clean spec name
                 name = name.strip('1')  # for some reason, some specs end with '1' for spec names
                 value = str(span_value.string).strip()
-                name = name.lower().replace(' ','_')  # normalize: lowercase and no spaces
+                name = self._normalize_spec_fieldnames(name)
                 prod_spec[name] = value
                 self._specs_fieldnames.add(name)
         except AttributeError as err:
@@ -163,7 +163,7 @@ class PerformanceBikes(Scraper):
 
         return prod_spec
 
-    def get_all_available_prods(self, to_csv=True, get_specs=False):
+    def get_all_available_prods(self, to_csv=True) -> list:
         """Get all products currently available from site"""
         # ensure product listings dictionary is empty
         self._products = {}
@@ -189,7 +189,8 @@ class PerformanceBikes(Scraper):
                 print(f'Current number of products: {len(self._products)}')
 
         if to_csv:
-            self._write_prod_listings_to_csv()
+            return [self._write_prod_listings_to_csv()]
 
-        if get_specs:
-            self.get_product_specs(get_prods_from='memory')
+        return list()
+        # if get_specs: #TODO: remove
+        #     self.get_product_specs(get_prods_from='memory')
