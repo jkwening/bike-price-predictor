@@ -1,6 +1,9 @@
 """Modules for loading raw data files into appropriate tables in the database"""
 
 import psycopg2
+from csv import DictReader
+
+from utils.utils import get_fieldnames_from_file
 
 
 class Ingest:
@@ -35,9 +38,8 @@ class Ingest:
       'frame_front_derailleur', 'disc_mount'
       }
     self._COPY_FROM_STATEMENT = """
-      COPY %s FROM STDIN WITH CSV HEADER DELIMITER AS ','
+      COPY %s FROM STDIN WITH CSV HEADER DELIMITER AS ',' FORCE_NULL
       """
-    self._tables = set()
 
   def connect(self):
     """Connect to PostgreSQL database server. """
@@ -48,7 +50,6 @@ class Ingest:
       print(e)
       return False
 
-  #TODO: seems unnecesary - remove once confirmed
   def close(self):
     """Close database server connection."""
     if self._conn is not None:
@@ -71,14 +72,17 @@ class Ingest:
     
   def get_db_tables(self):
     """Return tablenames in database."""
+    result = set()
     cur = self._conn.cursor()
     cur.execute("""SELECT table_name FROM information_schema.tables
        WHERE table_schema = 'public'""")
+    self._conn.commit()
     for table in cur.fetchall():
-        self._tables.add(table[0])
-    return self._tables
+        result.add(table[0])
+    cur.close()
+    return result
 
-  def create_table(self, tablenames):
+  def create_table(self, tablenames: list) -> bool:
     """Create tables in database."""
     commands = list()  # list of create table commands to execute
 
@@ -132,7 +136,7 @@ class Ingest:
       cur.close()
       return success
 
-  def process_file(self, tablename, filepath):
+  def process_file(self, tablename: list, filepath: str):
     """Load file into database."""
     # create table if it doesn't exist already
     if tablename not in self.get_db_tables():
@@ -143,7 +147,9 @@ class Ingest:
     with open(filepath, encoding='utf-8') as f:
       try:
         cur = self._conn.cursor()
-        cur.copy_expert(sql=self._COPY_FROM_STATEMENT % tablename, file=f)
+        # cur.copy_expert(sql=self._COPY_FROM_STATEMENT % tablename, file=f)
+        cur.copy_from(f, tablename, sep=',', null='',
+          columns=DictReader(f).fieldnames)
         self._conn.commit()
         success = True
       except (Exception, psycopg2.DatabaseError) as e:

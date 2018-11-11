@@ -1,6 +1,4 @@
 import unittest
-import os
-from csv import DictReader, DictWriter
 
 from ingestion.collect import Collect
 from ingestion.ingestion_mediator import IngestionMediator
@@ -8,7 +6,6 @@ from scrapers.competitive_cyclist import CompetitiveCyclist
 from scrapers.nashbar import NashBar
 from scrapers.performance_bike import PerformanceBikes
 from tests.unit_test_utils import DATA_PATH, TEST_DATA_PATH
-
 
 
 class ManifestTestCase(unittest.TestCase):
