@@ -37,9 +37,8 @@ class Ingest:
       'seatpost_diameter', 'seatpost', 'frame_headset_size',
       'frame_front_derailleur', 'disc_mount'
       }
-    self._COPY_FROM_STATEMENT = """
-      COPY %s FROM STDIN WITH CSV HEADER DELIMITER AS ',' FORCE_NULL
-      """
+    self._PRODUCTS_TABLENAMES = ['products', 'imported_products']
+    self._SPECS_TABLENAMES = ['product_specs', 'import_specs']
 
   def connect(self):
     """Connect to PostgreSQL database server. """
@@ -58,12 +57,12 @@ class Ingest:
     else:
       print('Not connected to database.')
 
-  def _generate_specs_create_table_sql_statement(self, fieldnames):
+  def _generate_specs_create_table_sql_statement(self, tablename, fieldnames):
     """Generate the appropriate SQL statement for product_specs table."""
-    statement = """CREATE TABLE product_specs (
+    statement = """CREATE TABLE %s (
       site VARCHAR(100) NOT NULL,
       product_id VARCHAR(100) NOT NULL,
-      PRIMARY KEY (site, product_id),"""
+      PRIMARY KEY (site, product_id),""" % tablename
 
     for fieldname in fieldnames:
       statement = (statement + '\n{} VARCHAR(500),').format(fieldname)
@@ -82,36 +81,28 @@ class Ingest:
     cur.close()
     return result
 
-  def create_table(self, tablenames: list) -> bool:
+  def create_table(self, tablename: str) -> bool:
     """Create tables in database."""
-    commands = list()  # list of create table commands to execute
+    if tablename in self._PRODUCTS_TABLENAMES:
+      command = """CREATE TABLE %s (
+        bike_type VARCHAR(50),
+        site VARCHAR(100) NOT NULL,
+        product_id VARCHAR(100) NOT NULL,
+        PRIMARY KEY (site, product_id),
+        href VARCHAR(1000),
+        brand VARCHAR(50),
+        description VARCHAR(100),
+        price FLOAT,
+        msrp FLOAT)""" % tablename
 
-    if 'products' in tablenames:
-      commands.append(
-        """
-        CREATE TABLE products (
-          bike_type VARCHAR(50),
-          site VARCHAR(100) NOT NULL,
-          product_id VARCHAR(100) NOT NULL,
-          PRIMARY KEY (site, product_id),
-          href VARCHAR(1000),
-          brand VARCHAR(50),
-          description VARCHAR(100),
-          price FLOAT,
-          msrp FLOAT
-        )
-        """
-      )
-
-    if 'product_specs' in tablenames:
-      commands.append(self._generate_specs_create_table_sql_statement(
-        self._SPEC_FIELDNAMES))
+    if tablename in self._SPECS_TABLENAMES:
+      command = self._generate_specs_create_table_sql_statement(tablename,
+        self._SPEC_FIELDNAMES)
     
     success = False
     try:
       cur = self._conn.cursor()
-      for command in commands:
-        cur.execute(command)
+      cur.execute(command)
       self._conn.commit()
       success = True
     except (Exception, psycopg2.DatabaseError) as e:
@@ -126,7 +117,7 @@ class Ingest:
     try:
       cur = self._conn.cursor()
       for table in tablenames:
-        statement = """DROP TABLE %s IF EXISTS""" % table
+        statement = """DROP TABLE IF EXISTS %s""" % table
         cur.execute(statement)
       self._conn.commit()
       success = True
@@ -145,11 +136,11 @@ class Ingest:
     
     return statement[:-1] + """) FROM STDIN WITH (FORMAT CSV, HEADER TRUE)"""
 
-  def process_file(self, tablename: list, filepath: str):
+  def process_file(self, tablename: str, filepath: str):
     """Load file into database."""
     # create table if it doesn't exist already
     if tablename not in self.get_db_tables():
-      if not self.create_table(tablenames=[tablename]):
+      if not self.create_table(tablename):
         raise psycopg2.DatabaseError
 
     success = False
