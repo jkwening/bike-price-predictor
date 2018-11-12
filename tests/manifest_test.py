@@ -69,10 +69,10 @@ class ManifestTestCase(unittest.TestCase):
 
 # TODO - need to complete: need to generate test csv files with
 #     timestamp organized folder structure like prod
-  def test_update_from_data(self):
-    """Test case for manifest.update(from_data=True)"""
-    # Delete any existing test_manifest.csv files and then create empty
-    self.assertEqual(False, True)
+  # def test_update_from_data(self):
+  #   """Test case for manifest.update(from_data=True)"""
+  #   # Delete any existing test_manifest.csv files and then create empty
+  #   self.assertEqual(False, True)
 
   def test_update_from_list(self):
     """Test case for manifest.update(from_list=[...])"""
