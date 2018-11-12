@@ -93,7 +93,6 @@ class CompetitiveCyclist(Scraper):
 
     # Get each spec_name, value pairing for bike product
     prod_specs = dict()
-    prod_specs['site'] = self._SOURCE
 
     try:
       for spec_row in tech_spec_rows:

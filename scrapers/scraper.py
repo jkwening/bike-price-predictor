@@ -182,8 +182,9 @@ class Scraper(ABC):
                 print(f'\tSpecifications page for {bike} not found!')
                 specs[bike] = {}
 
-            # add bike id for specifications for simple mapping/referencing
+            # ensure primary key fields are added
             specs[bike]['product_id'] = bike_id
+            specs[bike]['site'] = self._SOURCE
             
         running_time = (datetime.now() - start_timer)
         print(f'Runtime for scraping specs: {running_time}')
