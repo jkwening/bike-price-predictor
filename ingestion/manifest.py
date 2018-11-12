@@ -129,7 +129,7 @@ class Manifest(object):
 
     for row in rows:
       if row['tablename'] == 'product_specs':
-        filepath = os.path.join(DATA_PATH, row['timestamp'], row['filename'])
+        filepath = os.path.join(self._DATA_PATH, row['timestamp'], row['filename'])
         with open(filepath, encoding='utf-8') as f:
           fieldnames = DictReader(f).fieldnames
           
