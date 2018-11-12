@@ -136,6 +136,15 @@ class Ingest:
       cur.close()
       return success
 
+  def _generate_copy_expert_statement(self, tablename, fieldnames):
+    """Generate the appropriate SQL statement for product_specs table."""
+    statement = """COPY %s (""" % tablename
+
+    for fieldname in fieldnames:
+      statement = (statement + """\n{},""").format(fieldname)
+    
+    return statement[:-1] + """) FROM STDIN WITH (FORMAT CSV, HEADER TRUE)"""
+
   def process_file(self, tablename: list, filepath: str):
     """Load file into database."""
     # create table if it doesn't exist already
@@ -147,9 +156,11 @@ class Ingest:
     with open(filepath, encoding='utf-8') as f:
       try:
         cur = self._conn.cursor()
-        # cur.copy_expert(sql=self._COPY_FROM_STATEMENT % tablename, file=f)
-        cur.copy_from(f, tablename, sep=',', null='',
-          columns=DictReader(f).fieldnames)
+        fieldnames = DictReader(f).fieldnames
+        cur.copy_expert(sql=self._generate_copy_expert_statement(
+          tablename, fieldnames), file=f)
+        # cur.copy_from(f, tablename, sep=',', columns=fieldnames, null='',
+        #   quote='"')
         self._conn.commit()
         success = True
       except (Exception, psycopg2.DatabaseError) as e:

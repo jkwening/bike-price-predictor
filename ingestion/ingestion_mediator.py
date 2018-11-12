@@ -87,6 +87,9 @@ class IngestionMediator:
       self._collect.collect_from_sources(sources, get_specs=True, skip_failed=True)
     self._load_to_database(sources=sources,drop_tables=drop_tables)   
 
+  def close_conn(self):
+    self._ingest.close()
+    
 
 if __name__ == '__main__':
   mediator = IngestionMediator()
