@@ -1,4 +1,4 @@
-"""Modules for loading raw data files into appropriate tables in the database"""
+"""Module for loading raw data files into appropriate tables in the database"""
 
 import psycopg2
 from csv import DictReader
@@ -126,7 +126,7 @@ class Ingest:
     try:
       cur = self._conn.cursor()
       for table in tablenames:
-        statement = """DROP TABLE %s""" % table
+        statement = """DROP TABLE %s IF EXISTS""" % table
         cur.execute(statement)
       self._conn.commit()
       success = True
