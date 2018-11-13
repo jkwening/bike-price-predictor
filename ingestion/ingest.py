@@ -38,7 +38,7 @@ class Ingest:
       'frame_front_derailleur', 'disc_mount'
       }
     self._PRODUCTS_TABLENAMES = ['products', 'imported_products']
-    self._SPECS_TABLENAMES = ['product_specs', 'import_specs']
+    self._SPECS_TABLENAMES = ['product_specs', 'imported_specs']
 
   def connect(self):
     """Connect to PostgreSQL database server. """
@@ -59,7 +59,7 @@ class Ingest:
 
   def _generate_specs_create_table_sql_statement(self, tablename, fieldnames):
     """Generate the appropriate SQL statement for product_specs table."""
-    statement = """CREATE TABLE %s (
+    statement = """CREATE TABLE IF NOT EXISTS %s (
       site VARCHAR(100) NOT NULL,
       product_id VARCHAR(100) NOT NULL,
       PRIMARY KEY (site, product_id),""" % tablename
@@ -84,7 +84,7 @@ class Ingest:
   def create_table(self, tablename: str) -> bool:
     """Create tables in database."""
     if tablename in self._PRODUCTS_TABLENAMES:
-      command = """CREATE TABLE %s (
+      command = """CREATE TABLE IF NOT EXISTS %s (
         bike_type VARCHAR(50),
         site VARCHAR(100) NOT NULL,
         product_id VARCHAR(100) NOT NULL,
@@ -138,24 +138,32 @@ class Ingest:
 
   def process_file(self, tablename: str, filepath: str):
     """Load file into database."""
-    # create table if it doesn't exist already
-    if tablename not in self.get_db_tables():
-      if not self.create_table(tablename):
-        raise psycopg2.DatabaseError
-
     success = False
-    with open(filepath, encoding='utf-8') as f:
-      try:
+    try:
+      # load csv into temp table - create if doesn't exist
+      with open(filepath, encoding='utf-8') as f:
         cur = self._conn.cursor()
         fieldnames = DictReader(f).fieldnames
-        cur.copy_expert(sql=self._generate_copy_expert_statement(
-          tablename, fieldnames), file=f)
-        # cur.copy_from(f, tablename, sep=',', columns=fieldnames, null='',
-        #   quote='"')
+        if tablename in self._PRODUCTS_TABLENAMES:
+          tmp_tablename = 'imported_products' 
+        else:
+          tmp_tablename = 'imported_specs'
+        self.create_table(tmp_tablename)
+        cur.copy_expert(sql=self._generate_copy_expert_statement(tmp_tablename,
+          fieldnames), file=f)
         self._conn.commit()
-        success = True
-      except (Exception, psycopg2.DatabaseError) as e:
-        print(e)
-      finally:
-        cur.close()
-        return success
+      
+      # upsert into real table - create if doesn't exist
+      self.create_table(tablename)
+      statement  = """INSERT INTO %s
+        SELECT * FROM %s
+        ON CONFLICT DO NOTHING""" % (tablename, tmp_tablename)
+      cur.execute(statement)
+      self._conn.commit()
+      
+      success = True
+    except (Exception, psycopg2.DatabaseError) as e:
+      print(e)
+    finally:
+      cur.close()
+      return success
