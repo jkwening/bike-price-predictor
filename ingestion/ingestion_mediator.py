@@ -86,6 +86,12 @@ class IngestionMediator:
       self._collect.collect_from_sources(sources, get_specs=True, skip_failed=True)
     self._load_to_database(sources=sources,drop_tables=drop_tables)   
 
+  def get_rows_matching(self, sources: list=[], tablenames: list=[],
+    bike_types: list=[], loaded: list=[]) -> list:
+    """Return the manifest row matching request criteria."""
+    return self._manifest.get_rows_matching(sources=sources,
+      tablenames=tablenames, bike_types=bike_types, loaded=loaded)
+
   def close_conn(self):
     self._ingest.close()
 

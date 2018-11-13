@@ -88,23 +88,22 @@ class CompetitiveCyclist(Scraper):
   
   def _parse_prod_specs(self, soup):
     """Return dictionary representation of the product's specification."""
-    div_tech_specs_section = soup.find('div', class_='tech-specs__section')
-    tech_spec_rows = div_tech_specs_section.find_all('div', class_='tech-specs__row')
-
-    # Get each spec_name, value pairing for bike product
     prod_specs = dict()
-
     try:
+      div_tech_specs_section = soup.find('div', class_='tech-specs__section')
+      tech_spec_rows = div_tech_specs_section.find_all('div', class_='tech-specs__row')
+
+      # Get each spec_name, value pairing for bike product
       for spec_row in tech_spec_rows:
         spec_name = spec_row.find('b', class_='tech-specs__name').contents[0]
         spec_name = self._normalize_spec_fieldnames(spec_name)
         spec_value = spec_row.find('span', class_='tech-specs__value').contents[0]
         prod_specs[spec_name] = spec_value
         self._specs_fieldnames.add(spec_name)
+        print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
     except AttributeError as err:
       print(f'\tError: {err}')
 
-    print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
     return prod_specs
 
   def get_all_available_prods(self, bike_type_list=[], to_csv=True) -> list:
