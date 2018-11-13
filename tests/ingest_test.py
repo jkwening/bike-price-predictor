@@ -30,6 +30,21 @@ class ManifestTestCase(unittest.TestCase):
     self.assertEqual(1, self._ingest._conn.closed,
       msg=f'Incorrect closed value: {self._ingest._conn.closed}')
 
+  def test_create_table(self):
+    """Test Ingest.create_table()."""
+    # manually connect to database and drop necessary tables if exist
+    self._ingest.connect()
+    self._ingest.drop_table(self._ingest._PRODUCTS_TABLENAMES)
+
+    for tablename in self._ingest._PRODUCTS_TABLENAMES:
+      result = self._ingest.create_table(tablename)
+      self.assertTrue(result, msg=f'{tablename} should have been created.')
+      self.assertTrue(tablename in self._ingest.get_db_tables(),
+        msg=f'{tablename} should now be in database.')
+
+    #manually close database connection
+    self._ingest.close()
+
   def test_table_management_methods(self):
     """Test create_table, drop_table, and get_db_tables methods."""
     prods_tablename = 'products'
@@ -53,8 +68,11 @@ class ManifestTestCase(unittest.TestCase):
 
     # add test tables into database
     self.assertTrue(self._ingest.create_table(
-      tablenames=[specs_tablename, prods_tablename]),
-      msg='Failed to create test tables.')
+      tablename=specs_tablename),
+      msg=f'Failed to create {specs_tablename} table.')
+    self.assertTrue(self._ingest.create_table(
+      tablename=prods_tablename),
+      msg=f'Failed to create {prods_tablename} table.')
     current_db_tables = self._ingest.get_db_tables()
     print(f'[Add] - current tables: {current_db_tables}')
     self.assertTrue(prods_tablename in current_db_tables,
