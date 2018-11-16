@@ -86,12 +86,30 @@ class ManifestTestCase(unittest.TestCase):
   def test_process_file(self):
     """Test Ingest.process_file()."""
     self._ingest.connect()
-    self._ingest.drop_table(tablenames=['product_specs'])
+    self._ingest.drop_table(tablenames=self._ingest._SPECS_TABLENAMES)
     comp_road_spec_filepath = os.path.join(TEST_DATA_PATH, '11102018',
       'competitive_specs_road.csv')
     result = self._ingest.process_file(tablename='product_specs',
       filepath=comp_road_spec_filepath)
     self.assertTrue(result, msg='Should load file into database.')
+
+  def test_check_for_new_specs_columns(self):
+    """Test Ingest._check_for_new_specs_columns()."""
+    fieldnames = ['hello', 'world', 'cycling_hard']
+
+    # manually connect
+    self._ingest.connect()
+
+    # test case
+    result = self._ingest._check_for_new_specs_columns(fieldnames)
+    for fieldname in fieldnames:
+      self.assertTrue(fieldname in result,
+        msg=f'{fieldname} should be in {result}')
+      self.assertTrue(fieldname in self._ingest._SPEC_FIELDNAMES,
+        msg=f'{fieldname} should be in {self._ingest._SPEC_FIELDNAMES}')
+
+    # manually close connection
+    self._ingest.close()
 
 
 if __name__ == '__main__':

@@ -64,7 +64,7 @@ class Collect:
         spec_rows.append(spec_row)
       self._mediator.update_manifest(rows=spec_rows)
 
-  def collect_specs_matching(self, source: str, bike_type: str) -> list:
+  def collect_specs_matching(self, source: str, bike_type: str) -> dict:
     """Collect specs data for given product source and bike_type."""
     row = self._mediator.get_rows_matching(sources=[source],
     bike_types=[bike_type], tablenames=['products'])[0]
@@ -76,3 +76,5 @@ class Collect:
       bike_type=bike_type)
     print(f'[collect_specs_matching] {source} spec_row_data: {spec_row_data}')
     self._mediator.update_manifest(rows=[spec_row_data])
+    return spec_row_data
+    

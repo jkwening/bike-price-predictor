@@ -52,8 +52,16 @@ class IngestionMediator:
   def _recreate_database_tables(self):
     """Recreate all database tables."""
     tablenames = self._ingest.get_db_tables()
+    if not tablenames:  # get default tablenames if non currently active
+      tablenames = self._ingest.get_required_tablenames()
+    
+    # get appropriate fieldnames for product_specs table
+    fieldnames = self.get_spec_fieldnames()
+    self._ingest.set_spec_fieldnames(fieldnames)
+
     self._ingest.drop_table(tablenames)
-    self._ingest.create_table(tablenames)
+    for tablename in tablenames:
+      self._ingest.create_table(tablename)
   
   def _load_to_database(self, sources: list=[], drop_tables=False):
     """Load data for specified sources into database."""
@@ -86,6 +94,12 @@ class IngestionMediator:
       self._collect.collect_from_sources(sources, get_specs=True, skip_failed=True)
     self._load_to_database(sources=sources,drop_tables=drop_tables)   
 
+  def update_specs_matching(self, source: str, bike_type: str) -> bool:
+    if self._ingest.connect():
+      spec_row_data = self._collect.collect_specs_matching(source, bike_type)
+      return self._load_manifest_row_to_db(row=spec_row_data)
+    return False
+
   def get_rows_matching(self, sources: list=[], tablenames: list=[],
     bike_types: list=[], loaded: list=[]) -> list:
     """Return the manifest row matching request criteria."""
@@ -95,7 +109,11 @@ class IngestionMediator:
   def close_conn(self):
     self._ingest.close()
 
+  def get_spec_fieldnames(self):
+    """Get spec fieldnames from data all spec files in manifest.csv."""
+    return self._manifest.get_unique_spec_fieldnames()
+
 
 if __name__ == '__main__':
   mediator = IngestionMediator()
-  mediator.complete_update()
+  mediator.complete_update(drop_tables=True)
