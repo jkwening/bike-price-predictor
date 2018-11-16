@@ -202,5 +202,11 @@ class Scraper(ABC):
         fieldname = fieldname.replace('-', '_')
         fieldname = fieldname.replace('(', '')
         fieldname = fieldname.replace(')', '')
+        fieldname = fieldname.replace('[', '')
+        fieldname = fieldname.replace(']', '')
+        fieldname = fieldname.replace('{', '')
+        fieldname = fieldname.replace('}', '')
         fieldname = fieldname.replace('/', '_')
+        fieldname = fieldname.replace('.', '_')
+        fieldname = fieldname.replace('&', '_')
         return fieldname.lower().replace(' ','_')  # normalize: lowercase and no spaces

@@ -86,7 +86,7 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
         self._cc._get_prods_on_current_listings_page(soup)
         self.assertEqual(42, len(self._cc._products))
 
-    # TODO - complete this unit test snippet (FYI - long running)
+    #FIXME - complete this unit test snippet (FYI - long running)
     def test_get_bike_urls(self):
         response = self._cc.get_all_available_prods()
         self.assertEqual(False, response)
@@ -102,7 +102,7 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
         result = self._cc._get_num_pages(prod_list_soup)
         self.assertEqual(expected, result)
 
-    # TODO: finish this unit test logic has preformance data not competitive
+    # FIXME: finish this unit test logic has preformance data not competitive
     def test_get_prods_on_page(self):
         cases = {
             "Fuji Absolute 1.9 Disc Flat Bar Road Bike -2018":
@@ -125,7 +125,7 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
             self.assertTrue(value in self._cc._products.values())
 
     def test_get_prod_listings(self):
-        self._cc.get_all_available_prods(bike_type_list=['road'], to_csv=True)
+        self._cc.get_all_available_prods(bike_type_list=['kid'], to_csv=True)
         self.assertTrue(self._cc._num_bikes, len(self._cc._products))
 
     def test_parse_prod_spec(self):
@@ -205,7 +205,7 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
         self._cc._get_prods_on_current_listings_page(prod_list_soup)
         self._cc._write_prod_listings_to_csv()
 
-    #TODO: update unit test to use competitive source data
+    #FIXME: update unit test to use competitive source data
     def test_write_prod_specs_to_csv(self):
         test_specs_dict = {
             'marin_bike_spec': PINARELLO_SPECS,

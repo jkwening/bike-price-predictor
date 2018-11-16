@@ -123,7 +123,7 @@ class Manifest(object):
 
   def get_unique_spec_fieldnames(self):
     """Return set of fieldnames used in all spec files in manifest.csv."""
-    exclude_fieldnames = ['site', 'product_id']
+    exclude_fieldnames = ['site', 'product_id'] # exclude primary key fieldnames
     rows = self.get_all_rows()
     spec_fieldnames = set()
 
