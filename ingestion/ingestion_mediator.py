@@ -17,7 +17,7 @@ class IngestionMediator:
       filename=manifest_filename)
 
   #TODO: remove since redundant with update method
-  def complete_update(self, drop_tables=False):
+  def complete_update(self, collect_only=False, drop_tables=False):
     """Run data ingestion from collection to ingest into database for all tables.
     
     This involves:
@@ -28,7 +28,8 @@ class IngestionMediator:
     self._collect.collect_all_products(get_specs=True, skip_failed=True)
 
     # attempt to load into database
-    self._load_to_database(drop_tables=drop_tables)
+    if not collect_only:
+      self._load_to_database(drop_tables=drop_tables)
 
   def _load_manifest_row_to_db(self, row: dict) -> bool:
     """Attempt to load the given csv file into database."""
@@ -84,15 +85,18 @@ class IngestionMediator:
     else:
       print(f'Database not updated - failed to connect!')
 
-  def update(self, sources: list=[], from_manifest=True, drop_tables=False):
+  def update(self, sources: list=[], from_manifest=True,
+    collect_only=False, drop_tables=True):
     """Update only for the listed sources.
     
     Use downloaded data files currently in manifest.csv by default, else
     collect data first updating manifest.csv accordingly.
     """
-    if not from_manifest:
+    if not from_manifest or collect_only:
       self._collect.collect_from_sources(sources, get_specs=True, skip_failed=True)
-    self._load_to_database(sources=sources,drop_tables=drop_tables)   
+    
+    if not collect_only:
+      self._load_to_database(sources=sources,drop_tables=drop_tables)   
 
   def update_specs_matching(self, source: str, bike_type: str) -> bool:
     if self._ingest.connect():
