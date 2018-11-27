@@ -20,3 +20,9 @@ __pycache__/
 data/
 tests/test_data/
 manifest.csv
+
+#########################################################
+# Private files
+#########################################################
+credentials.csv
+secrets.json
