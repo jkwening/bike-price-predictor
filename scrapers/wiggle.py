@@ -107,17 +107,19 @@ class Wiggle(Scraper):
     """Return dictionary representation of the product's specification."""
     prod_specs = dict()
     try:
-      div_tech_specs_section = soup.find('div', class_='tech-specs__section')
-      tech_spec_rows = div_tech_specs_section.find_all('div', class_='tech-specs__row')
+      div_product_desc_table = soup.find('div',
+        class_='bem-pdp__product-description--tabular')
+      li_feature_items = div_product_desc_table.find_all('li',
+        class_='bem-pdp__features-item')
 
       # Get each spec_name, value pairing for bike product
-      for spec_row in tech_spec_rows:
-        spec_name = spec_row.find('b', class_='tech-specs__name').contents[0]
+      for feature in li_feature_items:
+        spec_name, spec_value = feature.string.split(': ')
         spec_name = self._normalize_spec_fieldnames(spec_name)
-        spec_value = spec_row.find('span', class_='tech-specs__value').contents[0]
-        prod_specs[spec_name] = spec_value
+        prod_specs[spec_name] = spec_value.strip()
         self._specs_fieldnames.add(spec_name)
-        print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
+      
+      print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
     except AttributeError as err:
       print(f'\tError: {err}')
 
