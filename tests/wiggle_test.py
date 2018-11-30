@@ -44,7 +44,35 @@ ORRO_SPECS = {
     'model_year': '2019',
     'road': 'Yes'
     }
-
+VITUS_SPECS = {
+    'weight': '7.9kg',
+    'frame': 'Carbon',
+    'fork': 'Carbon',
+    'fork_material': 'Carbon',
+    'steerer': 'Tapered 1 1/8 - 1 1/2',
+    'bottle_cage_mounts': 'Double',
+    'cable_routing': 'External',
+    'mudguard_mounts': 'Yes',
+    'rear_rack_mounts': 'Yes',
+    'groupset_manufacturer': 'Shimano',
+    'number_of_gears': '22 Speed',
+    'chainset': 'Shimano Ultegra',
+    'chainset_type': 'Double',
+    'chain': 'KMC X11L',
+    'cassette': 'Shimano Ultegra',
+    'wheel_size': '700c (622)',
+    'tires': 'Mavic Yksion Pro',
+    'brake_type': 'Hydraulic Disc Brake',
+    'brakes': 'Shimano Ultegra R8020',
+    'brake_calipers': 'Shimano Ultegra R8020',
+    'handlebars': 'Ritchey Comp Streem II',
+    'stem': 'Ritchey Comp 4 Axis',
+    'seat_post': 'Prime carbon',
+    'saddle': 'Fizik Antares R5',
+    'model_year': '2018',
+    'bike_weight': '7.9kg / 17.41 lbs',
+    'road': 'Yes'
+    }
 
 class WiggleTestCase(unittest.TestCase):
     def setUp(self):
@@ -105,6 +133,11 @@ class WiggleTestCase(unittest.TestCase):
         with open(html_path, encoding='utf-8') as f:
             orro_prod_detail_text = f.read()
 
+        html_path = os.path.abspath(os.path.join(HTML_PATH,
+            'wiggle-Vitus-Vitesse-Road-Bike.html'))
+        with open(html_path, encoding='utf-8') as f:
+            vitus_prod_detail_text = f.read()
+
         # html_path = os.path.abspath(os.path.join(HTML_PATH, 'bike-eli-elliptigo-sub-31-8914.html'))
         # with open(html_path, encoding='utf-8') as f:
         #     generic_error = f.read()
@@ -112,6 +145,7 @@ class WiggleTestCase(unittest.TestCase):
         kiddimoto_detail_soup = BeautifulSoup(kiddimoto_prod_detail_text, 'lxml')
         orro_detail_soup = BeautifulSoup(orro_prod_detail_text,
                                                   'lxml')
+        vitus_detail_soup = BeautifulSoup(vitus_prod_detail_text, 'lxml')
         # generic_error_soup = BeautifulSoup(generic_error, 'lxml')
 
         # case 1: exact match per example data
@@ -126,7 +160,13 @@ class WiggleTestCase(unittest.TestCase):
         for key in ORRO_SPECS.keys():
             self.assertEqual(ORRO_SPECS[key], result[key])
 
-        # # case 3: safely handle error TODO
+        # case 3: using third data, exact match in components
+        result = self.wiggle._parse_prod_specs(vitus_detail_soup)
+        self.assertEqual(len(VITUS_SPECS), len(result))
+        for key in VITUS_SPECS.keys():
+            self.assertEqual(VITUS_SPECS[key], result[key])
+
+        # # case 4: safely handle error TODO
         # result = self.wiggle._parse_prod_specs(generic_error_soup)
         # self.assertEqual(0, len(result))
 

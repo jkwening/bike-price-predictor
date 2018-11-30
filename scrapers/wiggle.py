@@ -41,11 +41,11 @@ class Wiggle(Scraper):
       'bmx': 'bmx-bikes',
       'kid': 'kids-bikes'
     }
-    super().__init__(base_url='http://www.wiggle.com/cycle/bikes',
+    super().__init__(base_url='http://www.wiggle.com',
       source='wiggle', save_data_path=save_data_path)
   
   def _fetch_prod_listing_view(self, prod_num=0, page_size=96):
-    req_url = f'{self._BASE_URL}/?g={prod_num}&ps={page_size}'
+    req_url = f'{self._BASE_URL}/cycle/bikes/?g={prod_num}&ps={page_size}'
     return self._fetch_html(req_url)
 
   def _get_max_num_prods(self, soup):
@@ -72,8 +72,8 @@ class Wiggle(Scraper):
       
       # get page href, description, and parse brand
       prod_a = prod_info.a
-      prod_href = prod_a['href']
-      product['href'] = prod_href
+      prod_href = prod_a['href'].split('/')[3]
+      product['href'] = f'/{prod_href}'
       desc = prod_a['title']
       product['description'] = desc
       product['brand'] = desc.split()[0]
@@ -114,10 +114,13 @@ class Wiggle(Scraper):
 
       # Get each spec_name, value pairing for bike product
       for feature in li_feature_items:
-        spec_name, spec_value = feature.string.split(': ')
-        spec_name = self._normalize_spec_fieldnames(spec_name)
-        prod_specs[spec_name] = spec_value.strip()
-        self._specs_fieldnames.add(spec_name)
+        try:
+          spec_name, spec_value = feature.string.split(': ')
+          spec_name = self._normalize_spec_fieldnames(spec_name)
+          prod_specs[spec_name] = spec_value.strip()
+          self._specs_fieldnames.add(spec_name)
+        except ValueError as err:
+          continue
       
       print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
     except AttributeError as err:
@@ -151,6 +154,6 @@ class Wiggle(Scraper):
       print(f'Current number of products: {self._num_bikes}')
 
     if to_csv:
-      return self._write_prod_listings_to_csv()
+      return [self._write_prod_listings_to_csv()]
 
     return list()
