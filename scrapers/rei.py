@@ -82,9 +82,9 @@ class Rei(Scraper):
     # Scrape first page while its in memory then fetch and scrape the remaining pages
     while True:
       results = data['results']
-      product = {'site': 'rei'}
 
       for prod in results:
+        product = {'site': 'rei'}
         brand = prod['brand']
         title = prod['cleanTitle']
         product['brand'] = brand

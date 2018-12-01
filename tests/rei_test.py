@@ -134,7 +134,7 @@ class ReiTestCase(unittest.TestCase):
     def test_get_prod_listings(self):
         data = json.loads(self.rei._fetch_prod_listing_view(page_size=self.rei._page_size))
         num_prods = int(data['query']['totalResults'])
-        self.rei.get_all_available_prods(to_csv=False)
+        self.rei.get_all_available_prods(to_csv=True)
         self.assertEqual(num_prods, self.rei._num_bikes,
             msg=f'Number of bikes = {num_prods}, parsed: {self.rei._num_bikes}')
 
