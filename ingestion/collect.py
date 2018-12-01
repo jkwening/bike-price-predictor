@@ -7,6 +7,7 @@ from scrapers.competitive_cyclist import CompetitiveCyclist
 from scrapers.nashbar import NashBar
 from scrapers.performance_bike import PerformanceBikes
 from scrapers.wiggle import Wiggle
+from scrapers.rei import Rei
 
 
 class Collect:
@@ -14,7 +15,10 @@ class Collect:
   def __init__(self, mediator, save_data_path=DATA_PATH):
     self._mediator = mediator
     self._save_data_path = save_data_path
-    self._SOURCES = ['competitive', 'nashbar', 'performance', 'wiggle']
+    self._SOURCES = [
+      'competitive', 'nashbar', 'performance',
+      'wiggle', 'rei'
+      ]
 
   def _get_class_instance(self, source: str):
     """Get appropriate scraper class instance for given source."""
@@ -26,6 +30,8 @@ class Collect:
       return PerformanceBikes(save_data_path=self._save_data_path)
     elif source == 'wiggle':
       return Wiggle(save_data_path=self._save_data_path)
+    elif source == 'rei':
+      return Rei(save_data_path=self._save_data_path)
     else:
       raise ValueError(f'Invalid source: {source} value.')
 
