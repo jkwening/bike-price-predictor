@@ -100,14 +100,16 @@ DRT_SPECS = {
     'gender': 'Unisex'}
 
 
-class ReiTestCase(unittest.TestCase):
+class CityBikesTestCase(unittest.TestCase):
     def setUp(self):
         self._citybikes = CityBikes(save_data_path=DATA_PATH)
 
     def test_fetch_prod_listing_view(self):
-        text = self._citybikes._fetch_prod_listing_view(page_size=30)
+        text = self._citybikes._fetch_prod_listing_view(
+            endpoint=self._citybikes._PROD_PAGE_ENDPOINT, page_size=30)
         soup = BeautifulSoup(text, 'lxml')
-        self._citybikes._get_prods_on_current_listings_page(soup)
+        self._citybikes._get_prods_on_current_listings_page(
+            soup, bike_type='all')
         self.assertEqual(30, len(self._citybikes._products),
                          msg='First page should return 30 products.')
 

@@ -23,7 +23,6 @@ class Scraper(ABC):
         self._specs_fieldnames = set(['site'])
         self._bike_type = 'all'
 
-    @staticmethod
     def _fetch_html(self, url, method='GET', params=None, data=None,
                     headers=None):
         """Fetch html page for bikes"""
@@ -62,7 +61,7 @@ class Scraper(ABC):
         return int(num_prods.split()[-2])
 
     @abstractmethod
-    def _get_prods_on_current_listings_page(self, soup):
+    def _get_prods_on_current_listings_page(self, **kwargs):
         """Get all bike products for the passed html page"""
         pass
 
@@ -200,7 +199,6 @@ class Scraper(ABC):
 
         return specs
 
-    @staticmethod
     def _normalize_spec_fieldnames(self, fieldname: str) -> str:
         """Remove invalid chars and normalize as lowercase and no spaces."""
         fieldname = fieldname.strip()

@@ -134,5 +134,31 @@ class CityBikes(Scraper):
                                             class_='seBrandName').contents[0]
             product['brand'] = brand_name
 
+            # Get price
+            product_price = prod.find('div', class_='seProductPrice')
+            reg_price = product_price.find('span', class_='seRegularPrice')
+
+            if reg_price is None:
+                price = product_price.find(
+                    'span', class_='seSpecialPrice').contents[0]
+                if price.find('-') > 0:
+                    price = price.split('-')[0].strip()
+                msrp = product_price.find(
+                    'span', class_='seOriginalPrice').contents[0]
+                if msrp.find('-') > 0:
+                    msrp = msrp.split('-')[0].strip()
+            else:
+                try:
+                    price = reg_price.contents[0]
+                    if price.find('-') > 0:
+                        price = price.split('-')[0].strip()
+                    msrp = price
+                except IndexError:
+                    price = '0'
+                    msrp = '0'
+
+            product['price'] = float(price.strip('$').replace(',', ''))
+            product['msrp'] = float(msrp.strip('$').replace(',', ''))
+
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
