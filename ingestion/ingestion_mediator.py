@@ -1,7 +1,13 @@
+import argparse
+
 from utils.utils import TIMESTAMP, DATA_PATH
 from ingestion.collect import Collect
 from ingestion.ingest import Ingest
 from ingestion.manifest import Manifest
+
+# Module constants
+SITES = ['competitive', 'nashbar', 'performance', 'rei', 'wiggle',
+         'citybikes']
 
 
 class IngestionMediator:
@@ -93,9 +99,11 @@ class IngestionMediator:
     collect data first updating manifest.csv accordingly.
     """
     if not from_manifest or collect_only:
+      print('collecting...')
       self._collect.collect_from_sources(sources, get_specs=True, skip_failed=True)
     
     if not collect_only:
+      print('loading to db...')
       self._load_to_database(sources=sources,drop_tables=drop_tables)   
 
   def update_specs_matching(self, source: str, bike_type: str) -> bool:
@@ -119,5 +127,20 @@ class IngestionMediator:
 
 
 if __name__ == '__main__':
+  # # Configure command line parsing
+  # parser = argparse.ArgumentParser(description='Update data for listed sources, all sources if none listed.')
+  # parser.add_argument('sources', metavar='S', type='string', nargs='?',
+  #   choices=SITES, default=[],
+  #   help='Data source options: "competitive", "nashbar", "performance", "rei", "wiggle"')
+  # mode = parser.add_mutually_exclusive_group(required=True)
+  # mode.add_argument('-m', '--from-manifest', dest='from_manifest', action='store_true',
+  #   help='Use downloaded data files currently in manifest.csv', default=False)
+  # mode.add_argument('-c', '--collect-only', dest='collect_only', action='store_true',
+  #   help='Collect data first updating manifest.csv accordingly', default=False)
+  #
+  # # Process args
+  # args = parser.parse_args()
   mediator = IngestionMediator()
-  mediator.complete_update(drop_tables=True)
+  # mediator.update(sources=args.sources, from_manifest=args.from_manifest,
+  #   collect_only=args.collect_only, drop_tables=False)
+  mediator.update(sources=SITES, from_manifest=False, collect_only=True)
