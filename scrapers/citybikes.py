@@ -17,12 +17,12 @@ class CityBikes(Scraper):
         super().__init__(base_url='https://www.citybikes.com',
                          source='citybikes', save_data_path=save_data_path)
         self._page_size = page_size
-        self._PROD_PAGE_ENDPOINT = 'product-list/bikes-1000/?'
+        self._PROD_PAGE_ENDPOINT = '/product-list/bikes-1000/'
         self._BIKE_CATEGORIES = self._get_categories()
 
     def _fetch_prod_listing_view(self, endpoint, page_size=60, page=1):
         start_row = ((page - 1) * page_size) + 1
-        req_url = f'{self._BASE_URL}/{endpoint}&startrow=' \
+        req_url = f'{self._BASE_URL}{endpoint}?&startrow=' \
                   f'{start_row}&maxItems={page_size}'
         return self._fetch_html(req_url)
 
@@ -80,7 +80,7 @@ class CityBikes(Scraper):
             bike_cat['count'] = int(self._normalize_spec_fieldnames(
                 c.span.contents[0]))
             categories[title] = bike_cat
-            print(f'[{len(categories)}] New category {title}: ', bike_cat)
+            # print(f'[{len(categories)}] New category {title}: ', bike_cat)
 
         return categories
 
@@ -92,6 +92,7 @@ class CityBikes(Scraper):
 
         # Scrape pages for each available category
         for bike_type in self._BIKE_CATEGORIES.keys():
+            print(f'Getting {bike_type} bikes...')
             endpoint = self._BIKE_CATEGORIES[bike_type]['href']
             num_bikes = self._BIKE_CATEGORIES[bike_type]['count']
             pages = math.ceil(num_bikes / self._page_size)

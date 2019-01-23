@@ -155,6 +155,16 @@ class CityBikesTestCase(unittest.TestCase):
         self.assertEqual(30, len(self._citybikes._products),
                          msg='First page should return 60 products.')
 
+    def test_get_all_available_prods(self):
+        result = self._citybikes.get_all_available_prods()
+
+        total_bikes = 0
+        for values in self._citybikes._BIKE_CATEGORIES.values():
+            total_bikes += values['count']
+        num_prods = len(self._citybikes._products)
+        self.assertTrue(total_bikes >= num_prods,
+                        msg=f'expected: {total_bikes} - found: {num_prods}')
+
     def test_parse_prod_spec(self):
         # load test prod details into memory
         html_path = os.path.abspath(os.path.join(HTML_PATH,
