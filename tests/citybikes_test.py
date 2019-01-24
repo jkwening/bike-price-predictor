@@ -24,80 +24,44 @@ SHOP_BIKES_HTML_PATH = os.path.abspath(
 COMMUTER_BIKES_HTML_PATH = os.path.abspath(
     os.path.join(HTML_PATH, 'citybikes-Commuter_Urban.html')
 )
-STROMER_SPECS = {
-    'best_use': 'Bike Commuting',
-    'motor': 'SYNO Drive 500W 40Nm',
-    'battery_type': 'Lithium Ion',
-    'charge_time_hrs': '4 - 8 hours',
-    'pedal_assist_range': '90 miles',
-    'frame': 'Stromer Alloy',
-    'bike_suspension': 'No Suspension',
-    'fork': 'Stromer Carbon',
-    'crankset': 'FSA Gossamer 52-36T',
-    'bottom_bracket': 'FSA',
+DRAGONFLY_SPECS = {
+    'frame': 'Reynolds 853 chromoly, w/dropper post routing, ISCG05, sliding 12x142mm dropouts',
+    'fork': 'Fox 32 Float Performance Series, 120mm-travel w/tapered steerer, 15mm thru-axle',
+    'rims_wheels': 'WTB Frequency Team i23 TCS',
+    'hubs': 'Formula disc',
+    'spokes': 'Stainless-steel',
+    'tires': 'Vittoria Barzo, 27.5 x 2.25',
+    'crankset': 'Shimano',
+    'chainrings': '36/22',
+    'front_derailleur': 'Shimano Deore',
+    'rear_derailleur': 'Shimano SLX Shadow',
+    'rear_cogs': 'Shimano, 10-speed: 11-36',
     'shifters': 'Shimano SLX',
-    'front_derailleur': 'NIL',
-    'rear_derailleur': 'Shimano Deore XT',
-    'rear_cogs': 'Shimano SLX, 11-34, 20-speed',
-    'number_of_gears': '20 gear(s)',
-    'brake_type': 'Hydraulic Disc Brake',
-    'brakes': 'Magura MT Next E-MT4',
-    'brake_levers': 'Magura MT Next E-MT4',
-    'rims': 'DT-Swiss 545D',
-    'front_hub': 'Formula DC71',
-    'rear_hub': 'Syno Drive 500W Hub Motor',
-    'wheel_size': '26 inches',
-    'tires': 'Schwalbe Big Ben, 26 x 2.15',
-    'tire_width': '2.15 inches',
-    'handlebar_shape': 'Flat Bar',
-    'handlebar': 'Stromer Custom Alloy',
-    'stem': 'Stromer Custom Alloy',
-    'seat_post': 'Stromer JD-SP100 Alloy',
-    'saddle': 'Stromer Custom',
-    'pedals': 'Stromer Custom Alloy',
-    'headset': 'Stromer Custom Sealed Cartidge',
-    'chain': 'Shimano CN-HG54',
-    'weight': '65 pounds',
-    'bike_weight': 'Bike weight is based on median size, as sold, or the average of two median sizes.',
-    'gender': 'Unisex',
-    'battery_removable': 'Yes',
-    'motor_torque_nm': '35',
-    'motor_type': 'Direct-Drive Hub',
-    'e_bike_classification': 'Class 3: high-speed pedal assist'}
-DRT_SPECS = {
-    'best_use': 'Mountain Biking',
-    'mountain_bike_style': 'Trail',
-    'frame': 'Co-op Cycles 6061 double-butted aluminum',
-    'bike_suspension': 'Front Suspension',
-    'fork': 'SR Suntour 27.5 air sprung suspension fork with rebound adjustment and remote lockout',
-    'fork_travel': '120 millimeters',
-    'crankset': 'Shimano FC-M6000-2, Deore, 36/22',
-    'bottom_bracket': 'Shimano',
-    'shifters': 'Shimano SL-M6000-IL Deore, Rapidfire Plus',
-    'front_derailleur': 'Shimano FD-M6025-D Deore',
-    'rear_derailleur': 'Shimano SLX Shadow Plus',
-    'rear_cogs': 'Shimano CS-HG500-10, 11-42T, 10 speed',
-    'number_of_gears': '20',
-    'brake_type': 'Hydraulic Disc Brake',
-    'brakes': 'Shimano BL/BR-MT500 hydraulic disc brake, Shimano Deore centerlock rotor 180mm/160mm',
-    'brake_levers': 'Shimano M425',
-    'rims': 'Weinmann U28, alloy 32h, double wall, single eyelet',
-    'front_hub': 'Joytech D041 loose ball disc hub; 15mm thru-axle; 32h',
-    'rear_hub': 'Shimano, center lock rotor; 32h',
-    'wheel_size': '27.5 inches',
-    'tires': 'Schwalbe Tough Tom 27.5 x 2.35 front, 27.5 x 2.25 rear',
-    'tire_width': '2.35 inches',
-    'handlebar_shape': 'Riser Bar',
-    'handlebar': 'Co-op Cycles AL6061 double-butted, 11mm rise; 7 deg backsweep; 5 deg upsweep; 740 width',
-    'stem': 'Co-op Cycles 6061 aluminum, 31.8, 0 degree rise',
-    'seat_post': 'Co-op Cycles 6016 AL, 31.6 diameter, 5mm offset',
-    'saddle': 'WTB Volt Sport',
-    'pedals': 'Co-op Cycles MTB style with alloy cage',
-    'headset': 'Co-op Cycles internal cartridge bearing with alloy upper and lower cups',
-    'chain': 'Shimano CN-HG54, 10 speed',
-    'weight': '29 lbs. 2.7 oz.',
-    'bike_weight': 'Bike weight is based on median size, as sold, or the average of two median sizes.',
-    'gender': 'Unisex'}
+    'handlebars': 'Ritchey Trail',
+    'tape_grips': 'Jamis lock-on',
+    'stem': 'Ritchey Trail',
+    'brakes': 'Shimano Deore disc, 180/160mm rotors',
+    'saddle': 'WTB Volt Comp w/Luxe Zone Cut-Out',
+    'seatpost': 'Ritchey Trail'}
+CROSS_TRAIL_SPECS = {
+    'frame': 'Specialized A1 Premium Aluminum, Fitness Geometry, butted tubing, rack mounts, Plug + Play fender mounts',
+    'fork': 'SR Suntour NEX w/ Specialized Fitness Brain technology, 55mm of travel, 1-1/8" steerer, QR, fender mounts',
+    'rims_wheels': '700C disc, double wall',
+    'tires': 'Trigger Sport Reflect, 60 TPI, wire bead, 700x38mm',
+    'crankset': 'Shimano Tourney, 3-piece',
+    'chainrings': '48/38/28T',
+    'bottom_bracket': 'BSA, 68mm, square taper',
+    'chain': 'KMC X8EPT, 8-speed, anti-corrosion coating w/ reusable Missing Link',
+    'front_derailleur': 'Shimano Tourney, top swing, 31.8mm clamp',
+    'rear_derailleur': 'Shimano Altus, 8-Speed',
+    'cassette_rear_cogs': 'Sunrace, 8-speed, 11-34t',
+    'shifters': 'Shimano Altus, RapidFire Plus, w/ gear display',
+    'handlebars': 'Double-butted alloy, 9-degree backsweep, 31.8mm',
+    'tape_grips': 'Specialized Body Geometry XCT, lock-on',
+    'stem': '3D forged alloy, 7-degree rise, 31.8mm clamp',
+    'brakes': 'Promax Solve, hydraulic disc, post mount, 160mm rotor',
+    'saddle': 'Specialized Canopy Comp, hollow Cr-Mo rails, 155mm',
+    'seat_post': 'Alloy, 12mm offset, 2-bolt clamp, 27.2mm'}
 
 
 class CityBikesTestCase(unittest.TestCase):
@@ -162,57 +126,49 @@ class CityBikesTestCase(unittest.TestCase):
         for values in self._citybikes._BIKE_CATEGORIES.values():
             total_bikes += values['count']
         num_prods = len(self._citybikes._products)
+        # There are dupes so expect less num_prods
         self.assertTrue(total_bikes >= num_prods,
                         msg=f'expected: {total_bikes} - found: {num_prods}')
 
     def test_parse_prod_spec(self):
         # load test prod details into memory
-        html_path = os.path.abspath(os.path.join(HTML_PATH,
-                                                 'citybikes-STROMER-Electric-Bike.html'))
+        html_path = os.path.abspath(os.path.join(
+            HTML_PATH, 'citybikes-Specialized-CrossTrail-Hydraulic-Disc.html'))
         with open(html_path, encoding='utf-8') as f:
-            stromer_prod_detail_text = f.read()
+            cross_trail_prod_detail_text = f.read()
 
-        html_path = os.path.abspath(os.path.join(HTML_PATH,
-                                                 'citybikes-Co-op-DRT.html'))
+        html_path = os.path.abspath(os.path.join(
+            HTML_PATH, 'citybikes-Jamis-Dragonfly-Women.html'))
         with open(html_path, encoding='utf-8') as f:
-            drt_prod_detail_text = f.read()
+            dragonfly_prod_detail_text = f.read()
 
-        # html_path = os.path.abspath(os.path.join(HTML_PATH,
-        #     'citybikes-Vitus-Vitesse-Road-Bike.html'))
-        # with open(html_path, encoding='utf-8') as f:
-        #     vitus_prod_detail_text = f.read()
+        html_path = os.path.abspath(os.path.join(
+            HTML_PATH, 'citybikes-Specialized-Boys-Hotwalk.html'))
+        with open(html_path, encoding='utf-8') as f:
+            generic_error = f.read()
 
-        # html_path = os.path.abspath(os.path.join(HTML_PATH, 'bike-eli-elliptigo-sub-31-8914.html'))
-        # with open(html_path, encoding='utf-8') as f:
-        #     generic_error = f.read()
-
-        stromer_detail_soup = BeautifulSoup(stromer_prod_detail_text, 'lxml')
-        drt_detail_soup = BeautifulSoup(drt_prod_detail_text,
-                                        'lxml')
-        # vitus_detail_soup = BeautifulSoup(vitus_prod_detail_text, 'lxml')
-        # generic_error_soup = BeautifulSoup(generic_error, 'lxml')
+        cross_trail_detail_soup = BeautifulSoup(
+            cross_trail_prod_detail_text, 'lxml')
+        dragonfly_detail_soup = BeautifulSoup(
+            dragonfly_prod_detail_text, 'lxml')
+        generic_error_soup = BeautifulSoup(generic_error, 'lxml')
 
         # case 1: exact match per example data
-        result = self._citybikes._parse_prod_specs(stromer_detail_soup)
-        self.assertEqual(len(STROMER_SPECS), len(result))
-        for key in STROMER_SPECS.keys():
-            self.assertEqual(STROMER_SPECS[key], result[key])
+        result = self._citybikes._parse_prod_specs(cross_trail_detail_soup)
+        self.assertEqual(len(CROSS_TRAIL_SPECS), len(result))
+        for key in CROSS_TRAIL_SPECS.keys():
+            self.assertEqual(
+                CROSS_TRAIL_SPECS[key], result[key])
 
         # case 2: using second data, exact match in components
-        result = self._citybikes._parse_prod_specs(drt_detail_soup)
-        self.assertEqual(len(DRT_SPECS), len(result))
-        for key in DRT_SPECS.keys():
-            self.assertEqual(DRT_SPECS[key], result[key])
+        result = self._citybikes._parse_prod_specs(dragonfly_detail_soup)
+        self.assertEqual(len(DRAGONFLY_SPECS), len(result))
+        for key in DRAGONFLY_SPECS.keys():
+            self.assertEqual(DRAGONFLY_SPECS[key], result[key])
 
-        # # case 3: using third data, exact match in components
-        # result = self._citybikes._parse_prod_specs(vitus_detail_soup)
-        # self.assertEqual(len(VITUS_SPECS), len(result))
-        # for key in VITUS_SPECS.keys():
-        #     self.assertEqual(VITUS_SPECS[key], result[key])
-
-        # # case 4: safely handle error TODO
-        # result = self._citybikes._parse_prod_specs(generic_error_soup)
-        # self.assertEqual(0, len(result))
+        # case 3: safely handle missing specs
+        result = self._citybikes._parse_prod_specs(generic_error_soup)
+        self.assertEqual(0, len(result))
 
 
 if __name__ == '__main__':

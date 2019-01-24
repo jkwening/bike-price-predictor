@@ -1,9 +1,7 @@
-import os
-
 from bs4 import BeautifulSoup
 
 from scrapers.scraper import Scraper
-from scrapers.scraper_utils import DATA_PATH, TIMESTAMP
+from scrapers.scraper_utils import DATA_PATH
 
 
 class CompetitiveCyclist(Scraper):

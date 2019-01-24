@@ -1,15 +1,12 @@
 """
 Module for scraping rei.com for its bike data.
 """
-import os
 import math
-import json
 
 from bs4 import BeautifulSoup
 
 from scrapers.scraper import Scraper
-from scrapers.scraper_utils import DATA_PATH, TIMESTAMP
-from scrapers.scraper_utils import get_bike_type_from_desc
+from scrapers.scraper_utils import DATA_PATH
 
 
 class CityBikes(Scraper):
@@ -28,25 +25,24 @@ class CityBikes(Scraper):
 
     # TODO: seems unnecessary, remove and embed directly into get_all_available_prods()
     def _get_max_num_prods(self, soup):
-        """Not used in this module."""
-        return None
+        """Raise error: Not implemented in this module."""
+        raise NotImplemented
 
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
         try:
-            script_product_details = soup.find('script',
-                                               attrs={
-                                                   'data-client-store': 'product-details'})
-            data = json.loads(script_product_details.string)
-            specs = data['specs']
+            id_prod_specs = soup.find('div', attrs={'id': 'ProductSpecs'})
+            table_specs = id_prod_specs.find('table',
+                                             class_='seProductSpecTable')
+            specs = table_specs.find_all('tr')
 
             # Get each spec_name, value pairing for bike product
             for spec in specs:
-                name = spec['name']
-                value = spec['values'][0]
+                name = spec.th.contents[0]
+                value = spec.td.contents[0]
                 spec_name = self._normalize_spec_fieldnames(name)
-                prod_specs[spec_name] = value
+                prod_specs[spec_name] = value.strip()
                 self._specs_fieldnames.add(spec_name)
 
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
@@ -154,7 +150,8 @@ class CityBikes(Scraper):
                     if price.find('-') > 0:
                         price = price.split('-')[0].strip()
                     msrp = price
-                except IndexError:
+                except IndexError: # No price on page
+                    # TODO: Get price from product specs page
                     price = '0'
                     msrp = '0'
 
