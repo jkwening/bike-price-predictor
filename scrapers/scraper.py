@@ -40,7 +40,7 @@ class Scraper(ABC):
         return response.text
 
     @abstractmethod
-    def _fetch_prod_listing_view(self):
+    def _fetch_prod_listing_view(self, **kwargs):
         """Fetch product listing webpage for respective vendor."""
         pass
 
@@ -61,7 +61,7 @@ class Scraper(ABC):
         return int(num_prods.split()[-2])
 
     @abstractmethod
-    def _get_prods_on_current_listings_page(self, soup):
+    def _get_prods_on_current_listings_page(self, **kwargs):
         """Get all bike products for the passed html page"""
         pass
 
@@ -98,7 +98,7 @@ class Scraper(ABC):
         }
 
     def _write_prod_specs_to_csv(self, specs: dict,
-            bike_type:str = '') -> dict:
+                                 bike_type: str = '') -> dict:
         """Save bike product specifications to csv file."""
         if not bike_type:
             bike_type = self._bike_type
@@ -115,7 +115,7 @@ class Scraper(ABC):
 
             for desc in spec_descs:
                 writer.writerow(specs[desc])
-        
+
         # return manifest row object of csv data
         return {
             'site': self._SOURCE, 'tablename': 'product_specs',
@@ -129,8 +129,8 @@ class Scraper(ABC):
         """Get all products currently available from site"""
         pass
 
-    def get_product_specs(self, get_prods_from='site', bike_type:str = '',
-            to_csv=True) -> dict:
+    def get_product_specs(self, get_prods_from='site', bike_type: str = '',
+                          to_csv=True) -> dict:
         """Get specifications for all available bikes on web site.
         
         Returns:
@@ -144,17 +144,19 @@ class Scraper(ABC):
             self.get_all_available_prods()
         elif get_prods_from:  # expecting file path of CSV file to load
             print(f'Loading products from {get_prods_from} - LOADING...')
-            _ , csv = get_prods_from.split('.')
+            _, csv = get_prods_from.split('.')
 
             if csv != 'csv':
                 raise TypeError('Not a CSV file type!')
 
-            with open(file=get_prods_from, mode='r', encoding='utf-8') as csv_file:
+            with open(file=get_prods_from, mode='r',
+                      encoding='utf-8') as csv_file:
                 products = dict()
                 reader = DictReader(csv_file)
 
                 for row in reader:
-                    bike = dict(row)  #TODO: isn't row already dict, seems unnecessary
+                    bike = dict(
+                        row)  # TODO: isn't row already dict, seems unnecessary
                     products[bike['product_id']] = bike
 
             self._products = products
@@ -185,14 +187,15 @@ class Scraper(ABC):
             # ensure primary key fields are added
             specs[bike]['product_id'] = bike_id
             specs[bike]['site'] = self._SOURCE
-            
+
         running_time = (datetime.now() - start_timer)
         print(f'Runtime for scraping specs: {running_time}')
 
         if to_csv:
-            self._specs_fieldnames.add('product_id')  # ensure id is field in specs file
+            self._specs_fieldnames.add(
+                'product_id')  # ensure id is field in specs file
             return self._write_prod_specs_to_csv(specs=specs,
-                bike_type=bike_type)
+                                                 bike_type=bike_type)
 
         return specs
 
@@ -210,4 +213,5 @@ class Scraper(ABC):
         fieldname = fieldname.replace('/', '_')
         fieldname = fieldname.replace('.', '_')
         fieldname = fieldname.replace('&', '_')
-        return fieldname.lower().replace(' ','_')  # normalize: lowercase and no spaces
+        return fieldname.lower().replace(' ',
+                                         '_')  # normalize: lowercase and no spaces
