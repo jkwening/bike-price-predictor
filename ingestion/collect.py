@@ -9,6 +9,8 @@ from scrapers.performance_bike import PerformanceBikes
 from scrapers.wiggle import Wiggle
 from scrapers.rei import Rei
 from scrapers.citybikes import CityBikes
+from scrapers.proshop import Proshop
+from scrapers.contebikes import ConteBikes
 
 
 class Collect:
@@ -19,7 +21,8 @@ class Collect:
         self._save_data_path = save_data_path
         self._SOURCES = [
             'competitive', 'nashbar', 'performance',
-            'wiggle', 'rei', 'citybikes'
+            'wiggle', 'rei', 'citybikes', 'proshop',
+            'contebikes'
         ]
 
     def _get_class_instance(self, source: str):
@@ -36,6 +39,10 @@ class Collect:
             return Rei(save_data_path=self._save_data_path)
         elif source == 'citybikes':
             return CityBikes(save_data_path=self._save_data_path)
+        elif source == 'contebikes':
+            return ConteBikes(save_data_path=self._save_data_path)
+        elif source == 'proshop':
+            return Proshop(save_data_path=self._save_data_path)
         else:
             raise ValueError(f'Invalid source: {source} value.')
 
