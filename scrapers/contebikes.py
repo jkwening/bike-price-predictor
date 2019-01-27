@@ -9,10 +9,10 @@ from scrapers.scraper import Scraper
 from scrapers.scraper_utils import DATA_PATH
 
 
-class CityBikes(Scraper):
+class ConteBikes(Scraper):
     def __init__(self, save_data_path=DATA_PATH, page_size=60):
-        super().__init__(base_url='https://www.citybikes.com',
-                         source='citybikes', save_data_path=save_data_path)
+        super().__init__(base_url='https://www.contebikes.com',
+                         source='contebikes', save_data_path=save_data_path)
         self._page_size = page_size
         self._PROD_PAGE_ENDPOINT = '/product-list/bikes-1000/'
         self._BIKE_CATEGORIES = self._get_categories()
