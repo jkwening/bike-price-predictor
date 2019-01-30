@@ -10,22 +10,19 @@ from scrapers.scraper_utils import DATA_PATH
 
 
 class EriksBikes(Scraper):
-    def __init__(self, save_data_path=DATA_PATH, page_size=60):
+    def __init__(self, save_data_path=DATA_PATH):
         super().__init__(base_url='https://www.eriksbikeshop.com',
                          source='eriks', save_data_path=save_data_path)
-        self._page_size = page_size
+        self._page_size = 30  # can't control via fetch
         self._PROD_PAGE_ENDPOINT = '/eriks-bicycle-buying-guide.aspx'
         self._BIKE_CATEGORIES = self._get_categories()
 
-    def _fetch_prod_listing_view(self, endpoint, page_size=60, page=1,
+    def _fetch_prod_listing_view(self, endpoint, page=1,
                                  guide=False):
         if guide:  # Get bikes guide page
             req_url = f'{self._BASE_URL}{endpoint}'
-            return self._fetch_html(req_url)
-
-        start_row = ((page - 1) * page_size) + 1
-        req_url = f'{self._BASE_URL}{endpoint}?&startrow=' \
-                  f'{start_row}&maxItems={page_size}'
+        else:
+            req_url = f'{self._BASE_URL}{endpoint}?page={page}'
         return self._fetch_html(req_url)
 
     # TODO: seems unnecessary, remove and embed directly into get_all_available_prods()
@@ -37,9 +34,9 @@ class EriksBikes(Scraper):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
         try:
-            id_prod_specs = soup.find('div', attrs={'id': 'ProductSpecs'})
-            table_specs = id_prod_specs.find('table',
-                                             class_='seProductSpecTable')
+            # div_feat = soup.find('div', class_='feat')
+            gspecs_div = soup.find('div', class_='specs')
+            table_specs = gspecs_div.find('table')
             specs = table_specs.find_all('tr')
 
             # Get each spec_name, value pairing for bike product
@@ -95,16 +92,21 @@ class EriksBikes(Scraper):
 
         # Scrape pages for each available category
         for bike_type in self._BIKE_CATEGORIES.keys():
-            print(f'Getting {bike_type} bikes...')
+            print(f'Getting {bike_type}...')
             endpoint = self._BIKE_CATEGORIES[bike_type]['href']
-            num_bikes = self._BIKE_CATEGORIES[bike_type]['count']
+
+            # Scrape first page, get num bikes, and determine num pages
+            soup = BeautifulSoup(self._fetch_prod_listing_view(
+                endpoint, page=1), 'lxml')
+            num_bikes = self._get_prods_on_current_listings_page(
+                soup, bike_type, get_num_bikes=True
+            )
             pages = math.ceil(num_bikes / self._page_size)
 
-            # Scrape all pages for bike category
-            for page in range(pages):
+            # Scrape remaining pages for bike category
+            for page in range(1, pages):
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
-                    endpoint, page=page + 1, page_size=self._page_size
-                ), 'lxml')
+                    endpoint, page=page + 1), 'lxml')
                 self._get_prods_on_current_listings_page(soup, bike_type)
 
         if to_csv:
@@ -112,61 +114,46 @@ class EriksBikes(Scraper):
 
         return list()
 
-    def _get_prods_on_current_listings_page(self, soup, bike_type):
+    def _get_prods_on_current_listings_page(self, soup, bike_type,
+                                            get_num_bikes=False):
         """Parse products on page."""
-        search_products = soup.find('div', attrs={'id': 'SearchProducts'})
-        products = search_products.find_all('div', class_='seProduct')
+        search_products = soup.find('div', class_='SearchProductList')
+        products = search_products.find_all('div', attrs={'id': 'Td2'})
         for prod in products:
             product = dict()
             product['site'] = self._SOURCE
             product['bike_type'] = bike_type
-            product_title = prod.find('div', class_='seProductTitle')
+
+            dept_prod_text = prod.find('div', class_='DeptProdText')
 
             # Get page href, product_id, and description
-            href = product_title.a['href']
-            product['href'] = href
-            prod_id = href.split('-')[-2]
+            product['href'] = dept_prod_text.a['href']  # full url
+            prod_id = dept_prod_text.a['rapi']
             product['product_id'] = prod_id
-            item_name = product_title.find('span',
-                                           class_='seItemName').contents[0]
-            try:  # Handle no title year
-                title_year = product_title.find(
-                    'span', class_='seCleanTitleYear').contents[0]
-            except AttributeError:
-                title_year = ''
-            product['description'] = item_name + title_year
+            desc = dept_prod_text.a.span.contents[0]
+            product['description'] = desc
 
             # Get brand name
-            brand_name = product_title.find('span',
-                                            class_='seBrandName').contents[0]
-            product['brand'] = brand_name
+            product['brand'] = desc.split()[0]
 
             # Get price
-            product_price = prod.find('div', class_='seProductPrice')
-            reg_price = product_price.find('span', class_='seRegularPrice')
-
-            if reg_price is None:
-                price = product_price.find(
-                    'span', class_='seSpecialPrice').contents[0]
-                if price.find('-') > 0:
-                    price = price.split('-')[0].strip()
-                msrp = product_price.find(
-                    'span', class_='seOriginalPrice').contents[0]
-                if msrp.find('-') > 0:
-                    msrp = msrp.split('-')[0].strip()
-            else:
-                try:
-                    price = reg_price.contents[0]
-                    if price.find('-') > 0:
-                        price = price.split('-')[0].strip()
-                    msrp = price
-                except IndexError: # No price on page
-                    # TODO: Get price from product specs page
-                    price = '0'
-                    msrp = '0'
-
-            product['price'] = float(price.strip('$').replace(',', ''))
-            product['msrp'] = float(msrp.strip('$').replace(',', ''))
+            price = dept_prod_text.find(
+                'span', class_='SalePriceA').span.contents[0]
+            product['price'] = float(
+                price.strip().strip('$').replace(',', ''))
+            try:
+                msrp = dept_prod_text.find(
+                    'span', class_='MSRPPriceA').contents[0]
+                product['msrp'] = float(
+                    msrp.strip().strip('$').replace(',', ''))
+            except AttributeError:
+                product['msrp'] = product['price']
 
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
+
+        # If requested return number of bike products
+        if get_num_bikes:
+            heading_info = soup.find('div', class_='searchHeadingInfo')
+            results = heading_info.span.span.contents[0].split()[0]
+            return int(results)

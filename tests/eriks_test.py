@@ -21,53 +21,40 @@ SHOP_BIKES_HTML_PATH = os.path.abspath(
 ROAD_BIKES_HTML_PATH = os.path.abspath(
     os.path.join(HTML_PATH, 'eriks-road.html')
 )
-GIANT_DEFY_SPECS = {
-    'frame': 'Advanced-grade composite',
-    'fork': 'Advanced-grade composite, Hybrid OverDrive steerer',
-    'rims_wheels': 'Giant PR-2 Disc, Tubeless',
-    'hubs': 'Giant Performance Tracker Road Disc, Sealed Bearings, 12mm axles, 28h',
-    'spokes': 'Sapim Race 14/15g',
-    'tires': 'Giant Gavia AC 1 Tubeless, 700x25, Folding',
-    'crankset': 'Shimano FC-R510',
-    'chainrings': '34/50',
-    'bottom_bracket': 'Shimano, Press Fit',
-    'chain': 'KMC X11EL-1',
-    'front_derailleur': 'Shimano 105',
-    'rear_derailleur': 'Shimano 105',
-    'cassette_rear_cogs': 'Shimano 105 11x32, 11-Speed',
-    'shifters': 'Shimano 105',
-    'handlebars': 'Giant Contact, 31.8mm',
-    'stem': 'Giant Connect',
-    'brake_levers': 'Shimano 105',
-    'brakes': 'Giant Conduct, hydraulic disc, 140mm',
-    'pedals': 'N/A',
-    'saddle': 'Contact Neutral',
-    'seat_post': 'Giant D-Fuse composite'}
-CANNONDALE_TRAIL_SPECS = {
-    'frame': 'Trail, SmartForm C2 Alloy, SAVE, 1-1/8” head tube',
-    'fork': 'SR Suntour XCM, 100mm, Coil, 51mm offset',
-    'headset': 'Sealed Semi Integrated, 1-1/8 reducer',
-    'axles': 'Front: QR',
-    'rims_wheels': 'WTB SX19, 32h',
-    'hubs': 'Formula w/ HG driver',
-    'spokes': 'Stainless Steel, 14g',
-    'tires': 'WTB Ranger Comp, 27.5/29 x 2.25" DNA Compound',
-    'crankset': 'FSA Comet, Alpha Drive',
-    'chainrings': '36/22',
-    'bottom_bracket': 'Sealed Bearing BSA',
-    'chain': 'KMC HG53, 9-speed',
-    'front_derailleur': 'MicroShift Direct Mount',
-    'rear_derailleur': 'Shimano Altus',
-    'cassette_rear_cogs': 'Sunrace, 11-36, 9-speed',
-    'shifters': 'Shimano Easy Fire EF505, 2x9',
-    'handlebars': 'Cannondale C4 Riser, 6061 Alloy, 25mm rise, 8° sweep, 6° rise, 720mm',
-    'tape_grips': 'Cannondale Dual-Density',
-    'stem': 'Cannondale C4, 3D Forged 6061 Alloy, 1-1/8", 31.8, 7°',
-    'brake_levers': 'Shimano MT200 hydro disc',
-    'brakes': 'Shimano MT200 hydro disc, 160/160mm RT26 rotors',
-    'pedals': 'Cannondale Platform',
-    'saddle': 'Cannondale Stage 3',
-    'seat_post': 'Cannondale C4, 6061 Alloy, 31.6 x 400mm'}
+STRIDER_SPECS = {
+    'frame': '6061 Aluminum Floval Tubing, Easy Standover',
+    'fork': 'Micro Landing Gear',
+    'wheels': '16H Alloy Hubs, Alloy Rims',
+    'tires': '12" x 2.125" Front & Rear',
+    'headset': '1-1/8" Threadless',
+    'stem': 'Top-Load Alloy, 40mm Reach',
+    'handlebars': '16" x 2" Alloy',
+    'grips': 'Mini Kraton',
+    'saddle': 'SE Racing Mini Seat / Post Combo',
+    'seat_post': 'Integrated Alloy, 22.2mm',
+    'seat_binder': 'Alloy Quick Release, 31.8mm Inner Diameter'
+}
+BIANCHI_SPECS = {
+    'frame': 'Intenso Disc carbon',
+    'fork': 'Bianchi Full Carbon w/Kevlar Disc',
+    'shifters': 'Shimano Ultegra ST-R8020 2x11sp',
+    'front_derailleur': 'Shimano Ultegra FD-R8000',
+    'rear_derailleur': 'Shimano Ultegra RD-R8000 GS 11sp',
+    'brakes': 'Shimano BR-R8070',
+    'brake_levers': 'included w/shifters',
+    'cranks': 'Shimano Ultegra FC-R8000 50x34T',
+    'cassette': 'Shimano Ultegra CS-R8000, 11-30T',
+    'bottom_bracket': 'Shimano SM-BBR60',
+    'chain': 'Shimano Ultegra CN-HG701-11, 11sp',
+    'rims': 'Fulcrum Racing 618 disc brake',
+    'tires': 'Vittoria Zaffiro Pro Slick 700x25',
+    'headset': 'Fsa Orbit C-40-ACB',
+    'stem': 'Reparto Corse Alloy 6061',
+    'handlebars': 'Reparto Corse Compact, alloy 6061',
+    'grips': 'La Spirale Ribbon cork',
+    'saddle': 'Selle Royal SR Asphalt GF',
+    'seat_post': 'Reparto Corse Alloy 2014'
+}
 
 
 class EriksBikesTestCase(unittest.TestCase):
@@ -96,17 +83,29 @@ class EriksBikesTestCase(unittest.TestCase):
         with open(ROAD_BIKES_HTML_PATH, mode='r',
                   encoding='utf-8') as html:
             soup = BeautifulSoup(html, 'lxml')
-        self._eriks._get_prods_on_current_listings_page(
-            soup, 'road_bikes')
+        num_bikes = self._eriks._get_prods_on_current_listings_page(
+            soup, 'road_bikes', get_num_bikes=True)
         self.assertEqual(30, len(self._eriks._products),
                          msg='First page should return 30 products.')
+        self.assertTrue(239, num_bikes)
 
     def test_get_all_available_prods(self):
-        result = self._eriks.get_all_available_prods()
-
+        # Scrape each bike_type first page and get total num bikes
         total_bikes = 0
-        for values in self._eriks._BIKE_CATEGORIES.values():
-            total_bikes += values['count']
+        for bike_type in self._eriks._BIKE_CATEGORIES.keys():
+            endpoint = self._eriks._BIKE_CATEGORIES[bike_type]['href']
+
+            # Scrape first page, get num bikes, and determine num pages
+            soup = BeautifulSoup(self._eriks._fetch_prod_listing_view(
+                endpoint, page=1), 'lxml')
+            num_bikes = self._eriks._get_prods_on_current_listings_page(
+                soup, bike_type, get_num_bikes=True
+            )
+            total_bikes += num_bikes
+        print(f'Expecting {total_bikes} total bikes.')
+
+        # Validate method
+        self._eriks.get_all_available_prods()
         num_prods = len(self._eriks._products)
         # There are dupes so expect less num_prods
         self.assertTrue(total_bikes >= num_prods,
@@ -115,42 +114,42 @@ class EriksBikesTestCase(unittest.TestCase):
     def test_parse_prod_spec(self):
         # load test prod details into memory
         html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'conte-Cannondale-Trail.html'))
+            HTML_PATH, 'eriks-Bianchi-Road-Bikes.html'))
         with open(html_path, encoding='utf-8') as f:
-            cannondale_trail_prod_detail_text = f.read()
+            bianchi_prod_detail_text = f.read()
 
         html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'conte-Giant-Defy.html'))
+            HTML_PATH, 'eriks-ripper.html'))
         with open(html_path, encoding='utf-8') as f:
-            giant_defy_prod_detail_text = f.read()
+            strider_prod_detail_text = f.read()
 
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'conte-Specialized-Boys-Hotwalk.html'))
-        with open(html_path, encoding='utf-8') as f:
-            generic_error = f.read()
+        # html_path = os.path.abspath(os.path.join(
+        #     HTML_PATH, 'conte-Specialized-Boys-Hotwalk.html'))
+        # with open(html_path, encoding='utf-8') as f:
+        #     generic_error = f.read()
 
-        cannondale_trail_detail_soup = BeautifulSoup(
-            cannondale_trail_prod_detail_text, 'lxml')
-        giant_defy_detail_soup = BeautifulSoup(
-            giant_defy_prod_detail_text, 'lxml')
-        generic_error_soup = BeautifulSoup(generic_error, 'lxml')
+        bianchi_detail_soup = BeautifulSoup(
+            bianchi_prod_detail_text, 'lxml')
+        strider_detail_soup = BeautifulSoup(
+            strider_prod_detail_text, 'lxml')
+        # generic_error_soup = BeautifulSoup(generic_error, 'lxml')
 
         # case 1: exact match per example data
-        result = self._eriks._parse_prod_specs(cannondale_trail_detail_soup)
-        self.assertEqual(len(CANNONDALE_TRAIL_SPECS), len(result))
-        for key in CANNONDALE_TRAIL_SPECS.keys():
+        result = self._eriks._parse_prod_specs(bianchi_detail_soup)
+        self.assertEqual(len(BIANCHI_SPECS), len(result))
+        for key in BIANCHI_SPECS.keys():
             self.assertEqual(
-                CANNONDALE_TRAIL_SPECS[key], result[key])
+                BIANCHI_SPECS[key], result[key])
 
         # case 2: using second data, exact match in components
-        result = self._eriks._parse_prod_specs(giant_defy_detail_soup)
-        self.assertEqual(len(GIANT_DEFY_SPECS), len(result))
-        for key in GIANT_DEFY_SPECS.keys():
-            self.assertEqual(GIANT_DEFY_SPECS[key], result[key])
+        result = self._eriks._parse_prod_specs(strider_detail_soup)
+        self.assertEqual(len(STRIDER_SPECS), len(result))
+        for key in STRIDER_SPECS.keys():
+            self.assertEqual(STRIDER_SPECS[key], result[key])
 
-        # case 3: safely handle missing specs
-        result = self._eriks._parse_prod_specs(generic_error_soup)
-        self.assertEqual(0, len(result))
+        # # case 3: safely handle missing specs
+        # result = self._eriks._parse_prod_specs(generic_error_soup)
+        # self.assertEqual(0, len(result))
 
 
 if __name__ == '__main__':
