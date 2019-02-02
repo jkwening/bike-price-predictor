@@ -41,10 +41,14 @@ class EriksBikes(Scraper):
 
             # Get each spec_name, value pairing for bike product
             for spec in specs:
-                name = spec.th.contents[0]
-                value = spec.td.contents[0]
+                name = ''
+                for str in spec.th.stripped_strings:
+                    name += str
+                value = ''
+                for str in spec.td.stripped_strings:
+                    value += str
                 spec_name = self._normalize_spec_fieldnames(name)
-                prod_specs[spec_name] = value.strip()
+                prod_specs[spec_name] = value
                 self._specs_fieldnames.add(spec_name)
 
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)

@@ -172,7 +172,12 @@ class Scraper(ABC):
             # define bike specifications url
             bike_href = self._products[bike]['href']
             bike_id = self._products[bike]['product_id']
-            bike_url = self._BASE_URL + bike_href
+
+            # Exception for url string
+            if self._SOURCE == 'eriks':
+                bike_url = bike_href
+            else:
+                bike_url = self._BASE_URL + bike_href
 
             # wait 1 second then get bike specification page
             time.sleep(0.10)

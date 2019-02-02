@@ -55,7 +55,25 @@ BIANCHI_SPECS = {
     'saddle': 'Selle Royal SR Asphalt GF',
     'seat_post': 'Reparto Corse Alloy 2014'
 }
-
+RUBY_SPECS = {
+    'frame': 'Specialized FACT 9r carbon, Women\'s Endurance Geometry, '
+             'Rider-First Engineered, 12x142mm thru-axle, Future Shock suspension, 20mm of travel, flat disc mounts',
+    'fork': 'Specialized FACT full-carbon, flat-mount disc, 12x100mm thru-axle',
+    'shifters': 'Shimano Tiagra',
+    'front_derailleur': 'Shimano Tiagra, braze-on',
+    'rear_derailleur': 'Shimano Tiagra, long cage, 10-speed',
+    'brakes': 'Tektro Spyre, flat mount, mechanical disc',
+    'cranks': 'Shimano Tiagra 50/34T',
+    'cassette': 'Shimano Tiagra, 10-speed, 11-34t',
+    'chain': 'KMC X10EL, 10-speed w/ Missing Link',
+    'wheels': 'Axis Sport Disc',
+    'tires': 'Espoir Sport, 60 TPI, wire bead, double BlackBelt protection, 700x28mm',
+    'stem': 'Specialized, 3D forged alloy, 4-bolt, 7-degree rise',
+    'handlebars': 'Specialized Shallow Drop, 6061, 70x125mm, 31.8mm clamp',
+    'grips': 'Specialized S-Wrap',
+    'saddle': 'Women\'s Body Geometry Myth Sport thin, Steel rails, 155mm',
+    'seat_post': 'Specialized, alloy, single bolt, 27.2mm'
+}
 
 class EriksBikesTestCase(unittest.TestCase):
     def setUp(self):
@@ -123,6 +141,11 @@ class EriksBikesTestCase(unittest.TestCase):
         with open(html_path, encoding='utf-8') as f:
             strider_prod_detail_text = f.read()
 
+        html_path = os.path.abspath(os.path.join(
+            HTML_PATH, 'eriks-ruby.html'))
+        with open(html_path, encoding='utf-8') as f:
+            ruby_prod_detail_text = f.read()
+
         # html_path = os.path.abspath(os.path.join(
         #     HTML_PATH, 'conte-Specialized-Boys-Hotwalk.html'))
         # with open(html_path, encoding='utf-8') as f:
@@ -132,6 +155,9 @@ class EriksBikesTestCase(unittest.TestCase):
             bianchi_prod_detail_text, 'lxml')
         strider_detail_soup = BeautifulSoup(
             strider_prod_detail_text, 'lxml')
+        ruby_detail_soup = BeautifulSoup(
+            ruby_prod_detail_text, 'lxml'
+        )
         # generic_error_soup = BeautifulSoup(generic_error, 'lxml')
 
         # case 1: exact match per example data
@@ -147,7 +173,15 @@ class EriksBikesTestCase(unittest.TestCase):
         for key in STRIDER_SPECS.keys():
             self.assertEqual(STRIDER_SPECS[key], result[key])
 
-        # # case 3: safely handle missing specs
+        # case 3: using third data, exact match in components
+        result = self._eriks._parse_prod_specs(ruby_detail_soup)
+        self.assertEqual(len(RUBY_SPECS), len(result))
+        for key in RUBY_SPECS.keys():
+            self.assertEqual(RUBY_SPECS[key], result[key],
+                             msg=f'{key}: Expected - {RUBY_SPECS[key]}; '
+                             f'Result - {result[key]}')
+
+        # # case 4: safely handle missing specs
         # result = self._eriks._parse_prod_specs(generic_error_soup)
         # self.assertEqual(0, len(result))
 
