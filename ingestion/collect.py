@@ -1,16 +1,14 @@
 """Module for scraping websites to collect raw data."""
 
-import os
-
-from utils.utils import DATA_PATH
+from scrapers.citybikes import CityBikes
 from scrapers.competitive_cyclist import CompetitiveCyclist
+from scrapers.contebikes import ConteBikes
 from scrapers.nashbar import NashBar
 from scrapers.performance_bike import PerformanceBikes
-from scrapers.wiggle import Wiggle
-from scrapers.rei import Rei
-from scrapers.citybikes import CityBikes
 from scrapers.proshop import Proshop
-from scrapers.contebikes import ConteBikes
+from scrapers.rei import Rei
+from scrapers.wiggle import Wiggle
+from utils.utils import DATA_PATH
 
 
 class Collect:
