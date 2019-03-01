@@ -107,7 +107,7 @@ class Ingest:
         PRIMARY KEY (site, product_id),
         href VARCHAR(1000),
         brand VARCHAR(50),
-        description VARCHAR(100),
+        description VARCHAR(1000),
         price FLOAT,
         msrp FLOAT)""" % tablename
 
@@ -137,6 +137,7 @@ class Ingest:
         try:
             cur = self._conn.cursor()
             for table in tablenames:
+                print(f'dropping table: {table}')
                 statement = """DROP TABLE IF EXISTS %s""" % table
                 cur.execute(statement)
             self._conn.commit()

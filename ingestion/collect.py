@@ -58,6 +58,9 @@ class Collect:
     def collect_from_sources(self, sources: list, get_specs=True,
                              skip_failed=False):
         """Collect raw data file from specified sources."""
+        if not sources:  # Assume all sources if empty list
+            sources = self._SOURCES
+
         for source in sources:
             try:
                 self.collect_products_from_source(source, get_specs=get_specs)
