@@ -27,3 +27,4 @@ manifest.csv
 #########################################################
 credentials.csv
 secrets.json
+nohup.out
