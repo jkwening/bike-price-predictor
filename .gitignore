@@ -26,5 +26,5 @@ manifest.csv
 # Private files
 #########################################################
 credentials.csv
-secrets.json
+config.ini
 nohup.out

@@ -1,13 +1,11 @@
-import time
-from datetime import datetime
-import os
 import math
+import time
 
 from bs4 import BeautifulSoup
 
-from scrapers.scraper_utils import MODULE_PATH, DATA_PATH, TIMESTAMP
-from scrapers.scraper_utils import get_bike_type_from_desc
 from scrapers.scraper import Scraper
+from scrapers.scraper_utils import DATA_PATH
+from scrapers.scraper_utils import get_bike_type_from_desc
 
 """
 base url = https://www.bikenashbar.com/cycling/bikes-frames#facet:&productBeginIndex:0&facetLimit:&orderBy:&pageView:grid&minPrice:&maxPrice:&pageSize:&
