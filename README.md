@@ -10,3 +10,5 @@ Build upon data engineer expertise by incorporating machine learning to build a 
 * Deploy web app that utilizes trained model to provide quantitative analysis of user provide bike specification along with confidence of assessment.
 * Time permitting: Setup automated system for continuously updating and expanding dateset to improve model result or factor in pricing due seasonal price changes.
 
+# Status
+After some preliminary data munging and then EDA idenfitified some data integrity issues and need for more data. Need to review data collection and transformation process to collect more data and also ensure all data is scraped correctly and exclude useless data.
