@@ -75,6 +75,7 @@ RUBY_SPECS = {
     'seat_post': 'Specialized, alloy, single bolt, 27.2mm'
 }
 
+
 class EriksBikesTestCase(unittest.TestCase):
     def setUp(self):
         self._eriks = EriksBikes(save_data_path=DATA_PATH)

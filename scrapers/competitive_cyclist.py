@@ -23,7 +23,7 @@ class CompetitiveCyclist(Scraper):
         return self._fetch_html(req_url)
 
     @staticmethod
-    def _get_num_pages(self, soup):
+    def _get_num_pages(soup):
         """Get number of result pages for products listing."""
         page_num_links = soup.find_all('li', 'page-number')
 

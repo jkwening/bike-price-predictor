@@ -1,15 +1,14 @@
-import requests
-import time
 import os
+import time
+from abc import ABC, abstractmethod
 from csv import DictWriter, DictReader
 from datetime import datetime
-import math
-from abc import ABC, abstractmethod
 
+import requests
 from bs4 import BeautifulSoup
 
-from scrapers.scraper_utils import create_directory_if_missing, MODULE_PATH
 from scrapers.scraper_utils import DATA_PATH, TIMESTAMP
+from scrapers.scraper_utils import create_directory_if_missing
 
 
 class Scraper(ABC):
@@ -20,10 +19,11 @@ class Scraper(ABC):
         self._TIMESTAMP = TIMESTAMP
         self._products = {}  # href, desc key,value pairs
         self._num_bikes = 0
-        self._specs_fieldnames = set(['site'])
+        self._specs_fieldnames = {'site'}
         self._bike_type = 'all'
 
-    def _fetch_html(self, url, method='GET', params=None, data=None,
+    @staticmethod
+    def _fetch_html(url, method='GET', params=None, data=None,
                     headers=None):
         """Fetch html page for bikes"""
 
@@ -206,17 +206,19 @@ class Scraper(ABC):
 
     def _normalize_spec_fieldnames(self, fieldname: str) -> str:
         """Remove invalid chars and normalize as lowercase and no spaces."""
-        fieldname = fieldname.strip()
-        fieldname = fieldname.replace(' / ', '_')
-        fieldname = fieldname.replace('-', '_')
-        fieldname = fieldname.replace('(', '')
-        fieldname = fieldname.replace(')', '')
-        fieldname = fieldname.replace('[', '')
-        fieldname = fieldname.replace(']', '')
-        fieldname = fieldname.replace('{', '')
-        fieldname = fieldname.replace('}', '')
-        fieldname = fieldname.replace('/', '_')
-        fieldname = fieldname.replace('.', '_')
-        fieldname = fieldname.replace('&', '_')
-        return fieldname.lower().replace(' ',
-                                         '_')  # normalize: lowercase and no spaces
+        result = fieldname.strip()
+        result = result.replace(' / ', '_')
+        result = result.replace(',', '')
+        result = result.replace('-', '_')
+        result = result.replace('(', '')
+        result = result.replace(')', '')
+        result = result.replace('[', '')
+        result = result.replace(']', '')
+        result = result.replace('{', '')
+        result = result.replace('}', '')
+        result = result.replace('/', '_')
+        result = result.replace('.', '_')
+        result = result.replace('&', '_')
+        result = result.lower().replace(' ', '_')  # normalize: lowercase and no spaces
+        result = result.replace('___', '_')
+        return result

@@ -1,17 +1,17 @@
 """Module for scraping websites to collect raw data."""
 
-import os
-
-from utils.utils import DATA_PATH
+from scrapers.citybikes import CityBikes
 from scrapers.competitive_cyclist import CompetitiveCyclist
+from scrapers.contebikes import ConteBikes
 from scrapers.nashbar import NashBar
 from scrapers.performance_bike import PerformanceBikes
-from scrapers.wiggle import Wiggle
-from scrapers.rei import Rei
-from scrapers.citybikes import CityBikes
 from scrapers.proshop import Proshop
+<<<<<<< HEAD
 from scrapers.contebikes import ConteBikes
 from scrapers.eriks import EriksBikes
+from scrapers.rei import Rei
+from scrapers.wiggle import Wiggle
+from utils.utils import DATA_PATH
 
 
 class Collect:
@@ -63,6 +63,9 @@ class Collect:
     def collect_from_sources(self, sources: list, get_specs=True,
                              skip_failed=False):
         """Collect raw data file from specified sources."""
+        if not sources:  # Assume all sources if empty list
+            sources = self._SOURCES
+
         for source in sources:
             try:
                 self.collect_products_from_source(source, get_specs=get_specs)

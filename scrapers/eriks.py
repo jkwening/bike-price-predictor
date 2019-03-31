@@ -143,8 +143,15 @@ class EriksBikes(Scraper):
             # Get price
             price = dept_prod_text.find(
                 'span', class_='SalePriceA').span.contents[0]
-            product['price'] = float(
-                price.strip().strip('$').replace(',', ''))
+            try:
+                product['price'] = float(
+                    price.strip().strip('$').replace(',', ''))
+            except ValueError:
+                low, high = price.split('-')
+                low = float(low.strip().strip('$').replace(',', ''))
+                high = float(high.strip().strip('$').replace(',', ''))
+                price = (low + high) / 2  # Use average of the price ranges
+
             try:
                 msrp = dept_prod_text.find(
                     'span', class_='MSRPPriceA').contents[0]
