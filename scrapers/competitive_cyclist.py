@@ -109,10 +109,10 @@ class CompetitiveCyclist(Scraper):
                         0]
                 prod_specs[spec_name] = spec_value
                 self._specs_fieldnames.add(spec_name)
-                print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         except AttributeError as err:
             print(f'\tError: {err}')
 
+        # print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         return prod_specs
 
     def get_all_available_prods(self, bike_type_list=[], to_csv=True) -> list:

@@ -67,7 +67,7 @@ FUJI_SPECS = {
 class NashBarTestCase(unittest.TestCase):
     def setUp(self):
         # use smaller page_size for testing purposes
-        self.pbs = NashBar(save_data_path=DATA_PATH, page_size=24)
+        self.pbs = NashBar(save_data_path=DATA_PATH)
 
     def test_get_categories(self):
         categories = ['bmx_bikes', 'cyclocross_bikes',
@@ -84,10 +84,11 @@ class NashBarTestCase(unittest.TestCase):
                             msg=f'{r} not in {categories}')
 
     def test_fetch_prod_listing_view(self):
-        text = self.pbs._fetch_prod_listing_view()
+        endpoint = self.pbs._BIKE_CATEGORIES['road_bicycles']['href']
+        text = self.pbs._fetch_prod_listing_view(endpoint)
         soup = BeautifulSoup(text, 'lxml')
-        self.pbs._get_prods_on_current_listings_page(soup)
-        self.assertEqual(self.pbs._page_size, len(self.pbs._products))
+        self.pbs._get_prods_on_current_listings_page(soup, bike_type='road_bicycles')
+        self.assertTrue(len(self.pbs._products) > 0)
 
     def test_get_max_num_products(self):
         # load test html into memory
@@ -102,14 +103,28 @@ class NashBarTestCase(unittest.TestCase):
 
     def test_get_prods_on_page(self):
         cases = {
-            '511632':  {'href': '/cycling/bikes-frames/nashbar-carbon-road-bike-fork-ns-icrf-base', 'desc': 'Nashbar Carbon Road Bike Fork', 'price': '$89.99', 'msrp': '$159.99', 'id': '511632'},
-            '1024819115206121167174928':  {'href': '/cycling/bikes-frames/nashbar-rigid-26-quot%3B-mountain-bike-fork-ns-cmf-base', 'desc': 'Nashbar Rigid 26" Mountain Bike Fork', 'price': '$49.99', 'msrp': '$84.99', 'id': '1024819115206121167174928'},
-            '1024819115206121167592693':  {'href': '/cycling/bikes-frames/lizard-skins-large-neoprene-chainstay-protector-ls-ncpl', 'desc': 'Lizard Skins Large Neoprene Chainstay Protector', 'price': '$10.99', 'msrp': '$10.99', 'id': '1024819115206121167592693'},
-            '1024819115206121167602766':  {'href': '/cycling/bikes-frames/fuji-captiva-comfort-bike-closeout-yb-cap-base', 'desc': 'Fuji Captiva Comfort Bike - Closeout', 'price': '$249.99', 'msrp': '$349.99', 'id': '1024819115206121167602766'},
-            '1024819115206121167593619':  {'href': '/cycling/bikes-frames/nashbar-derailleur-hanger-3-nb-dh3-base', 'desc': 'Nashbar Derailleur Hanger 3', 'price': '$7.99', 'msrp': '$15.00', 'id': '1024819115206121167593619'},
-            '1024819115206121167602976':  {'href': '/cycling/bikes-frames/cavalo-carbon-ultegra-road-bike-cv-ultc', 'desc': 'Cavalo Carbon Ultegra Road Bike', 'price': '$1,399.99', 'msrp': '$3,999.99', 'id': '1024819115206121167602976'},
-            '1024819115206121167603120':  {'href': '/cycling/bikes-frames/lizard-skins-fork-protector-clear-ls-fkpc-base', 'desc': 'Lizard Skins Fork Protector - Clear', 'price': '$24.99', 'msrp': '$24.99', 'id': '1024819115206121167603120'},
-            '1024819115206121167174979':  {'href': '/cycling/bikes-frames/nashbar-carbon-road-bike-fork-ns-crf', 'desc': 'Nashbar Carbon Road Bike Fork', 'price': '$99.99', 'msrp': '$169.99', 'id': '1024819115206121167174979'}
+            '949069': {'site': 'nashbar', 'bike_type': 'bikes', 'product_id': '949069',
+             'description': 'Fuji Bikes 2018 Absolute 1.1 Flat Bar Road Bike (Satin Stone Silver)',
+             'brand': 'Fuji Bikes',
+             'href': 'https://www.nashbar.com/fuji-bikes-2018-absolute-1.1-flat-bar-road-bike-satin-stone-silver-m-1182750217/p949069?v=696099',
+             'price': 899.97, 'msrp': 899.97},
+            '729585': {'site': 'nashbar', 'bike_type': 'bikes', 'product_id': '729585',
+             'description': 'Fuji Bikes 2018 Absolute 1.7 ST Womens Flat Bar Road Bike (Sky Blue) (M)',
+             'brand': 'Fuji Bikes',
+             'href': 'https://www.nashbar.com/fuji-bikes-2018-absolute-1.7-st-womens-flat-bar-road-bike-sky-blue-m-1182790617/p729585',
+             'price': 549.97, 'msrp': 549.97},
+            '724723': {'site': 'nashbar', 'bike_type': 'bikes', 'product_id': '724723',
+             'description': "Fuji Bikes 2018 Absolute 2.1 ST Women's Flat Bar Road Bike (White) (S)", 'brand': 'Fuji Bikes',
+             'href': 'https://www.nashbar.com/fuji-bikes-2018-absolute-2.1-st-womens-flat-bar-road-bike-white-s-1182831215/p724723',
+             'price': 349.97, 'msrp': 349.97},
+            '698231': {'site': 'nashbar', 'bike_type': 'bikes', 'product_id': '698231',
+             'description': "Fuji Bikes 2018 Absolute 2.1 ST Women's Flat Bar Road Bike (White) (L)", 'brand': 'Fuji Bikes',
+             'href': 'https://www.nashbar.com/fuji-bikes-2018-absolute-2.1-st-womens-flat-bar-road-bike-white-l-1182831219/p698231',
+             'price': 349.97, 'msrp': 349.97},
+            '724091': {'site': 'nashbar', 'bike_type': 'bikes', 'product_id': '724091',
+             'description': 'Kestrel 2018 RT-1100 Shimano Ultegra Disc Road Bike (Carbon Grey) (S)', 'brand': 'Kestrel',
+             'href': 'https://www.nashbar.com/kestrel-2018-rt1100-shimano-ultegra-disc-road-bike-carbon-grey-s-3081182148/p724091',
+             'price': 2499.99, 'msrp': 2499.99}
         }
 
         # load test html into memory
@@ -117,8 +132,8 @@ class NashBarTestCase(unittest.TestCase):
             prod_list_text = f.read()
 
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
-        self.pbs._get_prods_on_current_listings_page(prod_list_soup)
-        self.assertEqual(self.pbs._page_size, len(self.pbs._products))
+        self.pbs._get_prods_on_current_listings_page(prod_list_soup, bike_type='bikes')
+        self.assertTrue(len(cases) <= len(self.pbs._products))
         for key in cases:
             self.assertTrue(key in self.pbs._products)
         for value in cases.values():

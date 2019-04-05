@@ -29,9 +29,7 @@ span class='num_products'>($nbsp; # - # of # $nbsp;)< - range
 
 
 class NashBar(Scraper):
-    def __init__(self, save_data_path=DATA_PATH, page_size=72, page_view='list'):
-        self._page_size = page_size
-        self._page_view = page_view
+    def __init__(self, save_data_path=DATA_PATH):
         super().__init__(base_url='https://www.nashbar.com',
                          source='nashbar', save_data_path=save_data_path)
         self._BIKE_FRAMES_ENDPOINT = '/bikes-frames/c14941'
@@ -40,41 +38,6 @@ class NashBar(Scraper):
     def _fetch_prod_listing_view(self, endpoint, params=None):
         req_url = f'{self._BASE_URL}{endpoint}'
         return self._fetch_html(url=req_url, params=params)
-        # req_url = 'https://www.bikenashbar.com/ProductListingView?ajaxStoreImageDir=%2F%2Fwww.bikenashbar.com%2Fwcsstore%2FAuroraStorefrontAssetStore%2F&advancedSearch=&facet=&searchTermScope=&categoryId=204647&categoryFacetHierarchyPath=&searchType=1002&filterFacet=&resultCatEntryType=&emsName=Widget_CatalogEntryList_Ext_1024819115206121167&searchTerm=&filterTerm=&resultsPerPage=24&manufacturer=&sType=SimpleSearch&disableProductCompare=false&parent_category_rn=&catalogId=10052&langId=-1&gridPosition=&ddkey=ProductListingView_6_1024819115206087258_1024819115206121167&enableSKUListView=false&storeId=10053&metaData='
-        #
-        # headers = {
-        #     'X-Requested-With': 'XMLHttpRequest',
-        #     'Content-Type': 'application/x-www-form-urlencoded'
-        # }
-        #
-        # data = {
-        #     'contentBeginIndex': 0,
-        #     'productBeginIndex': product_begin_index,
-        #     'beginIndex': product_begin_index,
-        #     'orderBy': 5,
-        #     'pageView': self._page_view,
-        #     'resultType': 'products',
-        #     'loadProductsList': 'true',
-        #     'storeId': store_id,
-        #     'catalogId': catalog_id,
-        #     'langId': lang_id,
-        #     'homePageURL': '/cycling',
-        #     'commandContextCurrency': 'USD',
-        #     'urlPrefixForHTTPS': 'https://www.bikenashbar.com',
-        #     'urlPrefixForHTTP': 'https://www.bikenashbar.com',
-        #     'widgetPrefix': '6_1024819115206121167',
-        #     'showColorSwatches': 'true',
-        #     'showRatings': 'true',
-        #     'showDiscounts': 'true',
-        #     'pgl_widgetId': 1024819115206121167,
-        #     'objectId': '_6_1024819115206087258_1024819115206121167',
-        #     'requesttype': 'ajax'
-        # }
-        #
-        # print(f'begin index: {product_begin_index}')
-        #
-        # return self._fetch_html(url=req_url, method='POST', params=None,
-        #                         data=data, headers=headers)
 
     def _get_categories(self, soup=None):
         """Bike category endpoint encodings.
@@ -115,23 +78,29 @@ class NashBar(Scraper):
             product['site'] = self._SOURCE
             product['bike_type'] = bike_type
 
-            # Get prod_id, prod_desc, brand, and price
+            # Get prod_id, prod_desc, and brand
             prod_id = item['data-id']
             product['product_id'] = prod_id
             product['description'] = item['data-name']
             product['brand'] = item['data-brand']
-            product['price'] = float(item['data-price'])
 
             # Get product's spec href
             div_detail = item.find('div', class_='detail')
             product['href'] = str(div_detail.a['href']).strip()
 
-            # # get msrp price (list_price)
-            # span_old_price = prod_info.find('span', class_='old_price')
-            # if span_old_price is None:
-            #     product['msrp'] = product['price']
-            # else:
-            #     product['msrp'] = float(str(span_old_price.string).strip().split()[-1].strip('$').replace(',', ''))
+            # get current price and msrp (list_price)
+            span_price = item.find('span', class_='productNormalPrice').string
+            if span_price == 'See Price In Cart':
+                price = 0.0
+            else:
+                price = float(span_price.strip().strip('$').replace(',', ''))
+                product['price'] = price
+
+            span_old_price = item.find('span', class_='productSpecialPrice')
+            if span_old_price is None:
+                product['msrp'] = price
+            else:
+                product['msrp'] = float(str(span_old_price.string).strip().split()[-1].strip('$').replace(',', ''))
 
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
@@ -151,8 +120,13 @@ class NashBar(Scraper):
 
             # Identify where specifications begin and then split by ":"
             idx_spec = candidates.find('Specifications')
+            if idx_spec == -1:
+                idx_spec = candidates.find('Specs')
+                str_replace = 'Specs'
+            else:
+                str_replace = 'Specifications'
             parse_str = candidates[idx_spec:]
-            parse_str = parse_str.replace('Specifications:', '').strip()
+            parse_str = parse_str.replace(str_replace, '').strip()
             split_specs = parse_str.split('\n')
 
             for spec in split_specs:
@@ -164,9 +138,9 @@ class NashBar(Scraper):
                     prod_spec[name] = value.strip()
                     self._specs_fieldnames.add(name)
                 except ValueError:
-                    print(f'\tError: {spec}')
+                    print(f'\tValue ErrorError: {spec}')
         except AttributeError as err:
-            print(f'\tError: {err}')
+            print(f'\tAttribute Error: {err}')
 
         print('Parsed product specs:', prod_spec)
         return prod_spec
@@ -179,6 +153,12 @@ class NashBar(Scraper):
 
         # Get products for each bike category
         for cat in self._BIKE_CATEGORIES:
+            skip = ['bmx_bikes',
+                    'bike_forks_mountain_suspension',
+                    'bike_frame_protection', 'bike_frames',
+                    'kids_bikes_balance_bikes']
+            if cat in skip:
+                continue
             bike_type = cat
             endpoint = self._BIKE_CATEGORIES[cat]['href']
 

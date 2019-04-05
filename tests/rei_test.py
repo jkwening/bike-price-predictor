@@ -59,44 +59,65 @@ STROMER_SPECS = {
     'motor_torque_nm': '35',
     'motor_type': 'Direct-Drive Hub',
     'e_bike_classification': 'Class 3: high-speed pedal assist'}
-DRT_SPECS = {
-    'best_use': 'Mountain Biking',
-    'mountain_bike_style': 'Trail',
-    'frame': 'Co-op Cycles 6061 double-butted aluminum',
-    'bike_suspension': 'Front Suspension',
-    'fork': 'SR Suntour 27.5 air sprung suspension fork with rebound adjustment and remote lockout',
-    'fork_travel': '120 millimeters',
-    'crankset': 'Shimano FC-M6000-2, Deore, 36/22',
-    'bottom_bracket': 'Shimano',
-    'shifters': 'Shimano SL-M6000-IL Deore, Rapidfire Plus',
-    'front_derailleur': 'Shimano FD-M6025-D Deore',
-    'rear_derailleur': 'Shimano SLX Shadow Plus',
-    'rear_cogs': 'Shimano CS-HG500-10, 11-42T, 10 speed',
-    'number_of_gears': '20',
+SYNAPSE_SPECS = {
+    'best_use': 'Cycling',
+    'frame': 'Synapse Disc asymmetric, BallisTec carbon, Di2 ready, SAVE, BB30a, 12mm thru axle',
+    'fork': 'Synapse Disc asymmetric, SAVE PLUS, BallisTec carbon',
+    'bike_suspension': 'No Suspension',
+    'crankset': 'SRAM Apex 1 BB30a 44T X-Sync',
+    'bottom_bracket': 'FSA BB30A',
+    'shifters': 'SRAM Apex 1 HRD',
+    'rear_derailleur': 'SRAM Apex 1 Long cage',
+    'rear_cogs': 'SRAM PG 1130, 11-42, 11-speed',
+    'number_of_gears': '11 gear(s)',
     'brake_type': 'Hydraulic Disc Brake',
-    'brakes': 'Shimano BL/BR-MT500 hydraulic disc brake, Shimano Deore centerlock rotor 180mm/160mm',
-    'brake_levers': 'Shimano M425',
-    'rims': 'Weinmann U28, alloy 32h, double wall, single eyelet',
-    'front_hub': 'Joytech D041 loose ball disc hub; 15mm thru-axle; 32h',
-    'rear_hub': 'Shimano, center lock rotor; 32h',
-    'wheel_size': '27.5 inches',
-    'tires': 'Schwalbe Tough Tom 27.5 x 2.35 front, 27.5 x 2.25 rear',
-    'tire_width': '2.35 inches',
-    'handlebar_shape': 'Riser Bar',
-    'handlebar': 'Co-op Cycles AL6061 double-butted, 11mm rise; 7 deg backsweep; 5 deg upsweep; 740 width',
-    'stem': 'Co-op Cycles 6061 aluminum, 31.8, 0 degree rise',
-    'seat_post': 'Co-op Cycles 6016 AL, 31.6 diameter, 5mm offset',
-    'saddle': 'WTB Volt Sport',
-    'pedals': 'Co-op Cycles MTB style with alloy cage',
-    'headset': 'Co-op Cycles internal cartridge bearing with alloy upper and lower cups',
-    'chain': 'Shimano CN-HG54, 10 speed',
-    'weight': '29 lbs. 2.7 oz.',
+    'brakes': 'SRAM Apex 1 hydro disc, flat mount, 160/160mm',
+    'rims': 'WTB STP i19 TCS 28-hole, tubeless ready',
+    'front_hub': 'Formula RX-512',
+    'rear_hub': 'RX-142',
+    'wheel_size': '700c',
+    'tires': 'WTB Exposure, 700Cx30mm, tubeless ready, gumwall',
+    'tire_width': '30 millimeters',
+    'handlebar_shape': 'Drop Bar',
+    'handlebar': 'Cannondale C3, butted 6061 alloy, compact',
+    'stem': 'Cannondale C3, 6061 alloy, 31.8mm, 6 deg.',
+    'seat_post': 'Cannondale C3; 6061 alloy; 25.4x350mm (48-56), 400mm (58-61)',
+    'saddle': 'Fabric Scoop Radius Sport',
+    'pedals': 'Sold separately',
+    'headset': 'Synapse Si, 1-1/4 in. lower bearing, 25mm top cap',
+    'chain': 'SRAM PC 1110, 11-speed',
+    'weight': '20 pounds',
     'bike_weight': 'Bike weight is based on median size, as sold, or the average of two median sizes.',
-    'gender': 'Unisex'}
+    'gender': 'Unisex'
+}
+
 
 class ReiTestCase(unittest.TestCase):
     def setUp(self):
         self.rei = Rei(save_data_path=DATA_PATH)
+
+    def test_get_categories(self):
+        expected = {
+            'mountain': {'href': '/c/mountain-bikes', 'total': 81},
+            'road': {'href': '/c/road-bikes', 'total': 52},
+            "kids'": {'href': '/c/kids-bikes', 'total': 51},
+            'specialty': {'href': '/c/specialty-bikes', 'total': 38},
+            'hybrid': {'href': '/c/hybrid-bikes', 'total': 29},
+            'electric': {'href': '/c/electric-bikes', 'total': 27}
+        }
+
+        # load test bikes rei page
+        html_path = os.path.abspath(os.path.join(HTML_PATH,
+                                                 'rei.html'))
+        with open(html_path, encoding='utf-8') as f:
+            html = f.read()
+
+        categories = self.rei.get_categories(soup=BeautifulSoup(html, 'lxml'))
+        for key in expected:
+            self.assertTrue(key in categories,
+                            msg=f'{key} not in {categories}')
+            self.assertDictEqual(expected[key], categories[key],
+                                 msg=f'Dictionary does not match for {key}')
 
     def test_fetch_prod_listing_view(self):
         # required data fields expected in JSON repsonse
@@ -136,7 +157,7 @@ class ReiTestCase(unittest.TestCase):
         num_prods = int(data['query']['totalResults'])
         self.rei.get_all_available_prods(to_csv=True)
         self.assertEqual(num_prods, self.rei._num_bikes,
-            msg=f'Number of bikes = {num_prods}, parsed: {self.rei._num_bikes}')
+                         msg=f'Number of bikes = {num_prods}, parsed: {self.rei._num_bikes}')
 
     def test_parse_prod_spec(self):
         # load test prod details into memory
@@ -146,24 +167,13 @@ class ReiTestCase(unittest.TestCase):
             stromer_prod_detail_text = f.read()
 
         html_path = os.path.abspath(os.path.join(HTML_PATH,
-            'rei-Co-op-DRT.html'))
+            'REI-Outlet-Synapse.html'))
         with open(html_path, encoding='utf-8') as f:
-            drt_prod_detail_text = f.read()
-
-        # html_path = os.path.abspath(os.path.join(HTML_PATH,
-        #     'rei-Vitus-Vitesse-Road-Bike.html'))
-        # with open(html_path, encoding='utf-8') as f:
-        #     vitus_prod_detail_text = f.read()
-
-        # html_path = os.path.abspath(os.path.join(HTML_PATH, 'bike-eli-elliptigo-sub-31-8914.html'))
-        # with open(html_path, encoding='utf-8') as f:
-        #     generic_error = f.read()
+            synapse_prod_detail_text = f.read()
 
         stromer_detail_soup = BeautifulSoup(stromer_prod_detail_text, 'lxml')
-        drt_detail_soup = BeautifulSoup(drt_prod_detail_text,
+        synapse_detail_soup = BeautifulSoup(synapse_prod_detail_text,
                                                   'lxml')
-        # vitus_detail_soup = BeautifulSoup(vitus_prod_detail_text, 'lxml')
-        # generic_error_soup = BeautifulSoup(generic_error, 'lxml')
 
         # case 1: exact match per example data
         result = self.rei._parse_prod_specs(stromer_detail_soup)
@@ -172,20 +182,10 @@ class ReiTestCase(unittest.TestCase):
             self.assertEqual(STROMER_SPECS[key], result[key])
 
         # case 2: using second data, exact match in components
-        result = self.rei._parse_prod_specs(drt_detail_soup)
-        self.assertEqual(len(DRT_SPECS), len(result))
-        for key in DRT_SPECS.keys():
-            self.assertEqual(DRT_SPECS[key], result[key])
-
-        # # case 3: using third data, exact match in components
-        # result = self.rei._parse_prod_specs(vitus_detail_soup)
-        # self.assertEqual(len(VITUS_SPECS), len(result))
-        # for key in VITUS_SPECS.keys():
-        #     self.assertEqual(VITUS_SPECS[key], result[key])
-
-        # # case 4: safely handle error TODO
-        # result = self.rei._parse_prod_specs(generic_error_soup)
-        # self.assertEqual(0, len(result))
+        result = self.rei._parse_prod_specs(synapse_detail_soup, garage=True)
+        self.assertEqual(len(SYNAPSE_SPECS), len(result))
+        for key in SYNAPSE_SPECS.keys():
+            self.assertEqual(SYNAPSE_SPECS[key], result[key])
 
 
 if __name__ == '__main__':

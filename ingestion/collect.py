@@ -2,11 +2,9 @@
 
 from scrapers.citybikes import CityBikes
 from scrapers.competitive_cyclist import CompetitiveCyclist
-from scrapers.contebikes import ConteBikes
 from scrapers.nashbar import NashBar
 from scrapers.performance_bike import PerformanceBikes
 from scrapers.proshop import Proshop
-<<<<<<< HEAD
 from scrapers.contebikes import ConteBikes
 from scrapers.eriks import EriksBikes
 from scrapers.rei import Rei
