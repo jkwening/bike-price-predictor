@@ -17,62 +17,90 @@ DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
 TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
 HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
 SHOP_BIKES_HTML_PATH = os.path.abspath(
-    os.path.join(HTML_PATH, 'specialized.html'))
-ROAD_BIKES_HTML_PATH = os.path.abspath(
-    os.path.join(HTML_PATH, 'eriks-road.html')
-)
-STRIDER_SPECS = {
-    'frame': '6061 Aluminum Floval Tubing, Easy Standover',
-    'fork': 'Micro Landing Gear',
-    'wheels': '16H Alloy Hubs, Alloy Rims',
-    'tires': '12" x 2.125" Front & Rear',
-    'headset': '1-1/8" Threadless',
-    'stem': 'Top-Load Alloy, 40mm Reach',
-    'handlebars': '16" x 2" Alloy',
-    'grips': 'Mini Kraton',
-    'saddle': 'SE Racing Mini Seat / Post Combo',
-    'seat_post': 'Integrated Alloy, 22.2mm',
-    'seat_binder': 'Alloy Quick Release, 31.8mm Inner Diameter'
-}
-BIANCHI_SPECS = {
-    'frame': 'Intenso Disc carbon',
-    'fork': 'Bianchi Full Carbon w/Kevlar Disc',
-    'shifters': 'Shimano Ultegra ST-R8020 2x11sp',
-    'front_derailleur': 'Shimano Ultegra FD-R8000',
-    'rear_derailleur': 'Shimano Ultegra RD-R8000 GS 11sp',
-    'brakes': 'Shimano BR-R8070',
-    'brake_levers': 'included w/shifters',
-    'cranks': 'Shimano Ultegra FC-R8000 50x34T',
-    'cassette': 'Shimano Ultegra CS-R8000, 11-30T',
-    'bottom_bracket': 'Shimano SM-BBR60',
-    'chain': 'Shimano Ultegra CN-HG701-11, 11sp',
-    'rims': 'Fulcrum Racing 618 disc brake',
-    'tires': 'Vittoria Zaffiro Pro Slick 700x25',
-    'headset': 'Fsa Orbit C-40-ACB',
-    'stem': 'Reparto Corse Alloy 6061',
-    'handlebars': 'Reparto Corse Compact, alloy 6061',
-    'grips': 'La Spirale Ribbon cork',
-    'saddle': 'Selle Royal SR Asphalt GF',
-    'seat_post': 'Reparto Corse Alloy 2014'
-}
-RUBY_SPECS = {
-    'frame': 'Specialized FACT 9r carbon, Women\'s Endurance Geometry, '
-             'Rider-First Engineered, 12x142mm thru-axle, Future Shock suspension, 20mm of travel, flat disc mounts',
-    'fork': 'Specialized FACT full-carbon, flat-mount disc, 12x100mm thru-axle',
-    'shifters': 'Shimano Tiagra',
-    'front_derailleur': 'Shimano Tiagra, braze-on',
-    'rear_derailleur': 'Shimano Tiagra, long cage, 10-speed',
-    'brakes': 'Tektro Spyre, flat mount, mechanical disc',
-    'cranks': 'Shimano Tiagra 50/34T',
-    'cassette': 'Shimano Tiagra, 10-speed, 11-34t',
-    'chain': 'KMC X10EL, 10-speed w/ Missing Link',
-    'wheels': 'Axis Sport Disc',
-    'tires': 'Espoir Sport, 60 TPI, wire bead, double BlackBelt protection, 700x28mm',
-    'stem': 'Specialized, 3D forged alloy, 4-bolt, 7-degree rise',
+    os.path.join(HTML_PATH, 'specialized-mountain-bikes.html'))
+ALLEZ_SPECS = {
+    'bottom_bracket': 'BSA, 68mm, square-taper',
+    'chain': 'KMC X8 w/ Missing Link™, 8-speed',
+    'crankset': 'Shimano Claris R200',
+    'shift_levers': 'Shimano Claris 2000, 8-speed',
+    'front_derailleur': 'Shimano Claris, clamp-on',
+    'cassette': 'SunRace, 8-speed, 11-32t',
+    'chainrings': '50/34T',
+    'rear_derailleur': 'Shimano Claris, 8-speed',
+    'fork': 'Specialized FACT carbon, 1-1/8" to 1-3/8" taper, fender eyelets',
+    'saddle': 'Body Geometry Toupé Sport, steel rails, 143mm',
+    'seat_binder': 'Bolt-type, 31.8mm',
+    'tape': 'Specialized S-Wrap',
+    'seatpost': 'Alloy, 2-bolt Clamp, 12mm offset, 27.2mm, anti-corrosion hardware',
     'handlebars': 'Specialized Shallow Drop, 6061, 70x125mm, 31.8mm clamp',
-    'grips': 'Specialized S-Wrap',
-    'saddle': 'Women\'s Body Geometry Myth Sport thin, Steel rails, 155mm',
-    'seat_post': 'Specialized, alloy, single bolt, 27.2mm'
+    'stem': 'Specialized, 3D-forged alloy, 4-bolt, 6-degree rise',
+    'rear_wheel': 'Axis Sport',
+    'inner_tubes': 'Presta, 40mm valve',
+    'front_tire': 'Espoir Sport, 60 TPI, wire bead, double BlackBelt protection, 700x25mm',
+    'rear_tire': 'Espoir Sport, 60 TPI, wire bead, double BlackBelt protection, 700x25mm',
+    'front_wheel': 'Axis Sport',
+    'front_brake': 'Tektro, alloy, dual-pivot',
+    'rear_brake': 'Tektro, alloy, dual-pivot',
+    'pedals': 'Nylon, 105x78x28mm, loose ball w/ reflectors',
+    'frame': 'Specialized E5 Premium Aluminum, fully manipulated tubing w/ SmoothWelds, 1-1/8"- 1-3/8" tapered head tube, internal cable routing, threaded BB, 130mm spacing'
+}
+COMO_SPECS = {
+    'chain': 'Shimano E6070, 9-speed',
+    'shift_levers': 'Shimano Alivio, 9-speed w/ Optical Gear Display',
+    'cassette': 'Shimano CS-HG200, 9-speed, 11-36t',
+    'chainrings': '40T, 104 BCD w/ chainguard',
+    'rear_derailleur': 'Shimano Alivio, Shadow Design, SGS cage, 9-speed',
+    'front_hub': 'Specialized front hub disc, sealed bearings, 15mm thru-axle, 32h',
+    'rear_hub': 'Specialized, sealed cartridge bearings, 12x148mm thru-axle, 28h',
+    'inner_tubes': 'Schrader, 40mm valve',
+    'spokes': 'Stainless, 14g',
+    'rims': '650b disc, double-wall alloy, pinned, 32h',
+    'front_tire': 'Nimbus II Sport Reflect, 60 TPI, 650b x 2.3"',
+    'rear_tire': 'Nimbus II Sport Reflect, 60 TPI, 650b x 2.3"',
+    'saddle': 'Body Geometry "The Cup," 6-degree rise, elastomer base, steel rails, SWAT™ compatible mounts, 245mm',
+    'seatpost': 'Specialized 2-bolt head, forged alloy, 8mm offset, micro-adjust, 30.9mm',
+    'stem': 'Specialized Flowset, alloy, 20-degree w/ display mount, 31,8mm',
+    'handlebars': 'Specialized, alloy, 30-degree backsweep, 26mm rise, 680mm width, 31.8mm',
+    'grips': "Body Geometry Women's Contour",
+    'front_brake': 'Tektro HD-T286, hydraulic disc, 180mm',
+    'rear_brake': 'Tektro HD-T286, hydraulic disc, 160mm',
+    'pedals': 'Specialized Commuter w/ grip tape & reflectors',
+    'kickstand': 'Specialized kickstand, 40mm mount',
+    'bell': 'Simple bell',
+    'seat_binder': 'Alloy, bolt-type, 34.9mm',
+    'fork': 'Turbo Como aluminum disc fork, 15x100mm thru-axle',
+    'frame': 'Turbo Aluminum, low-entry frame, bottom bracket motor mount, Ground Control Geometry, fully integrated & lockable down tube battery, internal cable routing, fender/rack mounts, Smooth Welds',
+    'ui_remote': 'Custom 2.2" computer. LCD display, USB plug, stem mount w/ custom handlebar remote',
+    'battery': 'Specialized U1-460, On/Off button, state of charge display, 460Wh',
+    'charger': 'Custom Specialized 42V2A Charger w/ Rosenberger plug, AC power cord included',
+    'motor': 'Specialized 1.2, Custom Rx Trail-tuned motor, 250W Nominal',
+    'wiring_harness': 'Custom Specialized wiring harness'
+}
+SWORKS_SPECS = {
+    'chain': 'KMC X12 Ti, 12-speed',
+    'crankset': 'Race Face Next SL, 170/175mm',
+    'shift_levers': 'Shimano XTR M9100, 12-speed',
+    'cassette': 'Shimano XTR M9100, 12-speed, 10-51t',
+    'rear_derailleur': 'Shimano XTR M9100, 12-speed, Shadow Plus',
+    'fork': 'FOX Factory Step-Cast 34, Fit4 damper, Kashima, Boost™, 44mm offset, 120mm of travel',
+    'rear_shock': 'Custom RockShox Micro Brain shock w/ Spike Valve, AUTOSAG, 51x257mm',
+    'saddle': 'Body Geometry Phenom Pro, carbon fiber rails, carbon fiber base, 143mm',
+    'seat_binder': 'Alloy, 34.9mm, titanium bolt',
+    'seatpost': 'FOX Factory Transfer, Kashima, Shimano Ispec-EV lever (S: 100mm, M-XL: 125mm)',
+    'handlebars': 'S-Works Carbon Mini Rise, 6-degree upsweep, 8-degree backsweep, 10mm rise, 750mm, 31.8mm',
+    'stem': 'S-Works SL',
+    'grips': 'Specialized Sip grip, half-waffle, S/M: regular thickness, L/XL: XL thickness',
+    'front_hub': 'Roval Control SL, sealed cartridge bearings, 15mm thru-axle, 110mm spacing, 24h',
+    'rear_hub': 'Roval Control SL, DT Swiss Star Ratchet, 54t engagement, DT microspline, 12mm thru-axle, 148mm spacing, 28h',
+    'inner_tubes': 'Presta, 60mm valve',
+    'spokes': 'DT Swiss Industry',
+    'rims': 'Roval Control SL, hookless carbon, 25mm internal width, tubeless-ready, hand-built',
+    'front_tire': 'Ground Control, GRIPTON® compound, 60 TPI, 2Bliss Ready, 29x2.3"',
+    'rear_tire': 'Fast Trak, GRID casing, GRIPTON® compound, 60 TPI, 2Bliss Ready, 29x2.3"',
+    'front_brake': 'Shimano XTR Race M9100',
+    'rear_brake': 'Shimano XTR Race M9100',
+    'pedals': 'Specialized Dirt',
+    'frame': 'S-Works FACT 12m, XC Geometry, Rider-First Engineered™, threaded BB, 12x148mm rear spacing, internal cable routing, 100mm of travel'
 }
 
 
@@ -82,12 +110,11 @@ class SpecializedTestCase(unittest.TestCase):
 
     def test_get_categories(self):
         categories = [
-            'road_bikes',
-            'mountain_bikes',
-            'path_pavement_bikes',
-            'electric_bikes',
-            'youth_bikes',
-            'bmx_bikes'
+            'road',
+            'mountain',
+            'fitness',
+            'electric',
+            'kids'
         ]
 
         with open(SHOP_BIKES_HTML_PATH, mode='r', encoding='utf-8') as html:
@@ -103,23 +130,25 @@ class SpecializedTestCase(unittest.TestCase):
                   encoding='utf-8') as html:
             soup = BeautifulSoup(html, 'lxml')
         self._specialized._get_prods_on_current_listings_page(
-            soup)
-        self.assertEqual(18, len(self._specialized._products),
-                         msg='First page should return 18 products.')
+            soup, bike_type='mountain')
+        num_bikes = len(self._specialized._products)
+        self.assertTrue(num_bikes > 50,
+                        msg=f'Page has {num_bikes} mountain bikes.')
 
     def test_get_all_available_prods(self):
         # Scrape each bike_type first page and get total num bikes
-        total_bikes = 0
-        for bike_type in self._specialized._BIKE_CATEGORIES.keys():
-            endpoint = self._specialized._BIKE_CATEGORIES[bike_type]['href']
+        bike_cats = self._specialized._get_categories()
+        for bike_type in bike_cats.keys():
+            if bike_type == 'kids':  # skip kids bike page
+                continue
+            endpoint = bike_cats[bike_type]['href']
 
             # Scrape first page, get num bikes, and determine num pages
             soup = BeautifulSoup(self._specialized._fetch_prod_listing_view(
-                endpoint, page=1), 'lxml')
-            num_bikes = self._specialized._get_prods_on_current_listings_page(
-                soup, bike_type, get_num_bikes=True
-            )
-            total_bikes += num_bikes
+                endpoint, show_all=True), 'lxml')
+            self._specialized._get_prods_on_current_listings_page(soup, bike_type)
+
+        total_bikes = len(self._specialized._products)
         print(f'Expecting {total_bikes} total bikes.')
 
         # Validate method
@@ -132,58 +161,49 @@ class SpecializedTestCase(unittest.TestCase):
     def test_parse_prod_spec(self):
         # load test prod details into memory
         html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'specialized-Bianchi-Road-Bikes.html'))
+            HTML_PATH, 'specialized-allez.html'))
         with open(html_path, encoding='utf-8') as f:
-            bianchi_prod_detail_text = f.read()
+            allez_prod_detail_text = f.read()
 
         html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'specialized-ripper.html'))
+            HTML_PATH, 'specialized-Como.html'))
         with open(html_path, encoding='utf-8') as f:
-            strider_prod_detail_text = f.read()
+            como_prod_detail_text = f.read()
 
         html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'specialized-ruby.html'))
+            HTML_PATH, 'specialized-S-Works.html'))
         with open(html_path, encoding='utf-8') as f:
-            ruby_prod_detail_text = f.read()
+            sworks_prod_detail_text = f.read()
 
-        # html_path = os.path.abspath(os.path.join(
-        #     HTML_PATH, 'conte-Specialized-Boys-Hotwalk.html'))
-        # with open(html_path, encoding='utf-8') as f:
-        #     generic_error = f.read()
-
-        bianchi_detail_soup = BeautifulSoup(
-            bianchi_prod_detail_text, 'lxml')
-        strider_detail_soup = BeautifulSoup(
-            strider_prod_detail_text, 'lxml')
-        ruby_detail_soup = BeautifulSoup(
-            ruby_prod_detail_text, 'lxml'
+        allez_detail_soup = BeautifulSoup(
+            allez_prod_detail_text, 'lxml')
+        como_detail_soup = BeautifulSoup(
+            como_prod_detail_text, 'lxml')
+        sworks_detail_soup = BeautifulSoup(
+            sworks_prod_detail_text, 'lxml'
         )
         # generic_error_soup = BeautifulSoup(generic_error, 'lxml')
 
         # case 1: exact match per example data
-        result = self._specialized._parse_prod_specs(bianchi_detail_soup)
-        self.assertEqual(len(BIANCHI_SPECS), len(result))
-        for key in BIANCHI_SPECS.keys():
+        result = self._specialized._parse_prod_specs(allez_detail_soup)
+        self.assertEqual(len(ALLEZ_SPECS), len(result))
+        for key in ALLEZ_SPECS.keys():
             self.assertEqual(
-                BIANCHI_SPECS[key], result[key])
+                ALLEZ_SPECS[key], result[key])
 
         # case 2: using second data, exact match in components
-        result = self._specialized._parse_prod_specs(strider_detail_soup)
-        self.assertEqual(len(STRIDER_SPECS), len(result))
-        for key in STRIDER_SPECS.keys():
-            self.assertEqual(STRIDER_SPECS[key], result[key])
+        result = self._specialized._parse_prod_specs(como_detail_soup)
+        self.assertEqual(len(COMO_SPECS), len(result))
+        for key in COMO_SPECS.keys():
+            self.assertEqual(COMO_SPECS[key], result[key])
 
         # case 3: using third data, exact match in components
-        result = self._specialized._parse_prod_specs(ruby_detail_soup)
-        self.assertEqual(len(RUBY_SPECS), len(result))
-        for key in RUBY_SPECS.keys():
-            self.assertEqual(RUBY_SPECS[key], result[key],
-                             msg=f'{key}: Expected - {RUBY_SPECS[key]}; '
+        result = self._specialized._parse_prod_specs(sworks_detail_soup)
+        self.assertEqual(len(SWORKS_SPECS), len(result))
+        for key in SWORKS_SPECS.keys():
+            self.assertEqual(SWORKS_SPECS[key], result[key],
+                             msg=f'{key}: Expected - {SWORKS_SPECS[key]}; '
                              f'Result - {result[key]}')
-
-        # # case 4: safely handle missing specs
-        # result = self._specialized._parse_prod_specs(generic_error_soup)
-        # self.assertEqual(0, len(result))
 
 
 if __name__ == '__main__':
