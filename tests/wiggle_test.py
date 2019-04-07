@@ -74,6 +74,7 @@ VITUS_SPECS = {
     'road': 'Yes'
     }
 
+
 class WiggleTestCase(unittest.TestCase):
     def setUp(self):
         self.wiggle = Wiggle(save_data_path=DATA_PATH)
@@ -95,16 +96,7 @@ class WiggleTestCase(unittest.TestCase):
         result = self.wiggle._get_max_num_prods(prod_list_soup)
         self.assertEqual(expected, result)
 
-    # FIXME: finish this unit test logic has preformance data not wiggle
     def test_get_prods_on_page(self):
-        cases = {
-            "Fuji Absolute 1.9 Disc Flat Bar Road Bike -2018":
-                {'href': '/shop/bikes-frames/fuji-absolute-19-disc-flat-bar-road-bike-2018-31-8559', 'desc': 'Fuji Absolute 1.9 Disc Flat Bar Road Bike -2018', 'price': '$449.99', 'msrp': '$499.99', 'id': '7000000000000008209'},
-            "Breezer Cloud 9 Carbon 29er Mountain Bike - 2018": {'href': '/shop/bikes-frames/breezer-cloud-9-carbon-29er-mountain-bike-2018-31-8578', 'desc': 'Breezer Cloud 9 Carbon 29er Mountain Bike - 2018', 'price': '$1,499.99', 'msrp': '$2,999.99', 'id': '7000000000000006408'},
-            "Marin Hawk Hill 27.5 Mountain Bike - 2018": {'href': '/shop/bikes-frames/marin-hawk-hill-275-mountain-bike-2018-31-6715', 'desc': 'Marin Hawk Hill 27.5 Mountain Bike - 2018', 'price': '$1,399.99', 'msrp': '$1,499.99', 'id': '1215816'},
-            "Fuji Finest 1.0 LE Women's Road Bike - 2017": {'href': '/shop/bikes-frames/fuji-finest-10-le-womens-road-bike-2017-31-5619', 'desc': "Fuji Finest 1.0 LE Women's Road Bike - 2017", 'price': '$799.97', 'msrp': '$1,349.00', 'id': '1208310'}
-        }
-
         # load test html into memory
         with open(SHOP_BIKES_HTML_PATH, encoding='utf-8') as f:
             prod_list_text = f.read()
@@ -112,10 +104,6 @@ class WiggleTestCase(unittest.TestCase):
         prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
         self.wiggle._get_prods_on_current_listings_page(prod_list_soup)
         self.assertEqual(self.wiggle._page_size, len(self.wiggle._products))
-        for key in cases:
-            self.assertTrue(key in self.wiggle._products)
-        for value in cases.values():
-            self.assertTrue(value in self.wiggle._products.values())
 
     def test_get_prod_listings(self):
         self.wiggle.get_all_available_prods(to_csv=True)
