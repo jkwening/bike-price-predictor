@@ -22,7 +22,7 @@ def create_directory_if_missing(file_path):
 
 def get_bike_type_from_desc(desc):
     BIKE_TYPES_LIST = [  # order matters for fork, frame, kid, girl, and bmx as qualifiers
-        'frame', 'fork', 'kid', 'girl', 'e-bike', 'bmx', 'city', 'commuter', 'comfort',
+        'frame', 'frameset', 'fork', 'kid', 'girl', 'e-bike', 'bmx', 'city', 'commuter', 'comfort',
         'cruiser', 'fat', 'triathlon', 'adventure', 'touring', 'urban',
         'track', 'road', 'mountain', 'cyclocross', 'hybrid',
         'gravel'

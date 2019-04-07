@@ -29,89 +29,78 @@ span class='num_products'>($nbsp; # - # of # $nbsp;)< - range
 
 
 class NashBar(Scraper):
-    def __init__(self, save_data_path=DATA_PATH, page_size=72, page_view='list'):
-        self._page_size = page_size
-        self._page_view = page_view
-        super().__init__(base_url='https://www.bikenashbar.com',
-            source='nashbar', save_data_path=save_data_path)
+    def __init__(self, save_data_path=DATA_PATH):
+        super().__init__(base_url='https://www.nashbar.com',
+                         source='nashbar', save_data_path=save_data_path)
+        self._BIKE_FRAMES_ENDPOINT = '/bikes-frames/c14941'
+        self._BIKE_CATEGORIES = self._get_categories()
 
-    def _fetch_prod_listing_view(self, product_begin_index=1, store_id=10053,
-                                 catalog_id=10552, lang_id=-1,):
-        req_url = 'https://www.bikenashbar.com/ProductListingView?ajaxStoreImageDir=%2F%2Fwww.bikenashbar.com%2Fwcsstore%2FAuroraStorefrontAssetStore%2F&advancedSearch=&facet=&searchTermScope=&categoryId=204647&categoryFacetHierarchyPath=&searchType=1002&filterFacet=&resultCatEntryType=&emsName=Widget_CatalogEntryList_Ext_1024819115206121167&searchTerm=&filterTerm=&resultsPerPage=24&manufacturer=&sType=SimpleSearch&disableProductCompare=false&parent_category_rn=&catalogId=10052&langId=-1&gridPosition=&ddkey=ProductListingView_6_1024819115206087258_1024819115206121167&enableSKUListView=false&storeId=10053&metaData='
+    def _fetch_prod_listing_view(self, endpoint, params=None):
+        req_url = f'{self._BASE_URL}{endpoint}'
+        return self._fetch_html(url=req_url, params=params)
 
-        headers = {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
+    def _get_categories(self, soup=None):
+        """Bike category endpoint encodings.
 
-        data = {
-            'contentBeginIndex': 0,
-            'productBeginIndex': product_begin_index,
-            'beginIndex': product_begin_index,
-            'orderBy': 5,
-            'pageView': self._page_view,
-            'resultType': 'products',
-            'loadProductsList': 'true',
-            'storeId': store_id,
-            'catalogId': catalog_id,
-            'langId': lang_id,
-            'homePageURL': '/cycling',
-            'commandContextCurrency': 'USD',
-            'urlPrefixForHTTPS': 'https://www.bikenashbar.com',
-            'urlPrefixForHTTP': 'https://www.bikenashbar.com',
-            'widgetPrefix': '6_1024819115206121167',
-            'showColorSwatches': 'true',
-            'showRatings': 'true',
-            'showDiscounts': 'true',
-            'pgl_widgetId': 1024819115206121167,
-            'objectId': '_6_1024819115206087258_1024819115206121167',
-            'requesttype': 'ajax'
-        }
+        Returns:
+            dictionary of dictionaries
+        """
+        categories = dict()
 
-        print(f'begin index: {product_begin_index}')
+        if soup is None:
+            page = self._fetch_prod_listing_view(endpoint=self._BIKE_FRAMES_ENDPOINT)
+            soup = BeautifulSoup(page, 'lxml')
 
-        return self._fetch_html(url=req_url, method='POST', params=None,
-                                data=data, headers=headers)
+        main_content = soup.find('div', attrs={'id': 'maincontent'})
+        category_page = main_content.find('div', attrs={'id': 'categorypage'})
+        ul = category_page.find('ul', class_='category-menu-images')
+        cats = ul.find_all('a')
+
+        # Get all categories
+        for c in cats:
+            bike_cat = dict()
+            title = self._normalize_spec_fieldnames(c['title']).replace("'", "")
+            bike_cat['href'] = c['href']
+            categories[title] = bike_cat
+
+        return categories
 
     def _get_max_num_prods(self, soup):
         self._num_bikes = super()._get_max_num_prods(soup)
 
-    def _get_prods_on_current_listings_page(self, soup):
+    def _get_prods_on_current_listings_page(self, soup, bike_type):
         """Get all bike products for the passed html page"""
-        div_product_listing_widget = soup.find('div',
-                                               class_='productListingWidget')
-        div_product_info = div_product_listing_widget.find_all(
-            'div', class_='product_info')
+        products_view = soup.find('div', attrs={'id': 'productsview'})
+        items = products_view.find_all('div', class_='item')
 
-        for prod_info in div_product_info:
+        for item in items:
             product = dict()
             product['site'] = self._SOURCE
+            product['bike_type'] = bike_type
 
-            # get prod_desc, and prod_href
-            div_prod_name = prod_info.find('div', class_='product_name')
-            product['href'] = str(div_prod_name.a['href']).strip()
-            desc = str(div_prod_name.a.string).strip()
-            product['description'] = desc
+            # Get prod_id, prod_desc, and brand
+            prod_id = item['data-id']
+            product['product_id'] = prod_id
+            product['description'] = item['data-name']
+            product['brand'] = item['data-brand']
 
-            # Parse brand and bike_type from desc
-            product['brand'] = desc.split()[0]
-            product['bike_type'] = get_bike_type_from_desc(desc)
+            # Get product's spec href
+            div_detail = item.find('div', class_='detail')
+            product['href'] = str(div_detail.a['href']).strip()
 
-            # get sale price (offer_price)
-            span_price = prod_info.find('span', class_='price')
-            product['price'] = float(str(span_price.string).strip().strip('$').replace(',', ''))
+            # get current price and msrp (list_price)
+            span_price = item.find('span', class_='productNormalPrice').string
+            if span_price == 'See Price In Cart':
+                price = 0.0
+            else:
+                price = float(span_price.strip().strip('$').replace(',', ''))
+                product['price'] = price
 
-            # get msrp price (list_price)
-            span_old_price = prod_info.find('span', class_='old_price')
+            span_old_price = item.find('span', class_='productSpecialPrice')
             if span_old_price is None:
-                product['msrp'] = product['price']
+                product['msrp'] = price
             else:
                 product['msrp'] = float(str(span_old_price.string).strip().split()[-1].strip('$').replace(',', ''))
-
-            # get prod_id
-            input_info_hidden = prod_info.find('input')
-            prod_id = input_info_hidden['id'].split('_')[-1]
-            product['product_id'] = prod_id
 
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
@@ -121,58 +110,78 @@ class NashBar(Scraper):
         prod_spec = dict()
 
         try:
-            div_spec = soup.find(id='tab2Widget')
+            div_spec = soup.find(id='tab-overview')
+            div_std = div_spec.find('div', class_='std')
 
-            if div_spec is None:
-                error = soup.find('title')
-                print(f'Error: {error.string}')
-                return prod_spec
+            if div_std:
+                candidates = div_std.get_text()
+            else:
+                candidates = div_spec.get_text()
 
-            li_specs = div_spec.ul.find_all('li')
+            # Identify where specifications begin and then split by ":"
+            idx_spec = candidates.find('Specifications')
+            if idx_spec == -1:
+                idx_spec = candidates.find('Specs')
+                str_replace = 'Specs'
+            else:
+                str_replace = 'Specifications'
+            parse_str = candidates[idx_spec:]
+            parse_str = parse_str.replace(str_replace, '').strip()
+            split_specs = parse_str.split('\n')
 
-            for spec in li_specs:
-                span_name = spec.span
-                span_value = span_name.find_next_sibling('span')
-                name = str(span_name.string).strip().strip(':')  # get clean spec name
-                name = name.strip('1')  # for some reason, some specs end with '1' for spec names
-                name = self._normalize_spec_fieldnames(name)
-                value = str(span_value.string).strip()
-                prod_spec[name] = value
-                self._specs_fieldnames.add(name)
+            for spec in split_specs:
+                try:
+                    if not spec:
+                        continue
+                    name, value = spec.split(':')
+                    name = self._normalize_spec_fieldnames(name)
+                    prod_spec[name] = value.strip()
+                    self._specs_fieldnames.add(name)
+                except ValueError:
+                    print(f'\tValue ErrorError: {spec}')
         except AttributeError as err:
-            print(f'\tError: {err}')
+            print(f'\tAttribute Error: {err}')
 
+        print('Parsed product specs:', prod_spec)
         return prod_spec
 
     def get_all_available_prods(self, to_csv=True) -> list:
         """Get all products currently available from site"""
         # ensure product listings dictionary is empty
         self._products = {}
+        self._num_bikes = 0
 
-        # get first product listings view page, total num bikes, total pages
-        page_soup = BeautifulSoup(self._fetch_prod_listing_view(), 'lxml')
-        self._get_max_num_prods(soup=page_soup)
-        num_pages = math.ceil(self._num_bikes / self._page_size)
-        self._get_prods_on_current_listings_page(soup=page_soup)
-        print(f'Current number of products: {len(self._products)}')
+        # Get products for each bike category
+        for cat in self._BIKE_CATEGORIES:
+            skip = ['bmx_bikes',
+                    'bike_forks_mountain_suspension',
+                    'bike_frame_protection', 'bike_frames',
+                    'kids_bikes_balance_bikes']
+            if cat in skip:
+                continue
+            bike_type = cat
+            endpoint = self._BIKE_CATEGORIES[cat]['href']
 
-        # scrape for all bikes on every product listing pages
-        for page_num in range(num_pages):
-            print('Page: ', page_num + 1)
+            # Calculate total number of pages
+            html = self._fetch_prod_listing_view(endpoint)
+            soup = BeautifulSoup(html, 'lxml')
 
-            # wait 1 second then request next page
-            if (page_num + 1) <= num_pages:
-                time.sleep(1)
-                product_begin_index = (self._page_size * page_num + 1) - 1
-                page_soup = BeautifulSoup(self._fetch_prod_listing_view(
-                    product_begin_index=product_begin_index), 'lxml')
-                self._get_prods_on_current_listings_page(soup=page_soup)
-                print(f'Current number of products: {len(self._products)}')
+            page_totals_view = soup.find('div', attrs={'id': 'pagetotalsview'})
+            result = page_totals_view.string.split()
+            num_pages = math.ceil(int(result[5]) / int(result[3]))
+
+            self._get_prods_on_current_listings_page(soup, bike_type)
+
+            # get remaining pages
+            for p in range(2, num_pages + 1):
+                html = self._fetch_prod_listing_view(endpoint, {'p': p})
+                soup = BeautifulSoup(html, 'lxml')
+                self._get_prods_on_current_listings_page(soup, bike_type)
+
+            # Update num_bikes tracker
+            self._num_bikes = len(self._products)
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
 
         return list()
-
-        # if get_specs: #TODO: remove
-        #     self.get_product_specs(get_prods_from='memory') 

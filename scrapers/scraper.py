@@ -22,7 +22,8 @@ class Scraper(ABC):
         self._specs_fieldnames = {'site'}
         self._bike_type = 'all'
 
-    def _fetch_html(self, url, method='GET', params=None, data=None,
+    @staticmethod
+    def _fetch_html(url, method='GET', params=None, data=None,
                     headers=None):
         """Fetch html page for bikes"""
 
@@ -108,12 +109,11 @@ class Scraper(ABC):
         create_directory_if_missing(path)
 
         with open(file=path, mode='w', newline='', encoding='utf-8') as csvfile:
-            spec_descs = list(specs.keys())
             writer = DictWriter(csvfile, fieldnames=self._specs_fieldnames)
             writer.writeheader()
 
-            for desc in spec_descs:
-                writer.writerow(specs[desc])
+            for values in specs.values():
+                writer.writerow(values)
 
         # return manifest row object of csv data
         return {
@@ -171,14 +171,26 @@ class Scraper(ABC):
             # define bike specifications url
             bike_href = self._products[bike]['href']
             bike_id = self._products[bike]['product_id']
-            bike_url = self._BASE_URL + bike_href
 
-            # wait 1 second then get bike specification page
-            time.sleep(0.10)
+            # Exception for url string
+            # if self._SOURCE == 'eriks':
+            #     bike_url = bike_href
+            if self._BASE_URL in bike_href:
+                bike_url = bike_href
+            else:
+                bike_url = self._BASE_URL + bike_href
+
+            # # wait 1 second then get bike specification page
+            # time.sleep(0.10)
             try:
                 bike_spec_soup = BeautifulSoup(self._fetch_html(url=bike_url),
                                                'lxml')
-                specs[bike] = self._parse_prod_specs(bike_spec_soup)
+                # For REI check for garage products
+                if self._SOURCE == 'rei' and 'garage' in bike_href:
+                    specs[bike] = self._parse_prod_specs(bike_spec_soup,
+                                                         garage=True)
+                else:
+                    specs[bike] = self._parse_prod_specs(bike_spec_soup)
             except FileNotFoundError:
                 print(f'\tSpecifications page for {bike} not found!')
                 specs[bike] = {}
@@ -198,19 +210,22 @@ class Scraper(ABC):
 
         return specs
 
-    def _normalize_spec_fieldnames(self, fieldname: str) -> str:
+    @staticmethod
+    def _normalize_spec_fieldnames(fieldname: str) -> str:
         """Remove invalid chars and normalize as lowercase and no spaces."""
-        fieldname = fieldname.strip()
-        fieldname = fieldname.replace(' / ', '_')
-        fieldname = fieldname.replace('-', '_')
-        fieldname = fieldname.replace('(', '')
-        fieldname = fieldname.replace(')', '')
-        fieldname = fieldname.replace('[', '')
-        fieldname = fieldname.replace(']', '')
-        fieldname = fieldname.replace('{', '')
-        fieldname = fieldname.replace('}', '')
-        fieldname = fieldname.replace('/', '_')
-        fieldname = fieldname.replace('.', '_')
-        fieldname = fieldname.replace('&', '_')
-        return fieldname.lower().replace(' ',
-                                         '_')  # normalize: lowercase and no spaces
+        result = fieldname.strip()
+        result = result.replace(' / ', '_')
+        result = result.replace(',', '')
+        result = result.replace('-', '_')
+        result = result.replace('(', '')
+        result = result.replace(')', '')
+        result = result.replace('[', '')
+        result = result.replace(']', '')
+        result = result.replace('{', '')
+        result = result.replace('}', '')
+        result = result.replace('/', '_')
+        result = result.replace('.', '_')
+        result = result.replace('&', '_')
+        result = result.lower().replace(' ', '_')  # normalize: lowercase and no spaces
+        result = result.replace('___', '_')
+        return result
