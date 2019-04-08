@@ -226,6 +226,7 @@ class Scraper(ABC):
         result = result.replace('/', '_')
         result = result.replace('.', '_')
         result = result.replace('&', '_')
+        result = result.replace("'", '')
         result = result.lower().replace(' ', '_')  # normalize: lowercase and no spaces
         result = result.replace('___', '_')
         return result

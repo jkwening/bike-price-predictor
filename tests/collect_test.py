@@ -4,8 +4,8 @@ from ingestion.collect import Collect
 from ingestion.ingestion_mediator import IngestionMediator
 from scrapers.competitive_cyclist import CompetitiveCyclist
 from scrapers.nashbar import NashBar
-from scrapers.performance_bike import PerformanceBikes
-from tests.unit_test_utils import DATA_PATH, TEST_DATA_PATH
+from scrapers.specialized import Specialized
+from tests.unit_test_utils import DATA_PATH
 
 
 class ManifestTestCase(unittest.TestCase):
@@ -15,10 +15,10 @@ class ManifestTestCase(unittest.TestCase):
 
     def test_get_class_instance(self):
         """Unit test for Collect._get_class_instance()"""
-        # case 'performance'
-        result = self._collect._get_class_instance(source='performance')
-        self.assertTrue(isinstance(result, PerformanceBikes),
-                        msg=f'{result} should be an instance of PerformanceBike class.')
+        # case 'specialized'
+        result = self._collect._get_class_instance(source='specialized')
+        self.assertTrue(isinstance(result, Specialized),
+                        msg=f'{result} should be an instance of Specialized class.')
 
         # case 'competitive'
         result = self._collect._get_class_instance(source='competitive')
