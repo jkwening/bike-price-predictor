@@ -3,12 +3,15 @@
 from scrapers.citybikes import CityBikes
 from scrapers.competitive_cyclist import CompetitiveCyclist
 from scrapers.nashbar import NashBar
-from scrapers.performance_bike import PerformanceBikes
+# from scrapers.performance_bike import PerformanceBikes
 from scrapers.proshop import Proshop
 from scrapers.contebikes import ConteBikes
 from scrapers.eriks import EriksBikes
 from scrapers.rei import Rei
 from scrapers.wiggle import Wiggle
+from scrapers.trek import Trek
+from scrapers.specialized import Specialized
+
 from utils.utils import DATA_PATH
 
 
@@ -19,9 +22,9 @@ class Collect:
         self._mediator = mediator
         self._save_data_path = save_data_path
         self._SOURCES = [
-            'competitive', 'nashbar', 'performance',
+            'competitive', 'nashbar', 'trek',
             'wiggle', 'rei', 'citybikes', 'proshop',
-            'contebikes', 'eriks'
+            'contebikes', 'eriks', 'specialized'
         ]
 
     def _get_class_instance(self, source: str):
@@ -30,8 +33,8 @@ class Collect:
             return CompetitiveCyclist(save_data_path=self._save_data_path)
         elif source == 'nashbar':
             return NashBar(save_data_path=self._save_data_path)
-        elif source == 'performance':
-            return PerformanceBikes(save_data_path=self._save_data_path)
+        # elif source == 'performance':
+        #     return PerformanceBikes(save_data_path=self._save_data_path)
         elif source == 'wiggle':
             return Wiggle(save_data_path=self._save_data_path)
         elif source == 'rei':
@@ -44,6 +47,10 @@ class Collect:
             return Proshop(save_data_path=self._save_data_path)
         elif source == 'eriks':
             return EriksBikes(save_data_path=self._save_data_path)
+        elif source == 'specialized':
+            return Specialized(save_data_path=self._save_data_path)
+        elif source == 'trek':
+            return Trek(save_data_path=self._save_data_path)
         else:
             raise ValueError(f'Invalid source: {source} value.')
 
