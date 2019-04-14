@@ -1,0 +1,2271 @@
+<!DOCTYPE html><html lang="en"><!--
+	This website is powered by Neos, the Open Source Content Application Platform licensed under the GNU/GPL.
+	Neos is based on Flow, a powerful PHP application framework licensed under the MIT license.
+
+	More information and contribution opportunities at https://www.neos.io
+-->
+<head><meta charset="UTF-8" />
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta http-equiv="content-language" content="en">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="Canyon Bicycles GmbH · Karl-Tesche-Straße 12 · D-56073 Koblenz">
+        <meta name="web_author" content="WYSIWYG* Software Design GmbH, Düsseldorf, http://www.wysiwyg.de">
+        <meta name='robots' content='noodp'>
+
+        
+
+    
+        <link href="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/Styles/Main.css" rel="stylesheet" media="screen,print">
+        
+            <link href="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_homepage/css/base.css" rel="stylesheet" media="screen,print">
+            <link href="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/Styles/Homepage.css" rel="stylesheet" media="screen,print">
+
+            <style type="text/css" media="screen">
+                /* default - mobile */
+
+                .CTlight {
+                    font-family: CanyontextLight, Helvetica, Arial, sans-serif;
+                }
+
+                /* info message for CH users */
+
+                .ruHint {
+                    background-color: #B50218;
+                }
+                .chHint {
+
+                }
+
+                p.chHpMessage {
+                    font-family: CanyontextRegular;
+                    font-weight: 400;
+                    font-size: 15px;
+                    padding: 0 2em;
+                    margin-top: 6em;
+                }
+
+                p.ruHpMessage {
+                    font-weight: 400;
+                    font-size: 15px;
+                    padding: 0 2em;
+                    margin-top: 6em;
+                }
+
+                @media (min-width: 768px) {
+
+                    p.ruHpMessage,
+                    p.chHpMessage {
+                        font-size: 18px;
+                        margin-top: 4em;
+                    }
+                }
+
+                @media (min-width: 1024px) {
+
+                    p.ruHpMessage,
+                    p.chHpMessage {
+                        margin-top: 1em;
+                        padding: 0 4em;
+                    }
+                }
+
+                @media (min-width: 1202px) {
+
+                    p.ruHpMessage,
+                    p.chHpMessage {
+                        font-size: 20px;
+                        margin: 0 auto;
+                        width: 80%;
+                    }
+
+                }
+                /* / info message for CH users */
+
+                /* showroom */
+                .delivery-teaser {
+                    background-color: #e76000;
+                }
+
+                .canyon-home-inventory-teaser.delivery-teaser p {
+                    width: 100%;
+                }
+
+                @media (min-width: 768px) {
+
+                    .canyon-home-inventory-teaser.delivery-teaser p {
+                        float: left;
+                    }
+                }
+                /* / showroom */
+
+                /* performanceforall */
+                .performanceforall h4 {
+                    text-transform: none;
+                }
+                /* / performanceforall */
+
+                /* trails-are-calling sale */
+
+                .homepage-slide > .homepage-teaser-content.trails-are-calling h1 {
+                    font-family: Canyontextbold, Helvetica, Arial, sans-serif;
+                }
+
+                .homepage-slide > .homepage-teaser-content.trails-are-calling h1 {
+                    font-size: 36px;
+                    line-height: 70%;
+                    letter-spacing: 0.2em;
+                    margin-bottom: 10px;
+                }
+
+                @media (min-width: 768px) {
+
+                    .homepage-slide > .homepage-teaser-content.trails-are-calling h1 {
+                        font-size: 80px;
+                        line-height: 70%;
+                        letter-spacing: 0.2em;
+                    }
+                }
+
+                @media (min-width: 1202px) {
+
+                    .homepage-slide > .homepage-teaser-content.trails-are-calling h1 {
+                        font-size: 120px;
+                        line-height: 70%;
+                        letter-spacing: 0.2em;
+                    }
+                }
+
+                .decker {
+                    background-color: rgba(0,0,0,0.38);
+                    height: 100%;
+                    position: absolute;
+                    width: 100%;
+                }
+
+                /* / trails-are-calling sale */
+            </style>
+
+            <script src="https://static.canyon.com/_js/min/base-min.js?_=1476702031" type="text/javascript"></script>
+            <!--<script src="https://static.canyon.com/_homepage/js/base/Display2DExtensions.js?_=1448012696" type="text/javascript"></script>-->
+            <script src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_homepage/js/base/Display2DExtensions.js" type="text/javascript"></script>
+            <!--<script src="https://static.canyon.com/_homepage/js/libs/cookies.js?_=1443870093" type="text/javascript"></script>-->
+            <script src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_homepage/js/libs/cookies.js" type="text/javascript"></script>
+            <!--<script src="https://static.canyon.com/_homepage/js/homepage/Control.js?_=1490197201" type="text/javascript"></script>-->
+            <script src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_homepage/js/homepage/Control.js" type="text/javascript"></script>
+
+            <!--<script src="https://static.canyon.com/_homepage/js/homepage/Control.js?_=1496753344" type="text/javascript"></script>-->
+            <script src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_homepage/js/homepage/Homepage.js" type="text/javascript"></script>
+
+            <!--<script src="https://static.canyon.com/_homepage/js/homepage/HomepageSlider.js?_=1492528897" type="text/javascript"></script>-->
+            <script src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_homepage/js/homepage/HomepageSlider.js" type="text/javascript"></script>
+
+        
+    
+
+        <!-- start picturefill -->
+        <script>
+            document.createElement("picture");
+            // disable native picture/srcset support (broken in chrome < 41, absent in most other browsers)
+            if (navigator.userAgent.match(/hrome\/(\d+)/) && (RegExp.$1 < 41)) {
+                // the respimage script checks for existence of this method
+                window.HTMLPictureElement = null;
+            }
+        </script>
+
+        <script src="https://static.canyon.com/_js/min/respimage.min.js" type="text/javascript" async=""></script>
+        <!-- /end picturefill -->
+        <!-- Put your scripts inclusions for the head here, they will be included in your website by Fusion -->
+    <title>Road, Triathlon and Mountain Bikes | CANYON US </title><meta name="description" content="Get the best bikes for the best prices at Canyon! Discover mountain, road, triathlon, gravity, urban, fitness, cyclo-cross bikes and accessories online now." /><meta name="robots" content="index,follow" /><link rel="canonical" href="https://www.canyon.com/en-us/" /><meta property="og:type" content="website" /><meta property="og:title" content="CANYON IS HERE" /><meta property="og:description" content="Our award-winning, German-engineered bikes are now available in the USA." /><meta property="og:image" content="https://static.canyon.com/_Resources/Persistent/459e66b45a0afcf679bdf6d53e5226ef1ac03628/hero%20no%20period.jpg" /><meta property="og:url" content="https://www.canyon.com/en-us" />
+
+    <style type="text/css">
+
+        .homepage-slide.no-link {
+            cursor: default;
+        }
+
+        .homepage-slide > .homepage-teaser-content h1 {
+            /*padding: 0 10vw;*/
+        }
+
+        .homepage-slide > .homepage-teaser-content h4 {
+            padding: 0 10vw;
+            /*font-family: CanyontextRegular, Helvetica, Arial, sans-serif;*/
+        }
+
+        @media (min-width: 768px) {
+            /*.homepage-slide > .homepage-teaser-content h4 {
+                padding: 0 21vw;
+            }*/
+        }
+
+        @media (min-width: 1202px) {
+
+        }
+
+        @media (max-width: 767px) {
+            .homepage-slide > .homepage-teaser-content h1 {
+                font-size: 48px;
+            }
+        }
+
+        /* Take Flite */
+
+        .homepage-slide > .homepage-teaser-content.take-flite h1 {
+            color: #f1d723;
+
+            font-family: CanyontextRegular;
+            letter-spacing: .24em;
+
+        }
+        /* / Take Flite */
+
+		/* SPECTRAL */
+		.homepage-slide.spectral h1 {
+			font-family: CanyontextRegular;
+			letter-spacing: .1em;
+			font-family: Canyon;
+		}
+
+		.homepage-slide.spectral h1,
+		.homepage-slide.spectral h4 {
+			opacity: 1;
+			transition: opacity .5s 2.5s;
+		}
+
+		.homepage-slide.awake.spectral h1,
+		.homepage-slide.awake.spectral h4 {
+			opacity: 1;
+		}
+
+		.no-routine-overlay {
+			position: absolute;
+			left: 50%;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			opacity: 1;
+		}
+
+		@media (min-width: 768px) {
+			.no-routine-overlay {
+				width: 70%;
+			}
+		}
+
+		@media (min-width: 1202px) {
+			.no-routine-overlay {
+				width: 60%;
+			}
+		}
+
+		.no-routine-overlay:after {
+			content: " ";
+			display: block;
+			position: relative;
+			width: 100%;
+			height: 100%;
+			left: -50%;
+			background: url("https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_img/homepage-us/spectral/no-routine.svg") 50%/contain no-repeat;
+		}
+
+		.homepage-slide.awake .no-routine-overlay {
+			opacity: 0;
+			transition: opacity .5s 2s;
+		}
+		/* / SPECTRAL */
+
+		/* Grail */
+
+		.grail .homepage-teaser-content h1 {
+			font-family: Canyon;
+
+		}
+
+		.grail .homepage-teaser-content h1 {
+			font-size: 22vw;
+			line-height: 1em;
+
+			position: relative;
+			left: -.15em;
+
+		}
+
+		@media (max-width: 959px) {
+			.grail .homepage-teaser-content h1 {
+				font-size: 20vw;
+				line-height: 1em;
+				left: -.1em;
+
+			}
+
+		}
+
+		@media (min-width: 960px) {
+			.grail .homepage-teaser-content h1 {
+				font-size: 16vw;
+				line-height: 1em;
+				left: -.05em;
+
+			}
+
+		}
+
+		@media (min-width: 1280px) {
+			.grail .homepage-teaser-content h1 {
+				font-size: 190px;
+				line-height: 1em;
+
+			}
+
+		}
+
+		/* / Grail */
+    </style>
+
+
+
+    <script type="application/javascript">
+        var dataLayer = window.dataLayer = window.dataLayer || [];
+        var adroll_currency = "USD";
+    </script>
+
+    
+            <script>
+                !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+                n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+                document,'script','//connect.facebook.net/en_US/fbevents.js');
+                fbq('init', '1490569497923823');
+                fbq('track', 'PageView');
+            </script>
+        
+
+    
+            <!-- native Analytics tracking disabled -->
+        
+
+    
+            <script type="application/javascript">
+                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                })(window,document,'script','dataLayer','GTM-PPMTZP');
+            </script>
+
+            
+                <script type="application/javascript">
+                    var lang = 'en';
+                    var path = '';
+                    var cart = 'e';
+                    dataLayer.push({
+                        "event": "pageview",
+                        "site": {
+                            "virtPath":getCurrentPath(path),
+                            "contentGroup":getContentGroup(),
+                            "country":'US',
+                            "language":lang
+                        },
+                        "store": {
+                            "cart": cart
+                        },
+                        "system": {
+                            "view": getView()
+                        }
+                    });
+
+                    function getCurrentPath(path) {
+                        if (path != '') {
+                            return path;
+                        }
+                        return window.location.pathname;
+                    }
+
+                    function getContentGroup() {
+                        var link = window.location.pathname;
+                        if (link.indexOf('/buying-advice') != -1 || link.indexOf('/tools') != -1 || link.indexOf('/shop/expressbikes') != -1 || link.indexOf('/factory-outlet/original-pro-bikes') != -1 || link.indexOf('/shop/information') != -1) {
+                            return 'Buying Advice';
+                        }
+                        if (link.indexOf('/shop') != -1 || link.indexOf('/cart') != -1) {
+                            return 'Checkout';
+                        }
+                        if (link.indexOf('/mtb') != -1) {
+                            return 'MTB';
+                        }
+                        if (link.indexOf('/road') != -1) {
+                            return 'Road';
+                        }
+                        if (link.indexOf('/triathlon') != -1) {
+                            return 'Triathlon';
+                        }
+                        if (link.indexOf('/gravity') != -1) {
+                            return 'Gravity';
+                        }
+                        if (link.indexOf('/urban') != -1) {
+                            return 'Urban';
+                        }
+                        if (link.indexOf('/fitness') != -1) {
+                            return 'Fitness';
+                        }
+                        if (link.indexOf('/accessories') != -1) {
+                            return 'Accessories';
+                        }
+                        if (link.indexOf('/factory-outlet') != -1) {
+                            return 'Factory Outlet';
+                        }
+                        if (link.indexOf('/service') != -1) {
+                            return 'Service & Support';
+                        }
+                        if (link.indexOf('/explore-canyon') != -1) {
+                            return 'Explore Canyon';
+                        }
+                        if (link.indexOf('/about-us') != -1) {
+                            return 'About Us';
+                        }
+                        if (link.indexOf('/career') != -1) {
+                            return 'Career';
+                        }
+                        if (link.indexOf('/imprint-terms') != -1) {
+                            return 'Imprint/Terms & Conditions';
+                        }
+                        if (link.indexOf('/specials') != -1) {
+                            return 'SPECIALS';
+                        }
+                        return 'Home';
+                    }
+
+                    function getView()
+                    {
+                        var width = Math.max(
+                            document.documentElement.scrollWidth,
+                            document.documentElement.offsetWidth,
+                            document.documentElement.clientWidth
+                        );
+
+                        if (width <= 480){
+                            return 'm';
+                        }
+                        if (width <= 768){
+                            return 't';
+                        }
+
+                        return 'd';
+                    }
+
+                </script>
+            
+        
+</head><body class="black " data-lang="en" data-country="US" data-currency="USD" data-basedir="/en-us/" data-devel="0" data-feature="{}" data-mobile="0" data-phone="0" data-tablet="0" data-current-navid="0" data-logger-js="0">
+
+    
+
+    
+
+
+<header class="">
+    <div id="overlay"></div>
+
+    <section class="cart-section">
+        
+
+
+
+
+<div class="shopping-cart" id="cart-item-list" data-cart-item-list="[]">
+
+    <div class="navigation-flyout">
+
+        <a href="#" class="ci IconCloseThin"></a>
+
+        <header>
+            <h2>
+                Now in the shopping basket
+            </h2>
+        </header>
+
+        <div class="cart-table">
+            <table class="">
+                <tbody>
+                    
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary">
+            <p>
+                <span class="countItems">0</span>
+                item
+                <strong>Total US$0.00</strong>
+                <br>
+                
+            </p>
+
+            <p>
+                <!-- TODO: use site-hp setting -->
+                <a href="/en-us/shop/shoppingcart" class="button">
+                    to the checkout
+                    <span class="ci IconAngleSmalRight"></span>
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+
+    </section>
+
+    <section class="tools-section  trans20">
+        
+        
+
+
+<div class="container">
+    <div class="link-hotline chatActivator">
+        <p title="Call (833) 226-9661 Monday - Friday 7am - 5pm PST / Saturday 8am - 1pm PST">
+            Call (833) 226-9661 Monday - Friday 7am - 5pm PST / Saturday 8am - 1pm PST
+        </p>
+    </div>
+</div>
+
+        <nav class="navigation-tools" role="navigation">
+
+            <div class="navigation-header">
+                <a href="/en-us/" class="navigation-brand">
+                    <span class="brand-logo">canyon</span>
+                </a>
+            </div>
+
+            <ul class="navigation">
+                
+
+
+<li class="region">
+<!--    <a href="#" style="cursor:default">-->
+<!--        <img class="icon-flag" src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_img/flags/us.png" alt="Flag of Country" width="16" height="11">-->
+<!--        <span class="label">EN | US$</span>-->
+<!--    </a>-->
+
+    <!--<div class="navigation-flyout">-->
+    <!---->
+    <!--    <a href="#" class="ci IconCloseThin"></a>-->
+    <!---->
+    <!--    <form action="" method="post">-->
+    <!---->
+    <!--        <fieldset class="navigation-flyout-container">-->
+    <!---->
+    <!--            <div class="entry-group">-->
+    <!--                <label for="my_country_code">Your country</label>-->
+    <!--                <select name="my_country_code" id="my_country_code">-->
+    <!--                    <option value="" selected disabled>Please select ...</option>-->
+    <!--                    <option value="GB">United Kingdom</option>-->
+    <!--                    <option value="US" selected="selected">United States</option>-->
+    <!--                </select>-->
+    <!--            </div>-->
+    <!---->
+    <!--            <div class="entry-group">-->
+    <!--                <label for="my_lang_code">Your language</label>-->
+    <!--                <select name="my_lang_code" id="my_lang_code">-->
+    <!--                    <option value="" selected disabled>Please select ...</option>-->
+    <!--                    <option value="en" selected="selected">english</option>-->
+    <!--                </select>-->
+    <!--            </div>-->
+    <!---->
+    <!--            <div class="entry-group">-->
+    <!--                <button class="button solid icon full" type="submit">change</button>-->
+    <!--            </div>-->
+    <!---->
+    <!--        </fieldset>-->
+    <!---->
+    <!--    </form>-->
+    <!---->
+    <!--</div>-->
+
+</li>
+<!-- /Region -->
+
+
+<li class="chat">
+
+
+
+
+
+
+<li class="shopping-cart">
+    <div class="navigation-flyout">
+        <a href="#" class="ci IconCloseThin"></a>
+    </div>
+    <a href="#cart">
+        <span class="ci IconCart"></span>
+        <span class="badge">0</span>
+    </a>
+</li>
+
+
+
+<li class="search">
+    <a href="#"> <span class="ci IconSearch"></span> </a>
+
+    <div class="navigation-flyout">
+        <a href="#" class="ci IconCloseThin"></a>
+
+        <form action="#" method="get">
+            <fieldset class="navigation-flyout-container">
+                <div class="entry-group twitter-typeahead">
+                    <input class="typeahead" type="search" placeholder="Enter search term …" data-i18n='{"bikes":"Bikes","bikesEmpty":"Sorry,&#x20;we&#x20;could&#x20;not&#x20;find&#x20;a&#x20;bike&#x20;that&#x20;matches&#x20;your&#x20;search.", "groups":"Product&#x20;Categories","groupsEmpty":"Sorry,&#x20;we&#x20;could&#x20;not&#x20;find&#x20;a&#x20;product&#x20;that&#x20;matches&#x20;your&#x20;search.", "products":"Products","productsEmpty":"Sorry,&#x20;we&#x20;could&#x20;not&#x20;find&#x20;a&#x20;product&#x20;that&#x20;matches&#x20;your&#x20;search.", "support":"Support","supportEmpty":"Sorry,&#x20;we&#x20;could&#x20;not&#x20;find&#x20;an&#x20;article&#x20;that&#x20;matches&#x20;your&#x20;search.", "faq":"FAQ","faqEmpty":"Sorry,&#x20;we&#x20;could&#x20;not&#x20;find&#x20;an&#x20;article&#x20;that&#x20;matches&#x20;your&#x20;search.","brands":"Manufacturer","brandsEmpty":"Sorry,&#x20;we&#x20;could&#x20;not&#x20;find&#x20;a&#x20;brand&#x20;that&#x20;matches&#x20;your&#x20;search."}'>
+                </div>
+            </fieldset>
+        </form>
+
+    </div>
+</li>
+<!-- /Search -->
+
+
+                <li class="burger">
+                    <a href="#" class="navigation-shop-toggle show"> <span class="ci IconMenu"></span> </a>
+                </li>
+            </ul>
+        </nav>
+    </section>
+
+    <section class="shop-section  trans20">
+        
+
+
+<nav class="navigation-shop" role="navigation">
+
+    <ul class="navigation">
+
+        <li class="sticky-logo">
+            <a href="/en-us/" class="navigation-brand">
+				<span class="brand-logo">canyon</span>
+            </a>
+        </li>
+
+        
+            <li class="mtb">
+                <a data-nav="MTB" href="/en-us/mtb">
+                    MTB
+                </a>
+                
+                    <div class="navigation-flyout">
+                        <ul>
+                            <li>
+                                <a href="/en-us/mtb">
+                                    
+                                            MTB
+                                        
+                                </a>
+                                <ul>
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="589816b6-2cb6-426e-ae06-eebe67f7e738" href="/en-us/mtb/strive">Strive</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="a92bd6a2-195c-48af-ba29-9a5493dbae4e" href="/en-us/mtb/spectral">Spectral</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="f3d7fcb0-0d05-445e-a513-d24136c43d5b" href="/en-us/mtb/neuron">Neuron</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="86aa480c-12ca-44e7-86ed-34e0c637cc43" href="/en-us/mtb/lux">Lux</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="03b71ff1-cbcf-46c0-a2ea-87629d2c667c" href="/en-us/mtb/exceed">Exceed</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="5aaaecb7-5624-4caf-9d7b-be7cbf46f8f6" href="/en-us/gravity/torque">Torque</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="88065eb2-de10-40d2-a77e-a5f93dfcfd30" href="/en-us/mtb/all-wmn-mountainbikes">ALL WMN MOUNTAINBIKES</a>
+                                                </li>
+                                            
+                                    
+                                </ul>
+                            </li>
+                        </ul>
+                        
+                    </div>
+                
+            </li>
+        
+            <li class="road">
+                <a data-nav="Road" href="/en-us/road">
+                    Road
+                </a>
+                
+                    <div class="navigation-flyout">
+                        <ul>
+                            <li>
+                                <a href="/en-us/road">
+                                    
+                                            Road
+                                        
+                                </a>
+                                <ul>
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="b347c1c9-1cdf-4ac7-ae8c-63d1a110f8f1" href="/en-us/road/aeroad">Aeroad</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="4266640c-07b1-447e-8bbd-81c24865d1b6" href="/en-us/road/ultimate">Ultimate</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="111cb4f5-de23-4fb6-9618-da4de60dca23" href="/en-us/road/endurace">Endurace</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="8c0c827c-61c7-4a2e-917c-0d5c52298e58" href="/en-us/road/inflite">Inflite</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="e98456e9-c8ee-470d-bd2a-b72ff7fca65c" href="/en-us/road/grail">Grail</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="fffc9da8-aa17-4669-9280-6331a3d3b090" href="/en-us/road/wmn">ALL WMN ROADBIKES</a>
+                                                </li>
+                                            
+                                    
+                                </ul>
+                            </li>
+                        </ul>
+                        
+                                <a class="button button-sm variation bike-finder-link icon orange" href="/en-us/buying-advice/modelfinder#biketype=road">Find your Road bike</a>
+                            
+                    </div>
+                
+            </li>
+        
+            <li class="triathlon">
+                <a data-nav="Triathlon" href="/en-us/triathlon">
+                    Triathlon
+                </a>
+                
+                    <div class="navigation-flyout">
+                        <ul>
+                            <li>
+                                <a href="/en-us/triathlon">
+                                    
+                                            Triathlon
+                                        
+                                </a>
+                                <ul>
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="1217f38b-6abd-4cac-8cfe-b6139a0880d0" href="/en-us/triathlon/speedmax/cf-slx">Speedmax CF SLX</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="e31be8aa-cb72-4ae7-81ec-b8e7b3f9eae7" href="/en-us/triathlon/speedmax/cf">Speedmax CF</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="548bec74-880b-4fcb-b5e3-e71e79676e62" href="/en-us/road/aeroad">Aeroad</a>
+                                                </li>
+                                            
+                                    
+                                </ul>
+                            </li>
+                        </ul>
+                        
+                    </div>
+                
+            </li>
+        
+            <li class="gravity">
+                <a data-nav="Gravity" href="/en-us/gravity">
+                    Gravity
+                </a>
+                
+                    <div class="navigation-flyout">
+                        <ul>
+                            <li>
+                                <a href="/en-us/gravity">
+                                    
+                                            Gravity
+                                        
+                                </a>
+                                <ul>
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="d78d5b85-a941-4273-ab26-4f9d7e2a3074" href="/en-us/mtb/strive">Strive</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="f3b52ce5-21cc-42a9-94a0-e7785ca7c05b" href="/en-us/gravity/sender">Sender</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="cc6d07f0-562e-4e25-841a-1be6184262f7" href="/en-us/gravity/torque">Torque</a>
+                                                </li>
+                                            
+                                    
+                                </ul>
+                            </li>
+                        </ul>
+                        
+                                <a class="button button-sm variation bike-finder-link icon orange" href="/en-us/buying-advice/modelfinder#biketype=gravity">Find your Gravity bike</a>
+                            
+                    </div>
+                
+            </li>
+        
+            <li class="urban">
+                <a data-nav="Urban" href="/en-us/urban">
+                    Urban
+                </a>
+                
+                    <div class="navigation-flyout">
+                        <ul>
+                            <li>
+                                <a href="/en-us/urban">
+                                    
+                                            Urban
+                                        
+                                </a>
+                                <ul>
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="d8afabf0-cc82-44e4-982e-911abf6cd979" href="/en-us/urban/urban">Urban</a>
+                                                </li>
+                                            
+                                    
+                                </ul>
+                            </li>
+                        </ul>
+                        
+                                <a class="button button-sm variation bike-finder-link icon orange" href="/en-us/buying-advice/modelfinder#biketype=urban">Find your Urban bike</a>
+                            
+                    </div>
+                
+            </li>
+        
+            <li class="fitness">
+                <a data-nav="Fitness" href="/en-us/fitness">
+                    Fitness
+                </a>
+                
+                    <div class="navigation-flyout">
+                        <ul>
+                            <li>
+                                <a href="/en-us/fitness">
+                                    
+                                            Fitness
+                                        
+                                </a>
+                                <ul>
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="85877831-0116-425e-9d8a-3c74c44423b0" href="/en-us/fitness/pathlite">Pathlite</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a data-bikeid="8fc2946b-e845-43d4-869a-5179404b9438" href="/en-us/fitness/roadlite">Roadlite</a>
+                                                </li>
+                                            
+                                    
+                                </ul>
+                            </li>
+                        </ul>
+                        
+                    </div>
+                
+            </li>
+        
+            <li class="bikes on stock">
+                <a data-nav="Bikes On Stock" href="/en-us/bikes-on-stock">
+                    Bikes On Stock
+                </a>
+                
+            </li>
+        
+            <li class="accessories">
+                <a data-nav="Accessories" href="/en-us/accessories">
+                    Accessories
+                </a>
+                
+            </li>
+        
+            <li class="outlet">
+                <a data-nav="Outlet" href="/en-us/outlet">
+                    Outlet
+                </a>
+                
+            </li>
+        
+<!--        <li class="service">-->
+<!--            <a href="#service-support-navigation">-->
+<!--                Service-->
+<!--            </a>-->
+<!--        </li>-->
+    </ul>
+
+</nav>
+
+<div class="flyout-container">
+
+    <div class="container">
+
+        
+            
+                <div class="navigation-flyout" data-nav="MTB">
+                    <ul>
+                        <li>
+                            <a href="/en-us/mtb">
+                                
+                                        MTB
+                                    
+                            </a>
+                            <ul>
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="589816b6-2cb6-426e-ae06-eebe67f7e738" href="/en-us/mtb/strive">Strive</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="a92bd6a2-195c-48af-ba29-9a5493dbae4e" href="/en-us/mtb/spectral">Spectral</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="f3d7fcb0-0d05-445e-a513-d24136c43d5b" href="/en-us/mtb/neuron">Neuron</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="86aa480c-12ca-44e7-86ed-34e0c637cc43" href="/en-us/mtb/lux">Lux</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="03b71ff1-cbcf-46c0-a2ea-87629d2c667c" href="/en-us/mtb/exceed">Exceed</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="5aaaecb7-5624-4caf-9d7b-be7cbf46f8f6" href="/en-us/gravity/torque">Torque</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="88065eb2-de10-40d2-a77e-a5f93dfcfd30" href="/en-us/mtb/all-wmn-mountainbikes">ALL WMN MOUNTAINBIKES</a>
+                                            </li>
+                                        
+                                
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="preview-container">
+                        <figure class="initial" data-bikeid="0f414347-22aa-4093-a656-f57f883066a1">
+                            
+                                <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/d9ff6f7be59537b88e9e8edf35b05f81e8cb3293/mtb-exceed-navigation.jpg" width="540" height="430">
+                            
+                            <figcaption>
+                                <span class="slogan">Beyond Limits</span>
+                                <span class="core-value-statement">The most advanced and fastest carbon cross-country hardtail ever.</span>
+                            </figcaption>
+                        </figure>
+                        
+                            <figure class="hideme" data-bikeid="589816b6-2cb6-426e-ae06-eebe67f7e738">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/038e3c80b9e3e4e64978164f988e4acd1ae7b11f/mtb-strive.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Shape your Ride</span>
+                                    <span class="core-value-statement">Charge down, cruise back up, our 160 mm enduro bike is the most advanced on the scene.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="a92bd6a2-195c-48af-ba29-9a5493dbae4e">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/d60578ef548b3fda86ab5978394b789e7a07a410/navi-mtb-spectral.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">NO ROUTINE</span>
+                                    <span class="core-value-statement">Our take on the modern trail bike.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="f3d7fcb0-0d05-445e-a513-d24136c43d5b">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/6b3ae11cb0b8d1df7e352870f302ea24bf30e00f/mtb-neuron.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Go anywhere.  Do anything.</span>
+                                    <span class="core-value-statement">All-round full-suspension trail bike that can take you anywhere.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="86aa480c-12ca-44e7-86ed-34e0c637cc43">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/71d0b639f2b4039d733633a9e1a836be8ba001cf/mtb-lux.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">FLIGHTSPEED</span>
+                                    <span class="core-value-statement">Our lightest full suspension XC bike ready for modern racing.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="03b71ff1-cbcf-46c0-a2ea-87629d2c667c">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/a46f70204149eb94f7df7737c15856b372192b83/mtb-exceed.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Beyond Limits</span>
+                                    <span class="core-value-statement">The most advanced and fastest carbon cross-country hardtail ever.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="5aaaecb7-5624-4caf-9d7b-be7cbf46f8f6">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/4dd5b9938135fbbdcce066bd9900257965e746d0/gravity-torque.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">UNRULY. UNBOUND. UNREAL.</span>
+                                    <span class="core-value-statement">Super enduro, park bike, freeride, call it whatever you like, it’s our do-it-all gravity bike.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="88065eb2-de10-40d2-a77e-a5f93dfcfd30">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/e312f76425f2f86e96e82d585bce16699e121966/mtb-wmn-fullys.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Find your best</span>
+                                    <span class="core-value-statement">Whatever the trails, our women&#039;s full suspension mountain bikes are ready to rip.</span>
+                                </figcaption>
+                            </figure>
+                        
+                    </div>
+                    
+                </div>
+            
+        
+            
+                <div class="navigation-flyout" data-nav="Road">
+                    <ul>
+                        <li>
+                            <a href="/en-us/road">
+                                
+                                        Road
+                                    
+                            </a>
+                            <ul>
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="b347c1c9-1cdf-4ac7-ae8c-63d1a110f8f1" href="/en-us/road/aeroad">Aeroad</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="4266640c-07b1-447e-8bbd-81c24865d1b6" href="/en-us/road/ultimate">Ultimate</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="111cb4f5-de23-4fb6-9618-da4de60dca23" href="/en-us/road/endurace">Endurace</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="8c0c827c-61c7-4a2e-917c-0d5c52298e58" href="/en-us/road/inflite">Inflite</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="e98456e9-c8ee-470d-bd2a-b72ff7fca65c" href="/en-us/road/grail">Grail</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="fffc9da8-aa17-4669-9280-6331a3d3b090" href="/en-us/road/wmn">ALL WMN ROADBIKES</a>
+                                            </li>
+                                        
+                                
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="preview-container">
+                        <figure class="initial" data-bikeid="6b0f4e1f-163b-4c2c-9e26-d95fe6a9c0db">
+                            
+                                <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/3ab5f984cae69cc5e57f4755aa9c30330742a1ea/navigation-road-aeroad.jpg" width="540" height="430">
+                            
+                            <figcaption>
+                                <span class="slogan">Made for Racing</span>
+                                <span class="core-value-statement">Without a doubt, the most complete aero road bike in the pro peloton.</span>
+                            </figcaption>
+                        </figure>
+                        
+                            <figure class="hideme" data-bikeid="b347c1c9-1cdf-4ac7-ae8c-63d1a110f8f1">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/a8b6e41584f70d94a5972d3fb6b0fc61b706758a/navi-road-aeroad.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Made for Racing</span>
+                                    <span class="core-value-statement">Without a doubt, the most complete aero road bike in the pro peloton.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="4266640c-07b1-447e-8bbd-81c24865d1b6">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/81c8c1884cfb24f6b78d1fbbd0bde3659c651de2/road-ultimate.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Engineered Perfection</span>
+                                    <span class="core-value-statement">If you’re looking for Grand Tour-winning pedigree, our flagship lightweight road bike has it.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="111cb4f5-de23-4fb6-9618-da4de60dca23">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/c4a74d648b4d7e168f79f557263add060a2012bc/road-endurace.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Choose to Ride</span>
+                                    <span class="core-value-statement">Uniting control, comfort and speed, nothing can match the ride of our endurance road bike.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="8c0c827c-61c7-4a2e-917c-0d5c52298e58">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/80364adca48c747fb7d34d95ae6c8e7fe472c71c/navi-road-inflite.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">There is no Off-Season</span>
+                                    <span class="core-value-statement">At home on or off the road, ride through all seasons with our versatile cyclocross bike.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="e98456e9-c8ee-470d-bd2a-b72ff7fca65c">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/46334fe7bbda691572109193c8c42e388cad9001/road-grail.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">GO FIND IT</span>
+                                    <span class="core-value-statement">The Grail gravel bike blows the potential of what, where and how you ride wide open.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="fffc9da8-aa17-4669-9280-6331a3d3b090">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/b805bd93801e621e993887c99c0e7a522fd973c8/navi-road-wmn.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Find your best</span>
+                                    <span class="core-value-statement">From first-timers or seasoned competitors, our women&#039;s road bikes give you a range of choice like no other.</span>
+                                </figcaption>
+                            </figure>
+                        
+                    </div>
+                    
+                            <a class="button button-sm variation bike-finder-link icon orange" href="/en-us/buying-advice/modelfinder#biketype=road">Find your Road bike</a>
+                        
+                </div>
+            
+        
+            
+                <div class="navigation-flyout" data-nav="Triathlon">
+                    <ul>
+                        <li>
+                            <a href="/en-us/triathlon">
+                                
+                                        Triathlon
+                                    
+                            </a>
+                            <ul>
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="1217f38b-6abd-4cac-8cfe-b6139a0880d0" href="/en-us/triathlon/speedmax/cf-slx">Speedmax CF SLX</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="e31be8aa-cb72-4ae7-81ec-b8e7b3f9eae7" href="/en-us/triathlon/speedmax/cf">Speedmax CF</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="548bec74-880b-4fcb-b5e3-e71e79676e62" href="/en-us/road/aeroad">Aeroad</a>
+                                            </li>
+                                        
+                                
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="preview-container">
+                        <figure class="initial" data-bikeid="e5b1f289-c50b-4753-92f4-0d2e4fc13e65">
+                            
+                                <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/feeb9399520528602d294850cb9ac94930831a10/navigation-triathlon-speedmax.jpg" width="540" height="430">
+                            
+                            <figcaption>
+                                <span class="slogan">System Complete</span>
+                                <span class="core-value-statement">With every detail designed to boost your performance, this is the fastest triathlon bike in the world.</span>
+                            </figcaption>
+                        </figure>
+                        
+                            <figure class="hideme" data-bikeid="1217f38b-6abd-4cac-8cfe-b6139a0880d0">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/fee14cf17c9045640303bd387d4da62cba919440/triathlon-speedmax-cf-slx.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">System Complete</span>
+                                    <span class="core-value-statement">With every detail designed to boost your performance, this is the fastest triathlon bike in the world.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="e31be8aa-cb72-4ae7-81ec-b8e7b3f9eae7">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/3341e0d69537025a16a6e15a0c76c3c21afa636f/triathlon-speedmax-cf.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">SYSTEM COMPLETE</span>
+                                    <span class="core-value-statement">With every detail designed to boost your performance, this is the fastest triathlon bike in the world.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="548bec74-880b-4fcb-b5e3-e71e79676e62">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/a8b6e41584f70d94a5972d3fb6b0fc61b706758a/navi-road-aeroad.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Made for Racing</span>
+                                    <span class="core-value-statement">Without a doubt, the most complete aero road bike in the pro peloton.</span>
+                                </figcaption>
+                            </figure>
+                        
+                    </div>
+                    
+                </div>
+            
+        
+            
+                <div class="navigation-flyout" data-nav="Gravity">
+                    <ul>
+                        <li>
+                            <a href="/en-us/gravity">
+                                
+                                        Gravity
+                                    
+                            </a>
+                            <ul>
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="d78d5b85-a941-4273-ab26-4f9d7e2a3074" href="/en-us/mtb/strive">Strive</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="f3b52ce5-21cc-42a9-94a0-e7785ca7c05b" href="/en-us/gravity/sender">Sender</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="cc6d07f0-562e-4e25-841a-1be6184262f7" href="/en-us/gravity/torque">Torque</a>
+                                            </li>
+                                        
+                                
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="preview-container">
+                        <figure class="initial" data-bikeid="12744e3f-fb0f-4fa3-aaa8-db97b58457f1">
+                            
+                                <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/038e3c80b9e3e4e64978164f988e4acd1ae7b11f/mtb-strive.jpg" width="540" height="430">
+                            
+                            <figcaption>
+                                <span class="slogan">Shape your Ride</span>
+                                <span class="core-value-statement">Charge down, cruise back up, our 160 mm enduro bike is the most advanced on the scene.</span>
+                            </figcaption>
+                        </figure>
+                        
+                            <figure class="hideme" data-bikeid="d78d5b85-a941-4273-ab26-4f9d7e2a3074">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/038e3c80b9e3e4e64978164f988e4acd1ae7b11f/mtb-strive.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Shape your Ride</span>
+                                    <span class="core-value-statement">Charge down, cruise back up, our 160 mm enduro bike is the most advanced on the scene. </span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="f3b52ce5-21cc-42a9-94a0-e7785ca7c05b">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/5d785830bb14895b9034873fb3b99fcb90b1c502/navi-gravity-sender.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">DRAW THE LINE</span>
+                                    <span class="core-value-statement">Designed and engineered with a single focus: to create the ultimate downhill bike.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="cc6d07f0-562e-4e25-841a-1be6184262f7">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/4dd5b9938135fbbdcce066bd9900257965e746d0/gravity-torque.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">UNRULY. UNBOUND. UNREAL.</span>
+                                    <span class="core-value-statement">Super enduro, park bike, freeride, call it whatever you like, it’s our do-it-all gravity bike.</span>
+                                </figcaption>
+                            </figure>
+                        
+                    </div>
+                    
+                            <a class="button button-sm variation bike-finder-link icon orange" href="/en-us/buying-advice/modelfinder#biketype=gravity">Find your Gravity bike</a>
+                        
+                </div>
+            
+        
+            
+                <div class="navigation-flyout" data-nav="Urban">
+                    <ul>
+                        <li>
+                            <a href="/en-us/urban">
+                                
+                                        Urban
+                                    
+                            </a>
+                            <ul>
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="d8afabf0-cc82-44e4-982e-911abf6cd979" href="/en-us/urban/urban">Urban</a>
+                                            </li>
+                                        
+                                
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="preview-container">
+                        <figure class="initial" data-bikeid="86a0b0b0-3812-42b8-a8a2-072be08536b0">
+                            
+                                <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/4c6d3ea699ea64ec92470ea2ffe93691e04a8fc2/urban-urban-urban.jpg" width="540" height="430">
+                            
+                            <figcaption>
+                                <span class="slogan">Rediscover your city</span>
+                                <span class="core-value-statement">Substance, style and performance unite with our standout city bike.</span>
+                            </figcaption>
+                        </figure>
+                        
+                            <figure class="hideme" data-bikeid="d8afabf0-cc82-44e4-982e-911abf6cd979">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/4c6d3ea699ea64ec92470ea2ffe93691e04a8fc2/urban-urban-urban.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Rediscover your city</span>
+                                    <span class="core-value-statement">Substance, style and performance unite with our standout city bike.</span>
+                                </figcaption>
+                            </figure>
+                        
+                    </div>
+                    
+                            <a class="button button-sm variation bike-finder-link icon orange" href="/en-us/buying-advice/modelfinder#biketype=urban">Find your Urban bike</a>
+                        
+                </div>
+            
+        
+            
+                <div class="navigation-flyout" data-nav="Fitness">
+                    <ul>
+                        <li>
+                            <a href="/en-us/fitness">
+                                
+                                        Fitness
+                                    
+                            </a>
+                            <ul>
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="85877831-0116-425e-9d8a-3c74c44423b0" href="/en-us/fitness/pathlite">Pathlite</a>
+                                            </li>
+                                        
+                                
+                                    
+                                            <li>
+                                                <a data-bikeid="8fc2946b-e845-43d4-869a-5179404b9438" href="/en-us/fitness/roadlite">Roadlite</a>
+                                            </li>
+                                        
+                                
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="preview-container">
+                        <figure class="initial" data-bikeid="3bbbc87e-a2c6-40a1-a908-3d317dcb9793">
+                            
+                                <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/ab21346a8c3721840d8f742a3dfc97cd2bc68f9c/fitness-pathlite-US.jpg" width="540" height="430">
+                            
+                            <figcaption>
+                                <span class="slogan">Ride your Workout</span>
+                                <span class="core-value-statement">Refresh your routine with a fast and superlight fitness bike that won’t hold you back.</span>
+                            </figcaption>
+                        </figure>
+                        
+                            <figure class="hideme" data-bikeid="85877831-0116-425e-9d8a-3c74c44423b0">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/ecd6a767155a211425579f3928a760a3a29a3848/fitness-pathlite.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Ride your Workout</span>
+                                    <span class="core-value-statement">Refresh your routine with a fast and superlight fitness bike that won’t hold you back.</span>
+                                </figcaption>
+                            </figure>
+                        
+                            <figure class="hideme" data-bikeid="8fc2946b-e845-43d4-869a-5179404b9438">
+                                
+                                    <img class="preview-image" data-lazy-desktop="https://static.canyon.com/_Resources/Persistent/b7e2c1c5e75ff152a44a5d1ba947011f3bb8df98/fitness-roadlite.jpg" width="540" height="430">
+                                
+                                <figcaption>
+                                    <span class="slogan">Ride your Workout</span>
+                                    <span class="core-value-statement">Refresh your routine with a fast and superlight fitness bike that won’t hold you back.</span>
+                                </figcaption>
+                            </figure>
+                        
+                    </div>
+                    
+                </div>
+            
+        
+            
+        
+            
+        
+            
+        
+
+    </div>
+
+</div>
+
+    </section>
+
+</header>
+
+
+    
+
+    <section class=" background-container" data-bg-url="https://static.canyon.com/_Resources/Persistent/12d9bda26d08830e7dc9b1ecc8a39501a682b1a8/prosports-background.jpg">
+            <main class="neos-contentcollection" role="main">
+    
+        <section class="homepage-stage">
+            <div class="homepage-slider">
+                <div class="neos-contentcollection">
+
+    <div class="homepage-slide "
+
+         style="background-color: #000000"
+
+         data-href="/en-us/specials/send-it-into-spring"
+
+         data-background-image-name-xs="https://static.canyon.com/_Resources/Persistent/e119c0d948d45f2a7731bdbba2df79beb40adbda/SpringSend_Email_desktop_750x962.png"
+         data-background-image-alignment-xs="0.5;0.5"
+
+         data-background-image-name-sm="https://static.canyon.com/_Resources/Persistent/e119c0d948d45f2a7731bdbba2df79beb40adbda/SpringSend_Email_desktop_750x962.png"
+         data-background-image-alignment-sm="0.5;0.5"
+
+         data-background-image-name-md="https://static.canyon.com/_Resources/Persistent/53247ae3da636658a43f94d0f5252ea429dafbbd/SpringSend_Email_desktop_2400x1260.png"
+         data-background-image-alignment-md="0.5;0.5"
+
+    >
+
+        <div class="homepage-teaser-content">
+            
+                <div class="decker"></div>
+            
+            <div>
+                <div>
+                    <h1>THE SPRING SEND</h1>
+                    <h4>Save on select mountain bikes.</h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="homepage-slide "
+
+         style="background-color: #000000"
+
+         data-href="/en-us/mtb/neuron/neuron-al-7-0"
+
+         data-background-image-name-xs="https://static.canyon.com/_Resources/Persistent/58b30dd6d04633c8b23a29d4fc773c669cf93631/HP_NeuronAL_750x962_v1c.jpg"
+         data-background-image-alignment-xs="0.5;0.5"
+
+         data-background-image-name-sm="https://static.canyon.com/_Resources/Persistent/54c789d20c96ecdb6bed7740fbefdfb27f499923/HP_NeuronAL_1536x964_v1c.jpg"
+         data-background-image-alignment-sm="0.5;0.5"
+
+         data-background-image-name-md="https://static.canyon.com/_Resources/Persistent/d8ba3f9590fa5f2c8afaea0a1e66a55db161e45c/HP_NeuronAL_2400x1260_v1c.jpg"
+         data-background-image-alignment-md="0.5;0.5"
+
+    >
+
+        <div class="homepage-teaser-content">
+            
+            <div>
+                <div>
+                    <h1>Neuron AL</h1>
+                    <h4>The ultimate trail bike.</h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="homepage-slide spectral"
+
+         style="background-color: #000000"
+
+         data-href="https://www.canyon.com/en-us/mtb/strive"
+
+         data-background-image-name="/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_img/homepage-us/strive2019/video-standbild.jpg"
+         data-background-image-alignment="0.5;0.5"
+
+         data-background-video-name="/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_img/homepage-us/strive2019/strive_teaser"
+         data-background-video-alignment="0.5;0.5"
+
+         
+    >
+
+        <div class="homepage-teaser-content">
+            
+            <div>
+                <div>
+                    <h1>Strive</h1>
+                    <h4></h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="homepage-slide "
+
+         style="background-color: #000000"
+
+         data-href="https://www.canyon.com/en-us/buying-advice/bikes-on-stock?type=road&amp;series=Endurace%20CF%20SL%20Disc"
+
+         data-background-image-name-xs="https://static.canyon.com/_Resources/Persistent/2cf6c6ea655fd951416cef4da9069fe5c51b2398/HP_Endurace_750x962_181218.jpg"
+         data-background-image-alignment-xs="0.5;0.5"
+
+         data-background-image-name-sm="https://static.canyon.com/_Resources/Persistent/441cc847edb66394c7b8b894238e15a9d043c9c8/HP_Endurace_1536x964_181218.jpg"
+         data-background-image-alignment-sm="0.5;0.5"
+
+         data-background-image-name-md="https://static.canyon.com/_Resources/Persistent/56a0915dbab5412ee04b36aa87618e796c00d702/HP_Endurace_2400x1260_181218.jpg"
+         data-background-image-alignment-md="0.5;0.5"
+
+    >
+
+        <div class="homepage-teaser-content">
+            
+            <div>
+                <div>
+                    <h1>ENDURACE</h1>
+                    <h4>New and back in stock.</h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+            </div>
+        </section>
+    
+
+
+    <noscript>
+        <div class="page-header orange">
+            <div class="intro-box">
+                <div class="headline-box">
+                    <p class="h2">
+                        Javascript ist deactivated in your browser. Please activate Javascript to achieve an optimum result.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </noscript>
+
+    <!--[if lte IE 8]><script type="text/javascript">
+        document.createElement ("section");
+    </script><![endif]-->
+
+    <div id="debugOut" class="shape"></div>
+
+    <section class="homepage-stage">
+
+        <div class="homepage-box"
+             data-page-boundary="SM"
+             data-row-heights="XS: .33; SM: 0.5; *: 1"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en-us/road"
+                 data-promo="quarter"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/mid-2018/row1-road-vertical.jpg"
+                 data-background-image-alignment-vertical="0.5 ; 0"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/mid-2018/row1-road-horizontal.jpg"
+                 data-background-image-alignment-horizontal="0.5 ; 1"
+            >
+                <div class="homepage-teaser-content">
+                    <h3 class="overlay">
+                        Road
+                    </h3>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>
+
+        <div class="homepage-box"
+             data-row-heights="XS: .33; SM: 0.5; *: 1"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en-us/mtb"
+                 data-promo="quarter"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/early-2018/row1-mtb-vertical.jpg"
+                 data-background-image-alignment-vertical="0.5 ; 0"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/early-2018/row1-mtb-horizontal.jpg"
+                 data-background-image-alignment-horizontal="1 ; 0"
+            >
+                <div class="homepage-teaser-content">
+                    <h3 class="overlay">
+                        MTB
+                    </h3>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>
+
+        <div class="homepage-box"
+             data-row-heights="XS: .33; SM: 0.5; *: 1"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en-us/triathlon"
+                 data-promo="quarter"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/early-2018/row1-tria-vertical.jpg"
+                 data-background-image-alignment-vertical="1 ; 0"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/early-2018/row1-tria-horizontal.jpg"
+                 data-background-image-alignment-horizontal="1 ; 0"
+            >
+                <div class="homepage-teaser-content">
+                    <h3 class="overlay">
+                        Triathlon
+                    </h3>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>
+
+        <div class="homepage-box"
+             data-row-heights="XS: .33; SM: 0.5; *: 1"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en-us/gravity"
+                 data-promo="quarter"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/summer-2017/gravity-vertical.jpg"
+                 data-background-image-alignment-vertical="0.5 ; 0"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/summer-2017/gravity-horizontal.jpg"
+                 data-background-image-alignment-horizontal="0.5 ; 0"
+            >
+                <div class="homepage-teaser-content">
+                    <h3 class="overlay">
+                        Gravity
+                    </h3>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0, .5)">
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="homepage-box"
+             data-row-heights="XS: .33; SM: 0.5; *: .9"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en/urban/"
+                 data-promo="quarter"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/fall-2016/urban-vertical.jpg"
+                 data-background-image-alignment-vertical="1 ; 0.3"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/fall-2016/urban-mobile.jpg"
+            >
+                <div class="homepage-teaser-content">
+                    <h3 class="overlay">
+                        Urban
+                    </h3>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>-->
+
+        <!--<div class="homepage-box"
+             data-row-heights="XS: .33; SM: 0.5; *: .9"
+             data-page-boundary="SM"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en/fitness/"
+                 data-promo="quarter"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/row2-fitness-vertical-2017.jpg"
+                 data-background-image-alignment-vertical="1 ; 0"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/row2-fitness-horizontal-2017.jpg"
+            >
+                <div class="homepage-teaser-content">
+                    <h3 class="overlay">
+                        Fitness
+                    </h3>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>-->
+
+        <!-- Prosports -->
+        <!--<div class="homepage-box"
+             data-row-heights="XS: .33; SM: 0.5; *: .9"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en-us/experience/prosports/"
+                 data-promo="quarter"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/row2-probikes2017-vertical.jpg"
+                 data-background-image-alignment-vertical="0; 0.2;"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/row2-probikes2017-horizontal.jpg"
+                 data-background-image-alignment-horizontal="0.5; 0;"
+            >
+                <div class="homepage-teaser-content">
+                    <h3 class="overlay">
+                        Pro sport
+                    </h3>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>-->
+
+        <!-- Accessories -->
+        <!--<div class="homepage-box"
+             data-page-boundary="*"
+             data-row-heights="XS: .33; SM: 0.5; *: .9"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en-us/accessories"
+                 data-promo="quarter"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/fall-2016/accessoires-vertical.jpg"
+                 data-background-image-alignment-vertical="0.5; 0.3;"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/fall-2016/acc-mobile.jpg"
+            >
+                <div class="homepage-teaser-content">
+                    <h3 class="overlay">
+                        Accessories
+                    </h3>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>-->
+
+
+
+        <!--<div class="homepage-box"
+             data-page-boundary="*"
+             data-row-heights="SM: .5; *: .25">
+            <div class="homepage-teaser canyon-home-inventory-teaser"
+                 data-background-image-name="https://static.canyon.com/_img/homepage/teaser-canyon-home-inventory.jpg"
+                 data-background-image-alignment=".70 ; .9">
+                <div class="homepage-teaser-content">
+                    <p>
+                        <strong>REDUCED OPENING HOURS AND SERVICE AVAILABILITY (ON SATURDAY, August 19th)</strong> <br />WE ARE AVAILABLE AND HAPPY TO HELP YOU UNTIL 14.00!</strong> <br />
+                    </p>
+                </div>
+            </div>
+        </div>-->
+
+
+
+
+        <!-- Factory Outlet -->
+        <div class="homepage-box"
+             data-row-heights="XS: .33; SM: .5; *: .7"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en-us/outlet/"
+                 data-promo="fifth"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/fall-2016/outlet-vertical.jpg"
+                 data-background-image-alignment-vertical="1; 1"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/fall-2016/outlet-mobile.jpg"
+            >
+                <div class="homepage-teaser-content">
+                    <h3 class="overlay">
+                        Outlet
+                    </h3>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="homepage-box"
+             data-row-heights="XS: .33; SM: .5; *: .7"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en/shop/expressbikes/"
+                 data-promo="fifth"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/fall-2016/expressbikes-vertical.jpg"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/fall-2016/express-mobile.jpg"
+            >
+                <div class="homepage-teaser-content">
+                    <h4 class="overlay">
+                        EXPRESS BIKES
+                    </h4>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>-->
+
+        <!-- Original Pro Bikes -->
+        <!--<div class="homepage-box"
+             data-row-heights="XS: .33; SM: .5; *: .7"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en/factory-outlet/original-pro-bikes/"
+                 data-promo="fifth"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/fall-2016/probikes-vertical.jpg"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/fall-2016/probikes-mobile.jpg"
+            >
+                <div class="homepage-teaser-content">
+                    <h4 class="overlay">
+                        ORIGINAL PRO BIKES
+                    </h4>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>-->
+
+        <!-- Modellfinder -->
+        <!--<div class="homepage-box"
+             data-row-heights="XS: .33; SM: .5; *: .7"
+             data-hide-at-sizes="XS SM"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en-us/buying-advice/find-your-canyon"
+                 data-promo="fifth"
+                 data-background-image-name="https://static.canyon.com/_img/homepage/fall-2016/modellfinder-vertical.jpg"
+            >
+                <div class="homepage-teaser-content">
+                    <h4 class="overlay">
+                        Find your Canyon
+                    </h4>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>-->
+
+        <!-- Karriere -->
+        <!--<div class="homepage-box"
+             data-row-heights="XS: .33; SM: .5; *: .7"
+        >
+            <div class="homepage-teaser"
+                 data-href="/en-us/career/come-to-canyon"
+                 data-promo="fifth"
+                 data-background-image-name-vertical="https://static.canyon.com/_img/homepage/fall-2016/karriere-vertical.jpg"
+                 data-background-image-name-horizontal="https://static.canyon.com/_img/homepage/fall-2016/karriere-mobile.jpg"
+            >
+                <div class="homepage-teaser-content">
+                    <h4 class="overlay">
+                        Career
+                    </h4>
+                </div>
+                <div class="homepage-teaser-content homepage-teaser-content-hover"
+                     style="background-color: rgba(0,0,0,.5)">
+                </div>
+            </div>
+        </div>-->
+
+
+    </section>
+
+    <!-- Helper: Breakpoint Indicator -->
+    <span class="breakpoint-indicator">
+        <span class="screen-xs"></span>
+        <span class="screen-sm"></span>
+        <span class="screen-md"></span>
+    </span>
+    <!-- / Breakpoint Indicator -->
+
+    <script type="text/javascript" src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_homepage/js/homepage/SetUpHomepage.js"></script>
+
+</main>
+    </section>
+
+    
+
+    
+
+
+<!-- footer block -->
+<footer class="">
+
+    <section class="site-section">
+        <!-- Site Navigation -->
+        <a name="service-support-navigation"></a>
+
+        <nav class="navigation-site" role="navigation">
+
+            <ul class="navigation">
+                
+                    <li class="navigation-site-item-6">
+                        <a>Buying Advice</a>
+                        
+                            <div class="navigation-flyout">
+                                <ul>
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/buying-advice/pps">Perfect Position System</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/buying-advice/modelfinder">Find Your Canyon</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/buying-advice/bike-comparison">Bike Comparison</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/buying-advice/information">Buy at Canyon</a>
+                                                </li>
+                                            
+                                    
+                                </ul>
+                            </div>
+                        
+                    </li>
+                
+                    <li class="navigation-site-item-6">
+                        <a>Service &amp; Support</a>
+                        
+                            <div class="navigation-flyout">
+                                <ul>
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/service-support/service">Service at Canyon</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/service-support/exchange">Returns</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/service-support/warranty">Warranty</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/service-support/faq">FAQ</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/service-support/canyon-service-by-velofix">Velofix</a>
+                                                </li>
+                                            
+                                    
+                                </ul>
+                            </div>
+                        
+                    </li>
+                
+                    <li class="navigation-site-item-6">
+                        <a>Explore Canyon</a>
+                        
+                            <div class="navigation-flyout">
+                                <ul>
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/explore-canyon/lionel-sanders-triathlon-saved-me">16.11.2018 | Lionel Sanders: Triathlon Saved Me</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/explore-canyon/news">Canyon Blog</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/explore-canyon/showroom">Showroom</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/explore-canyon/prosports">Pro Sports</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/explore-canyon/newsletter">Newsletter</a>
+                                                </li>
+                                            
+                                    
+                                </ul>
+                            </div>
+                        
+                    </li>
+                
+                    <li class="navigation-site-item-6">
+                        <a>About Us</a>
+                        
+                            <div class="navigation-flyout">
+                                <ul>
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/about-us/career">Career</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/buying-advice/information#direct_sales">Advantages Direct Sale</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/about-us/awards">Awards and distinctions</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/about-us/contact">Contact</a>
+                                                </li>
+                                            
+                                    
+                                </ul>
+                            </div>
+                        
+                    </li>
+                
+                    <li class="navigation-site-item-6">
+                        <a>Terms &amp; Conditions</a>
+                        
+                            <div class="navigation-flyout">
+                                <ul>
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/imprint-terms/legal-notes">Legal Notices</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/imprint-terms/legal-notes#privacy-policy">Privacy Policy</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/imprint-terms/legal-notes#copyright-policy">Copyright Policy</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/imprint-terms/return-policy">Return Policy</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/imprint-terms/sales-tax-policy">Sales Tax Policy</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/imprint-terms/warranty-and-crash-replacement">Warranty and Crash Replacement</a>
+                                                </li>
+                                            
+                                    
+                                        
+                                                <li>
+                                                    <a href="/en-us/imprint-terms/imprint">Imprint</a>
+                                                </li>
+                                            
+                                    
+                                </ul>
+                            </div>
+                        
+                    </li>
+                
+            </ul>
+
+            <div class="container">
+                <p class="copyright-brand">
+                    <span class="ci IconCanyon"></span>
+                </p>
+            </div>
+
+        </nav><!-- /Site Navigation -->
+
+    </section>
+
+    <div class="container">
+        <div class="page-footer black">
+            <div class="neos-contentcollection"><article id="community-tools" class="black">
+    <div class="row">
+        <div class="col-xs-12">
+            <p>
+                <a target="_blank" href="http://twitter.com/canyon_bikes" class="icon-link">
+                    <i class="ci IconTwitter"></i>
+                </a>
+                <a target="_blank" href="http://facebook.com/canyon" class="icon-link">
+                    <i class="ci IconFacebook"></i>
+                </a>
+                <a target="_blank" href="http://www.youtube.com/user/purecycling" class="icon-link">
+                    <i class="ci IconYoutube"></i>
+                </a>
+                <a target="_blank" href="http://instagram.com/canyon" class="icon-link">
+                    <i class="ci IconInstagram"></i>
+                </a>
+            </p>
+        </div>
+    </div>
+</article></div>
+            <article class="black" id="copyright-container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <p>
+                            <span class="block-xs">
+                                <span class="brand-logo" style="margin-right: 1em;">canyon</span>
+                            </span>
+                             &copy; COPYRIGHT – 2019 CANYON BICYCLES USA, Inc. – ALL RIGHTS RESERVED 
+                        </p>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- Helper: Breakpoint Indicator -->
+    <span class="breakpoint-indicator">
+        <span class="screen-xs"></span>
+        <span class="screen-sm"></span>
+        <span class="screen-md"></span>
+    </span>
+    <!-- / Breakpoint Indicator -->
+</footer>
+
+
+
+    <script src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_js/min/jquery-min.js" type="text/javascript"></script>
+    <script src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_js/min/plugins-min.js" type="text/javascript"></script>
+    <script src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/_js/min/scripts-min.js" type="text/javascript"></script>
+    <script src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/JavaScript/plugins/cartServicePlugin.js" type="text/javascript"></script>
+
+    <script src="https://static.canyon.com/_Resources/Static/Packages/Wysiwyg.Canyon.Site/JavaScript/Main.js" type="text/javascript"></script>
+<script data-neos-node="/sites/canyon@live;language=en&amp;country=us" src="https://static.canyon.com/_Resources/Static/Packages/Neos.Neos/JavaScript/LastVisitedNode.js" async></script></body></html>
