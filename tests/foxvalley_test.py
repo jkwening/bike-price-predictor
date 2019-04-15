@@ -47,15 +47,6 @@ class SpecializedTestCase(unittest.TestCase):
             self.assertTrue(key in result,
                             msg=f'{key} is not in result!')
 
-    def test_get_num_bikes(self):
-        with open(SHOP_BIKES_HTML_PATH, mode='r', encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-
-        num = self._fox._get_max_num_prods(soup)
-        expected = 268
-        self.assertEqual(expected, num,
-                         msg=f'Expected: {expected}; parsed: {num}')
-
     def test_get_prod_listings(self):
         expected = 30
         with open(SHOP_ROAD_BIKES_HTML_PATH, mode='r',
