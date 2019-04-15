@@ -20,9 +20,11 @@ class FoxValley(Scraper):
     def _fetch_prod_listing_view(self, endpoint):
         req_url = f'{self._BASE_URL}{endpoint}'
 
-        # Spoof browser to avoid 403 error code
+        # Spoof browser to avoid being flagged as an attack
         headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.96 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.96 Safari/537.36',
+            'Connection': 'keep-alive',
+            'Cookie': 'corsActive=true; SPSI=9dfc4494d144ada004f48a02ede0fdcc; UTGv2=h4f7728ce06e8ec1da15a89311c1c3c87835; _ga=GA1.2.92630715.1555286400; _gid=GA1.2.30010004.1555286400; ai_user=6In3a|2019-04-14T23:59:59.757Z; Culture=us; tracker_device=16ee3852-7d53-4b67-8af7-551a393dceec; __distillery=fc2a100_5abf4553-62be-4357-a00f-fca8a3168e9c-59f4e479c-2dad24186f08-3d49; spcsrf=824b52752cfdd59851504ac8f5017a98; PRLST=bM; ai_session=VvSbi|1555296983756|1555300890354.465; adOtr=4AdQ94fd941'
         }
         return self._fetch_html(req_url, headers=headers)
 
@@ -34,14 +36,19 @@ class FoxValley(Scraper):
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
-        try:
-            div_table = soup.find('div', class_='product__specs-table')
-            table_tr = div_table.find_all('tr', class_='product__specs-table-entry')
+        div_specs = soup.find('div', id='specifications')
+        tables = div_specs.find_all('table', class_='specifications')
+        trs = list()
 
-            for tr in table_tr:
-                spec = tr.find('td', class_='product__specs-table-key').string.strip()
+        # Get all tr tags for both table tags
+        for table in tables:
+            trs += table.find_all('tr')
+
+        try:
+            for tr in trs:
+                spec = tr.th.string.strip()
                 spec = self._normalize_spec_fieldnames(spec)
-                value = tr.find('td', class_='product__specs-table-value').string.strip()
+                value = tr.td.string.strip()
                 prod_specs[spec] = value
 
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
@@ -99,33 +106,34 @@ class FoxValley(Scraper):
         """Parse products on page."""
         div_prod_list = soup.find('div', id='productsContainer')
         products = div_prod_list.find_all('div', class_='bikeseries-summary')
+
+        # Get model hrefs for products on page
         for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
+            href = prod.a['href']
+            print('[get_prods] Getting model products for', href)
 
-            product['href'] = prod.a['href']
-            text_tag = prod.find('div', class_='text')
-            brand_id = text_tag.find(
-                'div', class_='store-brandlogo').img['class']
+            if len(self._products) == 20:
+                print(href)
 
-            if brand_id == 'brandid2':  # default brand is Giant
-                product['brand'] = 'liv'
-            else:
-                product['brand'] = 'giant'
+            # Get product info for each model available
+            soup_model = BeautifulSoup(self._fetch_prod_listing_view(href), 'lxml')
+            container = soup_model.find('div', id='productsContainer')
+            bike_summary = container.find_all('div', class_='bike-summary')
 
-            # Get prod_id and description
-            prod_id = prod['id']
-            product['product_id'] = prod_id
-            product['description'] = text_tag.h3.string.strip()
+            for bike in bike_summary:
+                p_dict = dict()
+                p_dict['site'] = self._SOURCE
+                p_dict['bike_type'] = bike_type
 
-            # Get price
-            price = prod['data-pricemin']
-            product['price'] = float(
-                price.strip().strip('$').replace(',', ''))
-            msrp = prod['data-pricemax']
-            product['msrp'] = float(
-                msrp.strip().strip('$').replace(',', ''))
-
-            self._products[prod_id] = product
-            print(f'[{len(self._products)}] New bike: ', product)
+                a_tag = bike.article.a
+                p_dict['href'] = a_tag['href']
+                p_dict['brand'] = a_tag['data-product-brand']
+                p_dict['description'] = a_tag['data-product-name']
+                prod_id = p_dict['description'].lower().replace(' ', '-')
+                p_dict['prod_id'] = prod_id
+                price = bike.find('span', class_='currentprice').string
+                price = float(price.strip().strip('$').replace(',', ''))
+                p_dict['price'] = price
+                p_dict['msrp'] = price
+                self._products[prod_id] = p_dict
+                print(f'\t[{len(self._products)}] New bike: ', p_dict)
