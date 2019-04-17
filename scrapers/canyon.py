@@ -32,6 +32,7 @@ class Canyon(Scraper):
                     value = li.find('span', class_='specs').string.strip().replace('  ', '')
                     value = value.replace('\n\n', ' ')
                     prod_specs[spec] = value
+                    self._specs_fieldnames.add(spec)
 
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         except AttributeError as err:

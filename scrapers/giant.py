@@ -49,6 +49,7 @@ class Giant(Scraper):
                 spec = self._normalize_spec_fieldnames(spec)
                 value = tr.td.string.strip()
                 prod_specs[spec] = value
+                self._specs_fieldnames.add(spec)
 
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         except AttributeError as err:
