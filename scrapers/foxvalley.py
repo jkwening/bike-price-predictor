@@ -14,7 +14,6 @@ class FoxValley(Scraper):
     def __init__(self, save_data_path=DATA_PATH):
         super().__init__(base_url='http://www.giantfoxvalley.com',
                          source='foxvalley', save_data_path=save_data_path)
-        self._page_size = 18  # 18 per page or all items
         self._PROD_PAGE_ENDPOINT = '/us/bikes/startpage'
 
     def _fetch_prod_listing_view(self, endpoint):
@@ -24,7 +23,7 @@ class FoxValley(Scraper):
         headers = {
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.96 Safari/537.36',
             'Connection': 'keep-alive',
-            'Cookie': 'corsActive=true; SPSI=9dfc4494d144ada004f48a02ede0fdcc; UTGv2=h4f7728ce06e8ec1da15a89311c1c3c87835; _ga=GA1.2.92630715.1555286400; _gid=GA1.2.30010004.1555286400; ai_user=6In3a|2019-04-14T23:59:59.757Z; Culture=us; tracker_device=16ee3852-7d53-4b67-8af7-551a393dceec; __distillery=fc2a100_5abf4553-62be-4357-a00f-fca8a3168e9c-59f4e479c-2dad24186f08-3d49; spcsrf=824b52752cfdd59851504ac8f5017a98; PRLST=bM; ai_session=VvSbi|1555296983756|1555300890354.465; adOtr=4AdQ94fd941'
+            'Cookie': 'corsActive=true; _ga=GA1.2.92630715.1555286400; ai_user=6In3a|2019-04-14T23:59:59.757Z; Culture=us; tracker_device=16ee3852-7d53-4b67-8af7-551a393dceec; __distillery=fc2a100_5abf4553-62be-4357-a00f-fca8a3168e9c-59f4e479c-2dad24186f08-3d49; SPSI=6c0f0aa724f3f00b746363c57c64c0f5; sbtsck=javX9LEkDN/kQEjp7HOCdUTPHdd8wD/i4/knsaQTrhrTQU=; UTGv2=h4f7728ce06e8ec1da15a89311c1c3c87835; _gid=GA1.2.1639977765.1555471767; spcsrf=b2f386bfad5fdc96dc69c61276407ba5; sp_lit=TUZfd5tcbcPopT9+U7fbEQ==; PRLST=mQ; adOtr=0ScaY702af4; ai_session=vRuOq|1555471767789|1555472267689.78'
         }
         return self._fetch_html(req_url, headers=headers)
 
@@ -50,6 +49,7 @@ class FoxValley(Scraper):
                 spec = self._normalize_spec_fieldnames(spec)
                 value = tr.td.string.strip()
                 prod_specs[spec] = value
+                self._specs_fieldnames.add(spec)
 
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         except AttributeError as err:
