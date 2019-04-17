@@ -36,7 +36,10 @@ class Giant(Scraper):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
         div_specs = soup.find('div', id='specifications')
-        tables = div_specs.find_all('table', class_='specifications')
+        try:
+            tables = div_specs.find_all('table', class_='specifications')
+        except AttributeError:
+            return prod_specs
         trs = list()
 
         # Get all tr tags for both table tags
@@ -135,7 +138,7 @@ class Giant(Scraper):
                 p_dict['brand'] = a_tag['data-product-brand']
                 p_dict['description'] = a_tag['data-product-name']
                 prod_id = p_dict['description'].lower().replace(' ', '-')
-                p_dict['prod_id'] = prod_id
+                p_dict['product_id'] = prod_id
                 price = bike.find('span', class_='currentprice').string
                 price = float(price.strip().strip('$').replace(',', ''))
                 p_dict['price'] = price
