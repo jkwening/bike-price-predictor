@@ -14,6 +14,7 @@ from scrapers.specialized import Specialized
 from scrapers.canyon import Canyon
 from scrapers.foxvalley import FoxValley
 from scrapers.giant import Giant
+from scrapers.bicycle_warehouse import BicycleWarehouse
 
 from utils.utils import DATA_PATH
 
@@ -28,7 +29,8 @@ class Collect:
             'competitive', 'nashbar', 'trek',
             'wiggle', 'rei', 'citybikes', 'proshop',
             'contebikes', 'eriks', 'specialized',
-            'foxvalley', 'canyon', 'giant'
+            'foxvalley', 'canyon', 'giant',
+            'bicycyle_warehouse'
         ]
 
     def _get_class_instance(self, source: str):
@@ -61,6 +63,8 @@ class Collect:
             return FoxValley(save_data_path=self._save_data_path)
         elif source == 'giant':
             return Giant(save_data_path=self._save_data_path)
+        elif source == 'bicycle_warehouse':
+            return BicycleWarehouse(save_data_path=self._save_data_path)
         else:
             raise ValueError(f'Invalid source: {source} value.')
 

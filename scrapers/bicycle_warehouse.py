@@ -17,12 +17,7 @@ class BicycleWarehouse(Scraper):
 
     def _fetch_prod_listing_view(self, endpoint):
         req_url = f'{self._BASE_URL}{endpoint}'
-
-        # Spoof browser to avoid 403 error code
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.96 Safari/537.36'
-        }
-        return self._fetch_html(req_url, headers=headers)
+        return self._fetch_html(req_url)
 
     def _get_max_num_prods(self, soup):
         """Get max num of products on current page."""
@@ -43,14 +38,17 @@ class BicycleWarehouse(Scraper):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
         try:
-            section = soup.find('section', id='trekProductSpecificationsComponent')
-            ul_specs = section.find('ul')
-            dls = ul_specs.find_all('dl')
+            table = soup.find('div', id='tabs-3').table
+            rows = table.find_all('tr')
 
-            for dl in dls:
-                spec = dl.find('dt').string.strip()
+            for row in rows:
+                r = list()
+                for child in row.children:  # get row tags
+                    if child.name == 'th' or child.name == 'td':
+                        r.append(child)
+                spec = r[0].string.strip()
                 spec = self._normalize_spec_fieldnames(spec)
-                value = dl.find('dd').string.strip()
+                value = r[1].string.strip()
                 prod_specs[spec] = value
                 self._specs_fieldnames.add(spec)
 
