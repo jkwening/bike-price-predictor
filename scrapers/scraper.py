@@ -177,8 +177,9 @@ class Scraper(ABC):
             else:
                 bike_url = self._BASE_URL + bike_href
 
-            # wait 1 second then get bike specification page
-            time.sleep(0.10)
+            # wait 10th of a second every 50 specs parsed
+            if len(specs) % 50 == 0:
+                time.sleep(0.10)
             try:
                 bike_spec_soup = BeautifulSoup(self._fetch_html(url=bike_url),
                                                'lxml')

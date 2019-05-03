@@ -12,16 +12,11 @@ from scrapers.scraper_utils import DATA_PATH
 class BicycleWarehouse(Scraper):
     def __init__(self, save_data_path=DATA_PATH):
         super().__init__(base_url='https://bicyclewarehouse.com',
-                         source='trek', save_data_path=save_data_path)
-        self._PROD_PAGE_ENDPOINT = '/us/en_US/bikes/c/B100/'
-        self._PAGE_SIZE = 72
+                         source='bicycle_warehouse',
+                         save_data_path=save_data_path)
 
-    def _fetch_prod_listing_view(self, endpoint, page_size=None,
-                                 page=0):
+    def _fetch_prod_listing_view(self, endpoint):
         req_url = f'{self._BASE_URL}{endpoint}'
-
-        if page_size is not None:  # add page_size query
-            req_url += f'?pageSize={page_size}&page={page}'
 
         # Spoof browser to avoid 403 error code
         headers = {
@@ -31,9 +26,18 @@ class BicycleWarehouse(Scraper):
 
     def _get_max_num_prods(self, soup):
         """Get max num of products on current page."""
-        num = soup.find('p', id='results-count--product').string.strip()
-        num = int(num.split()[0])
-        return num
+        raise NotImplementedError
+
+    @staticmethod
+    def _get_next_page(soup):
+        """Returns (success, endpoint) for next page url."""
+        div = soup.find('div', class_='pagination--container')
+        li = div.find('li', class_='pagination--next')
+
+        if li is None:
+            return False, ''
+
+        return True, li.a['href']
 
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
@@ -65,7 +69,7 @@ class BicycleWarehouse(Scraper):
         categories = dict()
 
         if soup is None:
-            page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
+            page = self._fetch_prod_listing_view('')
             soup = BeautifulSoup(page, 'lxml')
 
         nav_cat = soup.find('nav', class_='site-navigation')
@@ -88,33 +92,24 @@ class BicycleWarehouse(Scraper):
         self._products = dict()
         self._num_bikes = 0
 
-        # Exclude list
-        exclude_list = ['womens']
-
         # Scrape pages for each available category
         bike_categories = self._get_categories()
-        for bike_type in bike_categories.keys():
-            if bike_type in exclude_list:
-                continue
-            print(f'Getting {bike_type}...')
+        for bike_type in bike_categories:
+            print(f'Parsing first page for {bike_type}...')
             endpoint = bike_categories[bike_type]['href']
             soup = BeautifulSoup(self._fetch_prod_listing_view(
-                endpoint, page_size=self._PAGE_SIZE), 'lxml')
+                endpoint), 'lxml')
             self._get_prods_on_current_listings_page(soup, bike_type)
-            num_bikes = self._get_max_num_prods(soup)
+            next_page, endpoint = self._get_next_page(soup)
 
-            if num_bikes > self._PAGE_SIZE:
-                # site embeds non products on page so
-                total_pages = math.ceil(num_bikes / self._PAGE_SIZE)
-
-                for i in range(1, total_pages):
-                    try:
-                        soup = BeautifulSoup(self._fetch_prod_listing_view(
-                            endpoint, page_size=self._PAGE_SIZE, page=i), 'lxml')
-                        self._get_prods_on_current_listings_page(soup, bike_type)
-                    except FileNotFoundError:
-                        print(f'Page: {i} does not exist.)')
-                        break  # page doesn't exist so exit
+            counter = 1
+            while next_page:
+                counter += 1
+                print('\tparsing page:', counter)
+                soup = BeautifulSoup(self._fetch_prod_listing_view(
+                    endpoint), 'lxml')
+                self._get_prods_on_current_listings_page(soup, bike_type)
+                next_page, endpoint = self._get_next_page(soup)
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
@@ -123,42 +118,38 @@ class BicycleWarehouse(Scraper):
 
     def _get_prods_on_current_listings_page(self, soup, bike_type):
         """Parse products on page."""
-        ul_prod = soup.find('ul', class_='product-list')
-        products = ul_prod.find_all('article', class_='product-tile')
+        products = soup.find_all('article', class_='productgrid--item')
 
         for prod in products:
             product = dict()
             product['site'] = self._SOURCE
             product['bike_type'] = bike_type
-            product['brand'] = 'trek'  # site is single brand
 
-            try:
-                prod_id = prod.find('a')['data-sku']
-                product['product_id'] = prod_id
-            except KeyError:  # not a product listing, skip
-                continue
-
-            a_tag = prod.find('a', id=f'product-tile-sku-price-{prod_id}')
+            item = prod.find('div', class_='productitem--info')
+            # Get href, description, and brand
+            a_tag = item.h2.a
             product['href'] = a_tag['href']
-            product['description'] = a_tag['title']
+            product['description'] = a_tag.string.strip()
+            product['brand'] = product['description'].split()[0].strip()
 
-            price = a_tag.find('span', class_='product-tile__saleprice').string
-            try:
-                product['price'] = float(
-                    price.strip().strip('$').replace(',', ''))
-            except ValueError:  # for ranges, take the lowest price
-                low = float(price.replace(',', '').split('-')[0].strip().strip('$'))
-                product['price'] = low
+            # Get prod id
+            div_id = item.find('div', class_='yotpo')
+            prod_id = div_id['data-product-id']
+            product['product_id'] = prod_id
 
+            # Parse price
+            div_price = item.find('div', class_='productitem--price')
+            main_price = div_price.find('div', class_='price--main')
+            price = main_price.find('span', class_='money').string
+            product['price'] = float(price.strip().strip('$').replace(',', ''))
+
+            # Parse msrp accordingly
             try:
-                msrp = a_tag.find('span', class_='product-tile__advprice').string
+                msrp = div_price.find('div', class_='price--compare-at').span.string
                 product['msrp'] = float(
                     msrp.strip().strip('$').replace(',', ''))
             except AttributeError:  # handle not on sale
                 product['msrp'] = product['price']
-            except ValueError:  # for ranges, take the lowest price
-                low = float(msrp.replace(',', '').split('-')[0].strip().strip('$'))
-                product['msrp'] = low
 
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
