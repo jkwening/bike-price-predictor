@@ -30,7 +30,7 @@ class Collect:
             'wiggle', 'rei', 'citybikes', 'proshop',
             'contebikes', 'eriks', 'specialized',
             'foxvalley', 'canyon', 'giant',
-            'bicycyle_warehouse'
+            'bicycle_warehouse'
         ]
 
     def _get_class_instance(self, source: str):
