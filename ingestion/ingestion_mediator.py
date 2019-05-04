@@ -1,3 +1,12 @@
+import os
+import sys
+
+# Add project path into sys.path if not already so can be run from cmd line
+ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+if ROOT_PATH not in sys.path:
+    sys.path.append(ROOT_PATH)
+
+# Import package modules
 from ingestion.collect import Collect
 from ingestion.ingest import Ingest
 from ingestion.manifest import Manifest
@@ -142,4 +151,4 @@ if __name__ == '__main__':
     mediator = IngestionMediator()
     # mediator.update(sources=args.sources, from_manifest=args.from_manifest,
     #   collect_only=args.collect_only, drop_tables=False)
-    mediator.update(sources=[], from_manifest=True, collect_only=False)
+    mediator.update(sources=['bicycle_warehouse'], from_manifest=True, collect_only=True)

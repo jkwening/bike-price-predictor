@@ -1,8 +1,6 @@
 """
 Module for scraping bicycle_warehouse.com for its bike data.
 """
-import math
-
 from bs4 import BeautifulSoup
 
 from scrapers.scraper import Scraper
@@ -42,15 +40,21 @@ class BicycleWarehouse(Scraper):
             rows = table.find_all('tr')
 
             for row in rows:
-                r = list()
-                for child in row.children:  # get row tags
-                    if child.name == 'th' or child.name == 'td':
-                        r.append(child)
-                spec = r[0].string.strip()
-                spec = self._normalize_spec_fieldnames(spec)
-                value = r[1].string.strip()
-                prod_specs[spec] = value
-                self._specs_fieldnames.add(spec)
+                # Skip empty tr rows
+                try:
+                    r = list()
+                    for child in row.children:  # get row tags
+                        if child.name == 'th' or child.name == 'td':
+                            r.append(child)
+
+                    spec = r[0].string.strip()
+                    spec = self._normalize_spec_fieldnames(spec)
+                    value = r[1].string.strip()
+                    prod_specs[spec] = value
+                    self._specs_fieldnames.add(spec)
+                except IndexError as err:
+                    print(f'\tError: {err}')
+                    print('\t\trow tag:', row)
 
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         except AttributeError as err:
