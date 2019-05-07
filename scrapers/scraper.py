@@ -185,10 +185,17 @@ class Scraper(ABC):
                                                'lxml')
                 # For REI check for garage products
                 if self._SOURCE == 'rei' and 'garage' in bike_href:
-                    specs[bike] = self._parse_prod_specs(bike_spec_soup,
+                    result = self._parse_prod_specs(bike_spec_soup,
                                                          garage=True)
                 else:
-                    specs[bike] = self._parse_prod_specs(bike_spec_soup)
+                    result = self._parse_prod_specs(bike_spec_soup)
+
+                # Process multiple product specs accordingly
+                if isinstance(result, list):
+                    for item in result:
+                        specs[bike] = item
+                else:
+                    specs[bike] = result
             except FileNotFoundError:
                 print(f'\tSpecifications page for {bike} not found!')
                 specs[bike] = {}
