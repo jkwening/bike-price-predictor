@@ -151,4 +151,4 @@ if __name__ == '__main__':
     mediator = IngestionMediator()
     # mediator.update(sources=args.sources, from_manifest=args.from_manifest,
     #   collect_only=args.collect_only, drop_tables=False)
-    mediator.update(sources=['lynskey'], from_manifest=False, collect_only=True)
+    mediator.update(sources=['spokes'], from_manifest=False, collect_only=True)
