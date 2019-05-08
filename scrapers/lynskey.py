@@ -38,7 +38,7 @@ class Lynskey(Scraper):
             try:
                 base_table = tables[2]
             except IndexError:  # Framesets don't have full specs
-                print('Error: Not complete bike!')'
+                print('Error: Not complete bike!')
                 return prod_specs
 
             trs = base_table.find('tbody').find_all('tr')
