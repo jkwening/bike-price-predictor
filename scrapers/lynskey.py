@@ -35,7 +35,12 @@ class Lynskey(Scraper):
         try:
             div_specs = soup.find('div', class_='product-description')
             tables = div_specs.find_all('table')
-            base_table = tables[2]
+            try:
+                base_table = tables[2]
+            except IndexError:  # Framesets don't have full specs
+                print('Error: Not complete bike!')'
+                return prod_specs
+
             trs = base_table.find('tbody').find_all('tr')
 
             for tr in trs:
