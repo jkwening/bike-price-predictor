@@ -35,11 +35,18 @@ class BicycleWarehouse(Scraper):
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
+
+        div_tab = soup.find('div', id='tabs-3')
+        if div_tab is None:
+            div_desc = soup.find('div', class_='product-description')
+            section = div_desc.find('table', class_='table-striped')
+        else:
+            section = div_tab
+
         try:
-            div_tab = soup.find('div', id='tabs-3')
             cur_spec = ''
             count = 1
-            for string in div_tab.strings:
+            for string in section.strings:
                 s_ = self._normalize_spec_fieldnames(string)
                 if not s_:  # skip empty lines
                     continue

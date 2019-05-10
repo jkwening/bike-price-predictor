@@ -28,6 +28,8 @@ SAMPLE_SPECS1 = {'frame': 'Reynolds 631 Chromoly Custom Butted, Tapered Headtube
 SAMPLE_SPECS2 = {'sizes': 'XS, S, M, M/L, L, XL', 'colors': 'Neon Red / Black Chrome, Matte Black / Gloss Black', 'frame': 'ALUXX SL-Grade Aluminum', 'fork': 'Advanced-Grade Composite, alloy OverDrive steerer', 'shock': 'N/A', 'handlebar': 'Giant Connect flat', 'stem': 'Giant Connect, 8-degree', 'seatpost': 'Giant D-Fuse, composite', 'saddle': 'Giant Contact (neutral)', 'pedals': 'Platform', 'shifters': 'Shimano Tiagra, 2x10', 'front_derailleur': 'Shimano Tiagra', 'rear_derailleur': 'Shimano Tiagra', 'brakes': 'TRP flat mount HD-R210 {F] 140mm rotor [R] 140mm rotor, custom caliper', 'brake_levers': 'TRP HD-R210', 'cassette': 'CS-HG500, 11x34', 'chain': 'KMC X10 with Missing Link', 'crankset': 'FC-RS400, 34/50', 'bottom_bracket': 'Shimano, threaded', 'rims': 'Giant S-R2 disc, tubeless wheelset', 'hubs': 'Giant S-R2 disc, tubeless wheelset', 'spokes': 'Giant S-R2 disc, tubeless wheelset', 'tires': 'Gavia AC 2 tubeless, 700x28', 'extras': 'Contact Ergo Max bar end'}
 SAMPLE_SPECS3 = {'sizes': 'XS, S, M, L, XL', 'colors': 'Metallic Black / Metallic Orange, Glacier Green/ Pure Red / Navy Blue', 'frame': 'ALUXX SL-Grade Aluminum', 'fork': 'Suntour AION 35-Boost RC DS 27.5+, 150mm travel, Boost QR15x110mm, tapered steerer', 'shock': 'RockShox Deluxe R, trunnion mount', 'handlebar': 'Giant Connect Trail, 780x31.8mm', 'stem': 'Giant Connect', 'seatpost': 'Giant Contact Switch dropper post with remote lever, 30.9mm', 'saddle': 'Giant Contact (neutral)', 'pedals': 'N/A', 'shifters': 'Shimano Deore, 1x10', 'front_derailleur': 'N/A', 'rear_derailleur': 'Shimano Deore , Shadow+', 'brakes': 'Shimano BR-MT400 [F] 180mm [R] 180mm, hydraulic disc', 'brake_levers': 'Shimano BL-MT400', 'cassette': 'Shimano Deore CS-HG500-10, 11x42', 'chain': 'KMC X10-1', 'crankset': 'Praxis Cadet, Boost, 30', 'bottom_bracket': 'Praxis BB-90 Press Fit', 'rims': 'Giant AM 27.5, tubeless ready, sleeve-joint rim, 30mm inner width', 'hubs': '[F] Giant Tracker Performance Boost 15x110mm, sealed bearing [R] Giant Tracker Performance, Boost 12x148, sealed bearing', 'spokes': 'Sapim', 'tires': '[F] Maxxis high Roller II 27.5x2.5 WT, 60 tpi, EXO, TR [R] Maxxis high Roller II 27.5x2.4, 60 tpi, EXO, TR, tubeless'}
 SAMPLE_SPECS4 = {'available_frame_sizes': 'S, M, L', 'available_colors': 'SANTA FE SAND; MILLITARY GREEN / CEMENT GREY', 'frame': 'NINER RDO CARBON FIBER, 140MM TRAVEL, GEO FLIP CHIP, RIB CAGE CONSTRUCTION, FULL SLEEVE CABLE ROUTING, ENDURO MAX BLACK OXIDE PIVOT BEARINGS', 'fork': 'FOX 36 FLOAT RHYTHM GRIP EVOL, SWEEP ADJUST, 150MM, 110X15MM, 44MM OFFSET', 'shock': 'FOX FLOAT DPX2 PERFORMANCE EVOL 3 POSITION', 'tubes_sealant': 'STANS NO TUBES SEALANT (2 X 2OZ BOTTLES)', 'front_wheel': 'NINER ALLOY, 110X15MM FRONT, NINER GRAPHIC', 'rear_wheel': 'NINER ALLOY, 148X12MM REAR, NINER GRAPHIC', 'front_tire': 'MAXXIS MINION DHF 3C/EXO/TR 2.5 WT FRONT', 'rear_tire': 'MAXXIS AGGRESSOR 2C/EXO/TR 2.5 WT REAR', 'brakes': 'SRAM LEVEL', 'brake_levers': 'SRAM LEVEL', 'brake_rotors': '180/180MM G2CS ROTORS', 'chain': 'SRAM NX EAGLE 12SP', 'front_shifter': 'N/A', 'rear_shifter': 'SRAM NX EAGLE 12SP', 'front_derailleur': 'N/A', 'rear_derailleur': 'SRAM PG 1230 11-50T', 'cassette': 'SRAM NX EAGLE 12SP', 'crankset': 'SRAM NX EAGLE DUB 32T', 'bottom_bracket': 'SRAM DUB BSA THREADED', 'saddle': 'NINER CUSTOM TR WITH CR-MO RAILS, PRINTED NINER GRAPHIC', 'seatpost': 'SDG TELLIS (S-125MM, M-150MM, L/XL-170MM)', 'handlebar': 'RACE FACE AEFFECT R 780MM WIDE, 20MM RISE, 35MM CLAMP', 'stem': 'RACE FACE AEFFECT R 40MM, 35MM CLAMP', 'headset': 'NINER INTERNAL ZS SHIS DESCRIPTION ZS44/28.6|ZS56/40', 'grips': 'NINER GRRRIPS L/O NYLON FLANGED'}
+SAMPLE_SPECS5 = {'frame': 'Lightweight Aluminum Alloy, w/ Custom Formed Stability Tuned Downtube', 'fork': 'Alloy, Oversized blades, Disc Brake Specific', 'headset': 'Integrated, Sealed Bearing', 'cranks': 'FForged Alloy for TranzX System', 'sprocket': 'Formed Spider, 38tooth w/ chainguard', 'rear_derailleur': 'Shimano Altus', 'shifter': 'Shimano TX50 Thumb Shifter w/ Optical Display', 'cogset_causette_freewheel': 'Shimano 12-32', 'chain': 'KMC X8', 'front_hub': 'Front Hub', 'rear_hub': 'VP Modus, Sealed Bearing, W/ QR', 'spokes': 'Stainless', 'rims': 'XM26, Alloy Double Wall', 'tires': 'Kenda Smooth Rolling City 26x1.95"', 'brakes': 'Tektro Mechanical Disc', 'brake_levers': 'Tektro Ergo 4 finger', 'pedals': 'Resin Body Urban, Sealed Bearing', 'handlebar': 'IZIP Aluminum Alloy', 'grips': 'IZIP Ergo Comfort Control', 'stem': 'IZIP Aluminum Alloy, 3d forged', 'seat': 'IZIP Custom Ergo Performance', 'seatpost': 'IZIP Aluminum Alloy, forged head', 'extras': 'Kickstand, Massload TA42', 'motor': 'TranzX M16 Center Mount, 350W', 'battery': '417Wh DT Mounted', 'display': 'TranzX info screen', 'max_assisted_speed': '20mph', 'range_estimated': '16mi/26km to 35mi/56km'}
+SAMPLE_SPECS6 = {'sizes': 'XS, S, M, M/L, L, XL', 'colors': 'Gun Metal Black / Charcoal / Chrome', 'frame': 'Advanced-Grade Composite, disc', 'fork': 'Advanced-Grade Composite, hybrid OverDrive steerer, disc', 'shock': 'N/A', 'handlebar': 'Giant Contact SL Aero', 'stem': 'Giant Contact SL Aero', 'seatpost': 'Giant Vector composite', 'saddle': 'Giant Contact (forward)', 'pedals': 'N/A', 'shifters': 'Shimano Ultegra', 'front_derailleur': 'Shimano Ultegra', 'rear_derailleur': 'Shimano Ultegra', 'brakes': 'Shimano Ultegra, hydraulic', 'brake_levers': 'Shimano Ultegra, hydraulic', 'cassette': 'Shimano Ultegra,11x30', 'chain': 'KMC X11EL-1', 'crankset': 'Shimano Ultegra, 36/52', 'bottom_bracket': 'Shimano Press Fit', 'rims': 'Giant SLR-1 Aero Disc WheelSystem (F:42mm, R:65mm)', 'hubs': 'Giant SLR-1 Aero Disc WheelSystem, 12mm thru-axle, CenterLock', 'spokes': 'Giant SLR-1 Aero Disc WheelSystem', 'tires': 'Giant Gavia AC 1 tubeless, 700x25, folding'}
 
 
 class SpecializedTestCase(unittest.TestCase):
@@ -132,6 +134,16 @@ class SpecializedTestCase(unittest.TestCase):
         with open(html_path, encoding='utf-8') as f:
             prod_detail_text4 = f.read()
 
+        html_path = os.path.abspath(os.path.join(
+            HTML_PATH, 'bicycle-warehouse-no-tab.html'))
+        with open(html_path, encoding='utf-8') as f:
+            prod_detail_text5 = f.read()
+
+        html_path = os.path.abspath(os.path.join(
+            HTML_PATH, 'bicycle-warehouse-no-tab2.html'))
+        with open(html_path, encoding='utf-8') as f:
+            prod_detail_text6 = f.read()
+
         detail_soup1 = BeautifulSoup(
             prod_detail_text1, 'lxml')
         detail_soup2 = BeautifulSoup(
@@ -141,6 +153,12 @@ class SpecializedTestCase(unittest.TestCase):
         )
         detail_soup4 = BeautifulSoup(
             prod_detail_text4, 'lxml'
+        )
+        detail_soup5 = BeautifulSoup(
+            prod_detail_text5, 'lxml'
+        )
+        detail_soup6 = BeautifulSoup(
+            prod_detail_text6, 'lxml'
         )
 
         # case 1: exact match per example data
@@ -169,6 +187,18 @@ class SpecializedTestCase(unittest.TestCase):
         self.assertEqual(len(SAMPLE_SPECS4), len(result))
         for key in SAMPLE_SPECS4.keys():
             self.assertEqual(SAMPLE_SPECS4[key], result[key])
+
+        # case 5: No specs tab section
+        result = self._scraper._parse_prod_specs(detail_soup5)
+        self.assertEqual(len(SAMPLE_SPECS5), len(result))
+        for key in SAMPLE_SPECS5.keys():
+            self.assertEqual(SAMPLE_SPECS5[key], result[key])
+
+        # case 6: No specs tab section but embedded in desc tab
+        result = self._scraper._parse_prod_specs(detail_soup6)
+        self.assertEqual(len(SAMPLE_SPECS6), len(result))
+        for key in SAMPLE_SPECS6.keys():
+            self.assertEqual(SAMPLE_SPECS6[key], result[key])
 
 
 if __name__ == '__main__':
