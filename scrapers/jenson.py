@@ -45,7 +45,7 @@ class Jenson(Scraper):
             specs = table_spec.find_all('tr')
             for spec in specs:
                 name = spec.th.string
-                value = spec.td.string
+                value = spec.td.text
                 spec_name = self._normalize_spec_fieldnames(name)
                 prod_specs[spec_name] = value.strip()
                 self._specs_fieldnames.add(spec_name)

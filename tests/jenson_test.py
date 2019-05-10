@@ -77,7 +77,7 @@ class CityBikesTestCase(unittest.TestCase):
     def test_parse_prod_spec(self):
         # load test prod details into memory
         html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'jenson-krypton.html'))
+            HTML_PATH, 'jenson-evil.html'))
         with open(html_path, encoding='utf-8') as f:
             prod_detail_text1 = f.read()
 
