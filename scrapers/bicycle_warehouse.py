@@ -37,9 +37,12 @@ class BicycleWarehouse(Scraper):
         prod_specs = dict()
 
         div_tab = soup.find('div', id='tabs-3')
+        one_col = False
         if div_tab is None:
             div_desc = soup.find('div', class_='product-description')
             section = div_desc.find('table', class_='table-striped')
+            cols = section.find('tr').find_all(['th', 'td'])
+            one_col = True if len(cols) == 1 else False
         else:
             section = div_tab
 
@@ -51,13 +54,20 @@ class BicycleWarehouse(Scraper):
                 if not s_:  # skip empty lines
                     continue
 
-                if count % 2 != 0:
-                    cur_spec = s_
-                    self._specs_fieldnames.add(cur_spec)
-                    # print(f'{count}: {cur_spec}')
+                if one_col:  # handle single column specs data
+                    spec, value = string.split(':', 1)
+                    spec = self._normalize_spec_fieldnames(spec)
+                    self._specs_fieldnames.add(spec)
+                    prod_specs[spec] = value.strip()
+                    # print(f'{count}: {spec} - {value.strip()}')
                 else:
-                    prod_specs[cur_spec] = string.strip()
-                    # print(f'{count}: {cur_spec} - {string.strip()}')
+                    if count % 2 != 0:
+                        cur_spec = s_
+                        self._specs_fieldnames.add(cur_spec)
+                        # print(f'{count}: {cur_spec}')
+                    else:
+                        prod_specs[cur_spec] = string.strip()
+                        # print(f'{count}: {cur_spec} - {string.strip()}')
 
                 count += 1
 

@@ -30,6 +30,7 @@ SAMPLE_SPECS3 = {'sizes': 'XS, S, M, L, XL', 'colors': 'Metallic Black / Metalli
 SAMPLE_SPECS4 = {'available_frame_sizes': 'S, M, L', 'available_colors': 'SANTA FE SAND; MILLITARY GREEN / CEMENT GREY', 'frame': 'NINER RDO CARBON FIBER, 140MM TRAVEL, GEO FLIP CHIP, RIB CAGE CONSTRUCTION, FULL SLEEVE CABLE ROUTING, ENDURO MAX BLACK OXIDE PIVOT BEARINGS', 'fork': 'FOX 36 FLOAT RHYTHM GRIP EVOL, SWEEP ADJUST, 150MM, 110X15MM, 44MM OFFSET', 'shock': 'FOX FLOAT DPX2 PERFORMANCE EVOL 3 POSITION', 'tubes_sealant': 'STANS NO TUBES SEALANT (2 X 2OZ BOTTLES)', 'front_wheel': 'NINER ALLOY, 110X15MM FRONT, NINER GRAPHIC', 'rear_wheel': 'NINER ALLOY, 148X12MM REAR, NINER GRAPHIC', 'front_tire': 'MAXXIS MINION DHF 3C/EXO/TR 2.5 WT FRONT', 'rear_tire': 'MAXXIS AGGRESSOR 2C/EXO/TR 2.5 WT REAR', 'brakes': 'SRAM LEVEL', 'brake_levers': 'SRAM LEVEL', 'brake_rotors': '180/180MM G2CS ROTORS', 'chain': 'SRAM NX EAGLE 12SP', 'front_shifter': 'N/A', 'rear_shifter': 'SRAM NX EAGLE 12SP', 'front_derailleur': 'N/A', 'rear_derailleur': 'SRAM PG 1230 11-50T', 'cassette': 'SRAM NX EAGLE 12SP', 'crankset': 'SRAM NX EAGLE DUB 32T', 'bottom_bracket': 'SRAM DUB BSA THREADED', 'saddle': 'NINER CUSTOM TR WITH CR-MO RAILS, PRINTED NINER GRAPHIC', 'seatpost': 'SDG TELLIS (S-125MM, M-150MM, L/XL-170MM)', 'handlebar': 'RACE FACE AEFFECT R 780MM WIDE, 20MM RISE, 35MM CLAMP', 'stem': 'RACE FACE AEFFECT R 40MM, 35MM CLAMP', 'headset': 'NINER INTERNAL ZS SHIS DESCRIPTION ZS44/28.6|ZS56/40', 'grips': 'NINER GRRRIPS L/O NYLON FLANGED'}
 SAMPLE_SPECS5 = {'frame': 'Lightweight Aluminum Alloy, w/ Custom Formed Stability Tuned Downtube', 'fork': 'Alloy, Oversized blades, Disc Brake Specific', 'headset': 'Integrated, Sealed Bearing', 'cranks': 'FForged Alloy for TranzX System', 'sprocket': 'Formed Spider, 38tooth w/ chainguard', 'rear_derailleur': 'Shimano Altus', 'shifter': 'Shimano TX50 Thumb Shifter w/ Optical Display', 'cogset_causette_freewheel': 'Shimano 12-32', 'chain': 'KMC X8', 'front_hub': 'Front Hub', 'rear_hub': 'VP Modus, Sealed Bearing, W/ QR', 'spokes': 'Stainless', 'rims': 'XM26, Alloy Double Wall', 'tires': 'Kenda Smooth Rolling City 26x1.95"', 'brakes': 'Tektro Mechanical Disc', 'brake_levers': 'Tektro Ergo 4 finger', 'pedals': 'Resin Body Urban, Sealed Bearing', 'handlebar': 'IZIP Aluminum Alloy', 'grips': 'IZIP Ergo Comfort Control', 'stem': 'IZIP Aluminum Alloy, 3d forged', 'seat': 'IZIP Custom Ergo Performance', 'seatpost': 'IZIP Aluminum Alloy, forged head', 'extras': 'Kickstand, Massload TA42', 'motor': 'TranzX M16 Center Mount, 350W', 'battery': '417Wh DT Mounted', 'display': 'TranzX info screen', 'max_assisted_speed': '20mph', 'range_estimated': '16mi/26km to 35mi/56km'}
 SAMPLE_SPECS6 = {'sizes': 'XS, S, M, M/L, L, XL', 'colors': 'Gun Metal Black / Charcoal / Chrome', 'frame': 'Advanced-Grade Composite, disc', 'fork': 'Advanced-Grade Composite, hybrid OverDrive steerer, disc', 'shock': 'N/A', 'handlebar': 'Giant Contact SL Aero', 'stem': 'Giant Contact SL Aero', 'seatpost': 'Giant Vector composite', 'saddle': 'Giant Contact (forward)', 'pedals': 'N/A', 'shifters': 'Shimano Ultegra', 'front_derailleur': 'Shimano Ultegra', 'rear_derailleur': 'Shimano Ultegra', 'brakes': 'Shimano Ultegra, hydraulic', 'brake_levers': 'Shimano Ultegra, hydraulic', 'cassette': 'Shimano Ultegra,11x30', 'chain': 'KMC X11EL-1', 'crankset': 'Shimano Ultegra, 36/52', 'bottom_bracket': 'Shimano Press Fit', 'rims': 'Giant SLR-1 Aero Disc WheelSystem (F:42mm, R:65mm)', 'hubs': 'Giant SLR-1 Aero Disc WheelSystem, 12mm thru-axle, CenterLock', 'spokes': 'Giant SLR-1 Aero Disc WheelSystem', 'tires': 'Giant Gavia AC 1 tubeless, 700x25, folding'}
+SAMPLE_SPECS7 = {'frame': 'Full CrMo, Integrated Headtube, w/6mm Dropouts, 20.8" TT, Mid BB, Removable Brake Posts & Cable Stop, Integrated Seat Clamp w/Head tube/BB & Dropout Heat Treated', 'fork': 'Free Agent Full CrMo Heat Treated Tapered Leg w/ Free Agent Threaded CNC Free Agent Top Cap', 'headset': 'Free Impact S/B Integrated, Threadless 1-1/8 w/Free Agent Threaded CNC Alloy Top Cap', 'handlebar': 'Free Agent Design CrMo, 9" x 740mm w/Tapered X-Bar', 'stem': 'Free Agent Alloy Top Load', 'grips': 'Free Agent Kraton', 'crankset': 'Free Agent Mid 3-pc Hollow CrMo, 175mm, Free Agent 25T Chainwheel', 'bb': 'Mid Cartridge Bearings, 8 Spline', 'chain': 'KMC Z410', 'pedals': 'Free Agent Low Profile Platform, Smoke', 'rims': 'Free Agent Alloy 20", Double Wall Rear, 36x36H', 'hubset': 'Free Agent Alloy FT 3/8", Alloy RR w/9T Driver, 14mm Axle', 'spokes': '14G Black, 36x36', 'tires': 'Maxxis Grifter, 120 TPI, 110 psi, 20x2.3 FT & RR, Folding Silkshield', 'freewheel_cassette': '9T Driver', 'brake_levers': 'Tektro Alloy 2F w/Hinged Bracket, XL-510', 'brakes_r': 'ProMax U910R, U-Brake w/Green Pads', 'saddle': 'Free Agent, Padded Pivotal', 'seatposts': 'Free Agent Nylon Pivotal', 'other_features': 'Ciclovation Long Linear Cable, Removable HT Cable Guide', 'color': 'Red'}
 
 
 class SpecializedTestCase(unittest.TestCase):
@@ -143,23 +144,18 @@ class SpecializedTestCase(unittest.TestCase):
             HTML_PATH, 'bicycle-warehouse-no-tab2.html'))
         with open(html_path, encoding='utf-8') as f:
             prod_detail_text6 = f.read()
+        html_path = os.path.abspath(os.path.join(
+            HTML_PATH, 'bicycle-warehouse-1col.html'))
+        with open(html_path, encoding='utf-8') as f:
+            prod_detail_text7 = f.read()
 
-        detail_soup1 = BeautifulSoup(
-            prod_detail_text1, 'lxml')
-        detail_soup2 = BeautifulSoup(
-            prod_detail_text2, 'lxml')
-        detail_soup3 = BeautifulSoup(
-            prod_detail_text3, 'lxml'
-        )
-        detail_soup4 = BeautifulSoup(
-            prod_detail_text4, 'lxml'
-        )
-        detail_soup5 = BeautifulSoup(
-            prod_detail_text5, 'lxml'
-        )
-        detail_soup6 = BeautifulSoup(
-            prod_detail_text6, 'lxml'
-        )
+        detail_soup1 = BeautifulSoup(prod_detail_text1, 'lxml')
+        detail_soup2 = BeautifulSoup(prod_detail_text2, 'lxml')
+        detail_soup3 = BeautifulSoup(prod_detail_text3, 'lxml')
+        detail_soup4 = BeautifulSoup(prod_detail_text4, 'lxml')
+        detail_soup5 = BeautifulSoup(prod_detail_text5, 'lxml')
+        detail_soup6 = BeautifulSoup(prod_detail_text6, 'lxml')
+        detail_soup7 = BeautifulSoup(prod_detail_text7, 'lxml')
 
         # case 1: exact match per example data
         result = self._scraper._parse_prod_specs(detail_soup1)
@@ -199,6 +195,12 @@ class SpecializedTestCase(unittest.TestCase):
         self.assertEqual(len(SAMPLE_SPECS6), len(result))
         for key in SAMPLE_SPECS6.keys():
             self.assertEqual(SAMPLE_SPECS6[key], result[key])
+
+        # case 7: No spec tab, single column table
+        result = self._scraper._parse_prod_specs(detail_soup7)
+        self.assertEqual(len(SAMPLE_SPECS7), len(result))
+        for key in SAMPLE_SPECS7.keys():
+            self.assertEqual(SAMPLE_SPECS7[key], result[key])
 
 
 if __name__ == '__main__':
