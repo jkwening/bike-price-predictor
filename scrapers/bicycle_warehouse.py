@@ -36,25 +36,23 @@ class BicycleWarehouse(Scraper):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
         try:
-            table = soup.find('div', id='tabs-3').table
-            rows = table.find_all('tr')
+            div_tab = soup.find('div', id='tabs-3')
+            cur_spec = ''
+            count = 1
+            for string in div_tab.strings:
+                s_ = self._normalize_spec_fieldnames(string)
+                if not s_:  # skip empty lines
+                    continue
 
-            for row in rows:
-                # Skip empty tr rows
-                try:
-                    r = list()
-                    for child in row.children:  # get row tags
-                        if child.name == 'th' or child.name == 'td':
-                            r.append(child)
+                if count % 2 != 0:
+                    cur_spec = s_
+                    self._specs_fieldnames.add(cur_spec)
+                    # print(f'{count}: {cur_spec}')
+                else:
+                    prod_specs[cur_spec] = string.strip()
+                    # print(f'{count}: {cur_spec} - {string.strip()}')
 
-                    spec = r[0].string.strip()
-                    spec = self._normalize_spec_fieldnames(spec)
-                    value = r[1].string.strip()
-                    prod_specs[spec] = value
-                    self._specs_fieldnames.add(spec)
-                except IndexError as err:
-                    print(f'\tError: {err}')
-                    print('\t\trow tag:', row)
+                count += 1
 
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         except AttributeError as err:
