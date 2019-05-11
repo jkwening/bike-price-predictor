@@ -33,6 +33,7 @@ SAMPLE_SPECS6 = {'sizes': 'XS, S, M, M/L, L, XL', 'colors': 'Gun Metal Black / C
 SAMPLE_SPECS7 = {'frame': 'Full CrMo, Integrated Headtube, w/6mm Dropouts, 20.8" TT, Mid BB, Removable Brake Posts & Cable Stop, Integrated Seat Clamp w/Head tube/BB & Dropout Heat Treated', 'fork': 'Free Agent Full CrMo Heat Treated Tapered Leg w/ Free Agent Threaded CNC Free Agent Top Cap', 'headset': 'Free Impact S/B Integrated, Threadless 1-1/8 w/Free Agent Threaded CNC Alloy Top Cap', 'handlebar': 'Free Agent Design CrMo, 9" x 740mm w/Tapered X-Bar', 'stem': 'Free Agent Alloy Top Load', 'grips': 'Free Agent Kraton', 'crankset': 'Free Agent Mid 3-pc Hollow CrMo, 175mm, Free Agent 25T Chainwheel', 'bb': 'Mid Cartridge Bearings, 8 Spline', 'chain': 'KMC Z410', 'pedals': 'Free Agent Low Profile Platform, Smoke', 'rims': 'Free Agent Alloy 20", Double Wall Rear, 36x36H', 'hubset': 'Free Agent Alloy FT 3/8", Alloy RR w/9T Driver, 14mm Axle', 'spokes': '14G Black, 36x36', 'tires': 'Maxxis Grifter, 120 TPI, 110 psi, 20x2.3 FT & RR, Folding Silkshield', 'freewheel_cassette': '9T Driver', 'brake_levers': 'Tektro Alloy 2F w/Hinged Bracket, XL-510', 'brakes_r': 'ProMax U910R, U-Brake w/Green Pads', 'saddle': 'Free Agent, Padded Pivotal', 'seatposts': 'Free Agent Nylon Pivotal', 'other_features': 'Ciclovation Long Linear Cable, Removable HT Cable Guide', 'color': 'Red'}
 SAMPLE_SPECS8 = {'frame': '100% Chromoly - Butted TT & DT', 'top_tube': '21"', 'chain_stay': '13.5"', 'head_tube': '75*', 'seat_tube': '71*', 'stand_over': '9.0"', 'brake_mounts': 'Removable', 'fork': '100% Chromoly 1pc ST - 30mm Offset', 'bars': '100% Chromoly - 2pc 9.0"', 'grips': 'Shadow Chula DCR', 'bar_ends': 'Shadow Nylon', 'headset': 'Bang Ur Headset Integrated', 'stem': 'Shadow Chula Top Load', 'front_rim': 'RANT Squad 36H Alloy Double Wall', 'rear_rim': 'RANT Squad 36H Alloy Double Wall', 'front_hub': 'RANT Party On Sealed Female', 'rear_hub': 'RANT Party On Sealed Cassette Male', 'tires': 'Shadow Valor 2.40" LP', 'cranks': 'Shadow Killer Cranks 3pc 175mm', 'bottom_bracket': 'Sealed Mid', 'sprocket': 'Shadow Kobra', 'gearing': '28 - 9', 'chain': 'Shadow Interlock V2', 'pedals': 'Shadow Ravager Plastic', 'seat': 'Signature Shadow Penumbra', 'seat_clamp': 'Shadow Alfred', 'brake_lever': 'RANT Spring Brake Hinged Lever', 'brakes': 'RANT Spring Brakes', 'extras': 'Subrosa Power Pegs x2, RANT Hub Guards x2'}
 SAMPLE_SPECS9 = {'frame': '100% 1020 High-Ten Steel', 'top_tube': '20.0"', 'chain_stay': '13.25"', 'head_tube': '75*', 'seat_tube': '71*', 'stand_over': '8.0"', 'brake_mounts': 'Welded', 'fork': '100% 1020 Hi-Ten Steel - 30mm Offset', 'bars': '100% 1020 Hi-Ten Steel - 2pc 7.75"', 'grips': 'Shadow Ol Dirty DCR', 'bar_ends': 'Shadow Nylon', 'headset': '1 1/8" Threadless', 'stem': 'Rant Jolt Top Load', 'front_rim': 'RANT Squad 36H Alloy Single Wall', 'rear_rim': 'RANT Squad 36H Alloy Single Wall', 'front_hub': '3/8" Loose Alloy', 'rear_hub': '14mm Sealed Cassette', 'tires': 'Rant Squad 2.35"', 'cranks': 'Chromoly 3pc 8 Spline 170mm', 'bottom_bracket': 'American Loose Ball', 'sprocket': 'Subrosa Shred Steel', 'gearing': '25 - 9', 'chain': 'RANT Max 410', 'pedals': 'RANT Shred Plastic', 'seat': 'Subrosa Static Mid 1pc Combo', 'seat_clamp': 'Shadow Alfred', 'brake_lever': 'Alloy 2 Finger', 'brakes': 'RANT Spring Brakes'}
+SAMPLE_SPECS10 = {'frame': "Women's Specific AL-6061 Double Butted Alloy Disc Frame with Thru-Axles", 'fork': 'Custom Carbon to Alloy 1-1/8" to 1.5 taper, Thru-Axle with Post Disc Mounts', 'cranks': 'Forged 2PC Compact 34/50t', 'bottom_bracket': 'External Bearing', 'front_derailleur': 'Shimano 105', 'rear_derailleur': 'Shimano 105', 'shifter': 'Shimano 105 11spd STI, Shimano SP41 Shift Housing', 'brake_levers': 'Shimano 105 STI', 'brakes': 'TRP Spyre C dual actuated mechanical disc brakes, w/160mm rotors', 'cogset': 'Shimano 11spd (11-32t)', 'rims': 'Weinmann XC180 Double Wall 23mm Wide', 'tires': 'Clement Strada LGG 60TPI, 700x28c', 'pedals': 'Test Ride Pedals', 'handlebar': 'Raleigh 200 Series Aero Ergo Flat Top Road, 31.8 with 6 Degree Flare, 38/40/42cm', 'stem': '3D Forged Anti-Shock, 31.8, 80/90/100mm', 'seatpost': 'Anti-Shock 27.2x300mm', 'seat': 'Raleigh 200 series Saddle', 'headset': 'Integrated Cartridge Bearings', 'chain': 'KMC X11', 'front_hub': 'Formula Alloy Disc 15mm Thru-Axle', 'rear_hub': 'Formula Alloy Disc 142x12mm Thru-Axle Cassette', 'spokes': '14g Stainless MAC'}
 
 
 class SpecializedTestCase(unittest.TestCase):
@@ -162,6 +163,11 @@ class SpecializedTestCase(unittest.TestCase):
         with open(html_path, encoding='utf-8') as f:
             prod_detail_text9 = f.read()
 
+        html_path = os.path.abspath(os.path.join(
+            HTML_PATH, 'bicycle-warehouse-next-tab.html'))
+        with open(html_path, encoding='utf-8') as f:
+            prod_detail_text10 = f.read()
+
         detail_soup1 = BeautifulSoup(prod_detail_text1, 'lxml')
         detail_soup2 = BeautifulSoup(prod_detail_text2, 'lxml')
         detail_soup3 = BeautifulSoup(prod_detail_text3, 'lxml')
@@ -171,6 +177,7 @@ class SpecializedTestCase(unittest.TestCase):
         detail_soup7 = BeautifulSoup(prod_detail_text7, 'lxml')
         detail_soup8 = BeautifulSoup(prod_detail_text8, 'lxml')
         detail_soup9 = BeautifulSoup(prod_detail_text9, 'lxml')
+        detail_soup10 = BeautifulSoup(prod_detail_text10, 'lxml')
 
         # case 1: exact match per example data
         result = self._scraper._parse_prod_specs(detail_soup1)
@@ -223,11 +230,17 @@ class SpecializedTestCase(unittest.TestCase):
         for key in SAMPLE_SPECS8.keys():
             self.assertEqual(SAMPLE_SPECS8[key], result[key])
 
-        # case : No spec tab, lists
+        # case 9: No spec tab, lists
         result = self._scraper._parse_prod_specs(detail_soup9)
         self.assertEqual(len(SAMPLE_SPECS9), len(result))
         for key in SAMPLE_SPECS9.keys():
             self.assertEqual(SAMPLE_SPECS9[key], result[key])
+
+        # case 10: Specs in next tab
+        result = self._scraper._parse_prod_specs(detail_soup10)
+        self.assertEqual(len(SAMPLE_SPECS10), len(result))
+        for key in SAMPLE_SPECS10.keys():
+            self.assertEqual(SAMPLE_SPECS10[key], result[key])
 
 
 if __name__ == '__main__':

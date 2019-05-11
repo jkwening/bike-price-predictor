@@ -38,6 +38,12 @@ class BicycleWarehouse(Scraper):
 
         # Default: spec div tab with two or more columns
         div_tab = soup.find('div', id='tabs-3')
+
+        if div_tab is not None:  # move to next tab if not specs tab
+            # frame = 'frame' not in div_tab.text.lower()
+            fork = 'fork' not in div_tab.text.lower()
+            if fork:
+                div_tab = soup.find('div', id='tabs-4')
         section = div_tab
         split_on_colon = False
         if div_tab is None:
@@ -72,7 +78,7 @@ class BicycleWarehouse(Scraper):
                         spec, value = string.split(':', 1)
                     except ValueError:  # skip if single column or bullets but no fields
                         print('\tError: skipping...')
-                        continue
+                        break
                     spec = self._normalize_spec_fieldnames(spec)
                     self._specs_fieldnames.add(spec)
                     prod_specs[spec] = value.strip()
