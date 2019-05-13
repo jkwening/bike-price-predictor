@@ -36,12 +36,34 @@ class BicycleWarehouse(Scraper):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
 
+        # Default: spec div tab with two or more columns
         div_tab = soup.find('div', id='tabs-3')
+
+        if div_tab is not None:  # move to next tab if not specs tab
+            # frame = 'frame' not in div_tab.text.lower()
+            fork = 'fork' not in div_tab.text.lower()
+            if fork:
+                div_tab = soup.find('div', id='tabs-4')
+        section = div_tab
+        split_on_colon = False
         if div_tab is None:
             div_desc = soup.find('div', class_='product-description')
-            section = div_desc.find('table', class_='table-striped')
-        else:
-            section = div_tab
+            section = div_desc
+
+        # Check if stored in table format
+        table = section.find('table', class_='table-striped')
+        if table is None:  # handle list format scenario
+            ul = section.find('ul')
+            if ul is not None:  # ensure ul and not just structured text
+                section = ul
+                split_on_colon = True
+        else:  # handle table format scenario, factoring into number of cols
+            try:
+                section = table
+                cols = section.find('tr').find_all(['th', 'td'])
+                split_on_colon = True if len(cols) == 1 else False
+            except AttributeError as err:
+                print(f'\tError: {err}')
 
         try:
             cur_spec = ''
@@ -51,13 +73,24 @@ class BicycleWarehouse(Scraper):
                 if not s_:  # skip empty lines
                     continue
 
-                if count % 2 != 0:
-                    cur_spec = s_
-                    self._specs_fieldnames.add(cur_spec)
-                    # print(f'{count}: {cur_spec}')
+                if split_on_colon:  # handle single column or bullets specs data
+                    try:
+                        spec, value = string.split(':', 1)
+                    except ValueError:  # skip if single column or bullets but no fields
+                        print('\tError: skipping...')
+                        break
+                    spec = self._normalize_spec_fieldnames(spec)
+                    self._specs_fieldnames.add(spec)
+                    prod_specs[spec] = value.strip()
+                    # print(f'{count}: {spec} - {value.strip()}')
                 else:
-                    prod_specs[cur_spec] = string.strip()
-                    # print(f'{count}: {cur_spec} - {string.strip()}')
+                    if count % 2 != 0:
+                        cur_spec = s_
+                        self._specs_fieldnames.add(cur_spec)
+                        # print(f'{count}: {cur_spec}')
+                    else:
+                        prod_specs[cur_spec] = string.strip()
+                        # print(f'{count}: {cur_spec} - {string.strip()}')
 
                 count += 1
 
@@ -74,6 +107,7 @@ class BicycleWarehouse(Scraper):
             dictionary of dictionaries
         """
         categories = dict()
+        exclude = ['kids_bikes']
 
         if soup is None:
             page = self._fetch_prod_listing_view('')
@@ -86,8 +120,10 @@ class BicycleWarehouse(Scraper):
 
         for li in li_cats:
             bike_cat = dict()
-            bike_cat['href'] = li.a['href']
             title = self._normalize_spec_fieldnames(li.a.contents[0].strip())
+            if title in exclude:  # skip categories in exclude list
+                continue
+            bike_cat['href'] = li.a['href']
             categories[title] = bike_cat
             # print(f'[{len(categories)}] New category {title}: ', bike_cat)
 
