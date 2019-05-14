@@ -61,6 +61,17 @@ class SpecializedTestCase(unittest.TestCase):
             self.assertTrue(key not in result,
                             msg=f'{key} is in result!')
 
+        result = self._scraper._get_categories()
+        print('categories:', result)
+        self.assertGreater(len(result), expected,
+                           msg=f'Expected at least {expected}; result = {len(result)}')
+        for key in categories:
+            self.assertTrue(key in result,
+                            msg=f'{key} is not in result!')
+        for key in exclude:
+            self.assertTrue(key not in result,
+                            msg=f'{key} is in result!')
+
     def test_get_prod_listings(self):
         expected = 4
         with open(SHOP_ROAD_BIKES_HTML_PATH, mode='r',
