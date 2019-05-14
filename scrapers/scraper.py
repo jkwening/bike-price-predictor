@@ -21,15 +21,21 @@ class Scraper(ABC):
         self._num_bikes = 0
         self._specs_fieldnames = {'site'}
         self._bike_type = 'all'
+        self._req_sess = requests.Session()
 
-    @staticmethod
-    def _fetch_html(url, method='GET', params=None, data=None,
+    def _fetch_html(self, url, method='GET', params=None, data=None,
                     headers=None):
         """Fetch html page for bikes"""
 
+        # Configure default header values
+        if headers is None:
+            headers = dict()
+        headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.96 Safari/537.36'
+        headers['Connection'] = 'keep-alive'
+
         print(f'Performing {method} request for: {url}')
-        response = requests.request(method=method, url=url, data=data,
-                                    params=params, headers=headers)
+        response = self._req_sess.request(method=method, url=url, data=data,
+                                          params=params, headers=headers)
 
         # check response status code
         if response.status_code != 200:
