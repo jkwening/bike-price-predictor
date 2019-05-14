@@ -89,7 +89,8 @@ class CityBikes(Scraper):
         # Scrape pages for each available category
         for bike_type in self._BIKE_CATEGORIES.keys():
             print(f'Getting {bike_type} bikes...')
-            endpoint = self._BIKE_CATEGORIES[bike_type]['href']
+            endpoint = self._PROD_PAGE_ENDPOINT + bike_type + '-'
+            endpoint += str(self._BIKE_CATEGORIES[bike_type]['filter_val'])
             num_bikes = self._BIKE_CATEGORIES[bike_type]['count']
             pages = math.ceil(num_bikes / self._page_size)
 

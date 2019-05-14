@@ -14,18 +14,11 @@ class Giant(Scraper):
     def __init__(self, save_data_path=DATA_PATH):
         super().__init__(base_url='https://www.giant-bicycles.com',
                          source='giant', save_data_path=save_data_path)
-        self._PROD_PAGE_ENDPOINT = '/us/bikes/startpage'
+        self._PROD_PAGE_ENDPOINT = '/us/bikes/'
 
     def _fetch_prod_listing_view(self, endpoint):
         req_url = f'{self._BASE_URL}{endpoint}'
-
-        # Spoof browser to avoid being flagged as an attack
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.96 Safari/537.36',
-            # 'Connection': 'keep-alive',
-            # 'Cookie': 'corsActive=true; SPSI=9dfc4494d144ada004f48a02ede0fdcc; UTGv2=h4f7728ce06e8ec1da15a89311c1c3c87835; _ga=GA1.2.92630715.1555286400; _gid=GA1.2.30010004.1555286400; ai_user=6In3a|2019-04-14T23:59:59.757Z; Culture=us; tracker_device=16ee3852-7d53-4b67-8af7-551a393dceec; __distillery=fc2a100_5abf4553-62be-4357-a00f-fca8a3168e9c-59f4e479c-2dad24186f08-3d49; spcsrf=824b52752cfdd59851504ac8f5017a98; PRLST=bM; ai_session=VvSbi|1555296983756|1555300890354.465; adOtr=4AdQ94fd941'
-        }
-        return self._fetch_html(req_url, headers=headers)
+        return self._fetch_html(req_url)
 
     # TODO: seems unnecessary, remove and embed directly into get_all_available_prods()
     def _get_max_num_prods(self, soup):
@@ -73,14 +66,14 @@ class Giant(Scraper):
             soup = BeautifulSoup(page, 'lxml')
 
         menu = soup.find('div', id='megamenubikes')
-        container = menu.find('div', class_='container')
-        main_cats = container.find_all('div', class_='clearfix')
+        container = menu.find('div', class_='row')
+        cols = container.find_all('div', class_='col')
 
-        for cat in main_cats:
-            c_append = cat.h3.a.string.strip()
+        for col in cols:
+            c_append = col.h3.a.text.strip()
             c_append = self._normalize_spec_fieldnames(c_append)
 
-            lis = cat.find_all('li')
+            lis = col.find_all('li')
             for li in lis:
                 bike_cat = dict()
                 bike_cat['href'] = li.a['href']
@@ -116,12 +109,12 @@ class Giant(Scraper):
     def _get_prods_on_current_listings_page(self, soup, bike_type):
         """Parse products on page."""
         div_prod_list = soup.find('div', id='productsContainer')
-        products = div_prod_list.find_all('div', class_='bikeseries-summary')
+        products = div_prod_list.find_all('div', class_='tile')
 
         # Get model hrefs for products on page
         for prod in products:
             href = prod.a['href']
-            print('\t[get_prods] Getting model products for', href)
+            print('\t[get_prods] Getting models for', href)
 
             # Get product info for each model available
             soup_model = BeautifulSoup(self._fetch_prod_listing_view(href), 'lxml')
@@ -133,13 +126,15 @@ class Giant(Scraper):
                 p_dict['site'] = self._SOURCE
                 p_dict['bike_type'] = bike_type
 
-                a_tag = bike.article.a
+                a_tag = bike.a
                 p_dict['href'] = a_tag['href']
                 p_dict['brand'] = a_tag['data-product-brand']
                 p_dict['description'] = a_tag['data-product-name']
-                prod_id = p_dict['description'].lower().replace(' ', '-')
+                prod_id = bike['id']
                 p_dict['product_id'] = prod_id
-                price = bike.find('span', class_='currentprice').string
+
+                # Parse price
+                price = a_tag.find('span', class_='price').string
                 price = float(price.strip().strip('$').replace(',', ''))
                 p_dict['price'] = price
                 p_dict['msrp'] = price

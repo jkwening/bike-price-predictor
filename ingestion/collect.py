@@ -19,6 +19,7 @@ from scrapers.litespeed import LiteSpeed
 from scrapers.lynskey import Lynskey
 from scrapers.spokes import Spokes
 from scrapers.jenson import Jenson
+from scrapers.backcountry import BackCountry
 
 from utils.utils import DATA_PATH
 
@@ -34,7 +35,8 @@ class Collect:
             'wiggle', 'rei', 'citybikes', 'proshop',
             'contebikes', 'eriks', 'specialized',
             'canyon', 'giant', 'jenson',
-            'bicycle_warehouse', 'litespeed', 'lynskey', 'spokes'
+            'bicycle_warehouse', 'litespeed', 'lynskey',
+            'spokes', 'backcountry'
         ]
 
     def _get_class_instance(self, source: str):
@@ -77,6 +79,8 @@ class Collect:
             return Spokes(save_data_path=self._save_data_path)
         elif source == 'jenson':
             return Jenson(save_data_path=self._save_data_path)
+        elif source == 'backcountry':
+            return BackCountry(save_data_path=self._save_data_path)
         else:
             raise ValueError(f'Invalid source: {source} value.')
 
