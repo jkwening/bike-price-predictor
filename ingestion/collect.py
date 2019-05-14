@@ -12,7 +12,7 @@ from scrapers.wiggle import Wiggle
 from scrapers.trek import Trek
 from scrapers.specialized import Specialized
 from scrapers.canyon import Canyon
-from scrapers.foxvalley import FoxValley
+# from scrapers.foxvalley import FoxValley
 from scrapers.giant import Giant
 from scrapers.bicycle_warehouse import BicycleWarehouse
 from scrapers.litespeed import LiteSpeed
@@ -33,9 +33,8 @@ class Collect:
             'competitive', 'nashbar', 'trek',
             'wiggle', 'rei', 'citybikes', 'proshop',
             'contebikes', 'eriks', 'specialized',
-            'foxvalley', 'canyon', 'giant',
-            'bicycle_warehouse', 'litespeed', 'lynskey', 'spokes',
-            'jenson'
+            'canyon', 'giant', 'jenson',
+            'bicycle_warehouse', 'litespeed', 'lynskey', 'spokes'
         ]
 
     def _get_class_instance(self, source: str):
@@ -64,8 +63,8 @@ class Collect:
             return Trek(save_data_path=self._save_data_path)
         elif source == 'canyon':
             return Canyon(save_data_path=self._save_data_path)
-        elif source == 'foxvalley':
-            return FoxValley(save_data_path=self._save_data_path)
+        # elif source == 'foxvalley':
+        #     return FoxValley(save_data_path=self._save_data_path)
         elif source == 'giant':
             return Giant(save_data_path=self._save_data_path)
         elif source == 'bicycle_warehouse':

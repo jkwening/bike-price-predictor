@@ -16,7 +16,11 @@ class Specialized(Scraper):
                          source='specialized', save_data_path=save_data_path)
         self._page_size = 18  # 18 per page or all items
         self._PROD_PAGE_ENDPOINT = '/us/en/shop/bikes/c/bikes'
-        # self._BIKE_CATEGORIES = self._get_categories()
+        self._BIKE_CATEGORIES = {
+            'road': '/us/en/shop/bikes/mountain-bikes/c/mountain',
+            'mountain': '/us/en/shop/bikes/road-bikes/c/road',
+            'fitness': '/us/en/shop/bikes/fitness--urban/c/fitness'
+        }
 
     def _fetch_prod_listing_view(self, endpoint, page=1,
                                  show_all=False):
@@ -51,34 +55,6 @@ class Specialized(Scraper):
 
         return prod_specs
 
-    def _get_categories(self, soup=None) -> dict:
-        """Bike category endpoint encodings.
-
-        Returns:
-            dictionary of dictionaries
-        """
-        categories = dict()
-
-        if soup is None:
-            page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
-            soup = BeautifulSoup(page, 'lxml')
-
-        nav_bar = soup.find('nav', attrs={'id': 'navigation'})
-        bike_links = nav_bar.find('div', class_='BikesLink')
-        cat_links = bike_links.find('li', class_='category-links')
-        li_lvl2 = cat_links.find_all('li', class_='level2')
-
-        for li in li_lvl2:
-            bike_cat = dict()
-
-            a_tag = li.div.a
-            bike_cat['href'] = a_tag['href']
-            title = self._normalize_spec_fieldnames(a_tag['title'])
-            categories[title] = bike_cat
-            # print(f'[{len(categories)}] New category {title}: ', bike_cat)
-
-        return categories
-
     def get_all_available_prods(self, to_csv=True) -> list:
         """Scrape wiggle site for prods."""
         # Reset scraper related variables
@@ -86,14 +62,10 @@ class Specialized(Scraper):
         self._num_bikes = 0
 
         # Scrape pages for each available category
-        bike_categories = self._get_categories()
-        for bike_type in bike_categories.keys():
-            if bike_type == 'kids':  # skip kids bike page
-                continue
+        for bike_type, href in self._BIKE_CATEGORIES.items():
             print(f'Getting {bike_type}...')
-            endpoint = bike_categories[bike_type]['href']
             soup = BeautifulSoup(self._fetch_prod_listing_view(
-                endpoint, show_all=True), 'lxml')
+                href, show_all=True), 'lxml')
             self._get_prods_on_current_listings_page(soup, bike_type)
 
         if to_csv:

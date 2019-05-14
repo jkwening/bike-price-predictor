@@ -108,23 +108,6 @@ class SpecializedTestCase(unittest.TestCase):
     def setUp(self):
         self._specialized = Specialized(save_data_path=DATA_PATH)
 
-    def test_get_categories(self):
-        categories = [
-            'road',
-            'mountain',
-            'fitness',
-            'electric',
-            'kids'
-        ]
-
-        with open(SHOP_BIKES_HTML_PATH, mode='r', encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        result = self._specialized._get_categories(soup)
-        print('categories:', result)
-        for key in result:
-            self.assertTrue(key in categories,
-                            msg=f'{key} is not in categories!')
-
     def test_get_prod_listings(self):
         with open(SHOP_BIKES_HTML_PATH, mode='r',
                   encoding='utf-8') as html:
@@ -136,27 +119,13 @@ class SpecializedTestCase(unittest.TestCase):
                         msg=f'Page has {num_bikes} mountain bikes.')
 
     def test_get_all_available_prods(self):
-        # Scrape each bike_type first page and get total num bikes
-        bike_cats = self._specialized._get_categories()
-        for bike_type in bike_cats.keys():
-            if bike_type == 'kids':  # skip kids bike page
-                continue
-            endpoint = bike_cats[bike_type]['href']
-
-            # Scrape first page, get num bikes, and determine num pages
-            soup = BeautifulSoup(self._specialized._fetch_prod_listing_view(
-                endpoint, show_all=True), 'lxml')
-            self._specialized._get_prods_on_current_listings_page(soup, bike_type)
-
-        total_bikes = len(self._specialized._products)
-        print(f'Expecting {total_bikes} total bikes.')
-
-        # Validate method
         self._specialized.get_all_available_prods()
-        num_prods = len(self._specialized._products)
+        total_bikes = len(self._specialized._products)
+
+        expected = 100
         # There are dupes so expect less num_prods
-        self.assertTrue(total_bikes >= num_prods,
-                        msg=f'expected: {total_bikes} - found: {num_prods}')
+        self.assertTrue(total_bikes >= expected,
+                        msg=f'expected: {expected} - found: {total_bikes}')
 
     def test_parse_prod_spec(self):
         # load test prod details into memory

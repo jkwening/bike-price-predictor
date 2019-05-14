@@ -18,14 +18,7 @@ class FoxValley(Scraper):
 
     def _fetch_prod_listing_view(self, endpoint):
         req_url = f'{self._BASE_URL}{endpoint}'
-
-        # Spoof browser to avoid being flagged as an attack
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.96 Safari/537.36',
-            'Connection': 'keep-alive',
-            'Cookie': 'corsActive=true; _ga=GA1.2.92630715.1555286400; ai_user=6In3a|2019-04-14T23:59:59.757Z; Culture=us; tracker_device=16ee3852-7d53-4b67-8af7-551a393dceec; __distillery=fc2a100_5abf4553-62be-4357-a00f-fca8a3168e9c-59f4e479c-2dad24186f08-3d49; SPSI=6c0f0aa724f3f00b746363c57c64c0f5; sbtsck=javX9LEkDN/kQEjp7HOCdUTPHdd8wD/i4/knsaQTrhrTQU=; UTGv2=h4f7728ce06e8ec1da15a89311c1c3c87835; _gid=GA1.2.1639977765.1555471767; spcsrf=b2f386bfad5fdc96dc69c61276407ba5; sp_lit=TUZfd5tcbcPopT9+U7fbEQ==; PRLST=mQ; adOtr=0ScaY702af4; ai_session=vRuOq|1555471767789|1555472267689.78'
-        }
-        return self._fetch_html(req_url, headers=headers)
+        return self._fetch_html(req_url)
 
     # TODO: seems unnecessary, remove and embed directly into get_all_available_prods()
     def _get_max_num_prods(self, soup):
