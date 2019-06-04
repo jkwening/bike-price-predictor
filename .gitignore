@@ -19,6 +19,7 @@ bike-pricer-env/
 # Project files
 #########################################################
 data/
+munged_data/
 tests/test_data/
 manifest.csv
 

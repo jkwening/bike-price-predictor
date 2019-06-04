@@ -9,8 +9,9 @@ if ROOT_PATH not in sys.path:
 # Import package modules
 from ingestion.collect import Collect
 from ingestion.ingest import Ingest
-from ingestion.manifest import Manifest
-from utils.utils import TIMESTAMP, DATA_PATH
+from ingestion.cleaner import Cleaner
+from ingestion.manifest import Manifest, MungedManifest
+from utils.utils import TIMESTAMP, DATA_PATH, MUNGED_DATA_PATH
 
 # Module constants
 SITES = ['competitive', 'nashbar', 'performance', 'rei', 'wiggle',
@@ -24,11 +25,16 @@ class IngestionMediator:
   classes involved and help clearly outline dependencies in workflow.
   """
 
-    def __init__(self, data_path=DATA_PATH, manifest_filename='manifest.csv'):
+    def __init__(self, data_path=DATA_PATH, manifest_filename='manifest.csv',
+                 munged_data_path=MUNGED_DATA_PATH,
+                 munged_manifest_filename='munged_manifest.csv'):
         self._ingest = Ingest(mediator=self)
         self._collect = Collect(mediator=self, save_data_path=data_path)
+        self._cleaner = Cleaner(mediator=self, save_data_path=MUNGED_DATA_PATH)
         self._manifest = Manifest(mediator=self, path=data_path,
                                   filename=manifest_filename)
+        self._munged_manifest = MungedManifest(mediator=self, path=munged_data_path,
+                                               filename=munged_manifest_filename)
 
     # TODO: remove since redundant with update method
     def complete_update(self, collect_only=False, drop_tables=False):
@@ -130,8 +136,16 @@ class IngestionMediator:
         self._ingest.close()
 
     def get_spec_fieldnames(self):
-        """Get spec fieldnames from data all spec files in manifest.csv."""
+        """Get spec fieldnames from all spec data files in manifest.csv."""
         return self._manifest.get_unique_spec_fieldnames()
+
+    def aggregate_data(self):
+        mapping = self._manifest.get_table_pairs()
+        return mapping
+
+    def clean_source(self, source, bike_type='all'):
+        """Clean and merge raw data files for given source."""
+        return self._cleaner.merge_source(source, bike_type)
 
 
 if __name__ == '__main__':
