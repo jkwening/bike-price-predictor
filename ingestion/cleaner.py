@@ -1,9 +1,11 @@
 """Module for cleaning each product specs csv file into standard format and then
 merging with products csv file into standard munged data file for each source."""
 
+import re
+import math
+import os
 import pandas as pd
 import numpy as np
-import re
 
 # Project modules
 from utils.utils import MUNGED_DATA_PATH
@@ -200,7 +202,10 @@ class Cleaner(object):
             'shimano ft 30': 'shimano tourney',
             'shimano ft-30': 'shimano tourney',
             'shimano rd-5800': 'shimano 105',
-            'shimano rd 5800': 'shimano 105'
+            'shimano rd 5800': 'shimano 105',
+            'X01 Eagle': 'sram xO1 eagle',
+            'SEAM X01 Eagle': 'sram xO1 eagle',
+            'Sram A1': 'sram apex'
         }
 
     @staticmethod
@@ -365,9 +370,13 @@ class Cleaner(object):
         return df
 
     @staticmethod
-    def _parse_material(frame: pd.Series) -> pd.Series:
+    def _parse_material(material: pd.Series) -> pd.Series:
         """Parse and normailize materials from data."""
         def material_replace(elem):
+            # Skip np.NaN
+            if not isinstance(elem, str) and math.isnan(elem):
+                return elem
+
             materials_list = [
                 'carbon', 'aluminum', 'aluminium', 'steel', 'alloy',
                 'titanium', 'chromoly', 'crmo', 'cr-mo', 'hi-ten',
@@ -386,36 +395,50 @@ class Cleaner(object):
                 'cr-mo': 'chromoly',
                 'hi-ten': 'steel'
             }
-            try:
-                for material in materials_list:
-                    if re.search(re.escape(material), elem, re.IGNORECASE):
-                        return materials_dict[material]
-            except TypeError:
-                return np.NaN
+            for m in materials_list:
+                if re.search(re.escape(m), elem, re.IGNORECASE):
+                    return materials_dict[m]
             return np.NaN
 
-        frame_material = frame.apply(material_replace)
-        # data.frame_material.value_counts()
-        return frame_material
+        return material.apply(material_replace)
 
-    def _parse_derailleur_types(self, desc: pd.Series) -> pd.Series:
-        """Return matched derailleur types."""
-        def derailleur_replace(d, return_desc=True):
+    def _parse_groupset(self, desc: pd.Series) -> pd.Series:
+        """Return matched groupset types."""
+        def groupset_replace(d, return_desc=True):
+            # Skip np.NaN
+            if not isinstance(d, str) and math.isnan(d):
+                return d
+
             try:
-                for key, value in self._GROUPSETS_MAP.values():
+                for groupset in self._GROUPSETS_MAP:
                     # remove ','
                     d = d.replace(',', '')
                     # Regex matching
-                    if re.search(re.escape(key), d, re.IGNORECASE):
-                        return value
-                    # Extra custom cleaning
-                    others = {
-                        'X01 Eagle': 'sram xO1 eagle',
-                        'SEAM X01 Eagle': 'sram xO1 eagle',
-                        'Sram A1': 'sram apex'
-                    }
-                    if d in others.keys():
-                        return others[d]
+                    if re.search(re.escape(groupset), d, re.IGNORECASE):
+                        return self._GROUPSETS_MAP[groupset]
+                    # # Extra custom cleaning
+                    # others = {
+                    #     'X01 Eagle': 'sram xO1 eagle',
+                    #     'SEAM X01 Eagle': 'sram xO1 eagle',
+                    #     'Sram A1': 'sram apex'
+                    # }
+                    # if d in others.keys():
+                    #     return others[d]
+            except AttributeError:
+                pass
+            return d if return_desc else np.NaN
+
+        def brand_replace(d, return_desc=True):
+            """Match for specific brands"""
+            brands = ['praxis', 'oval', 'race face', 'fsa', 'sram stylo']
+
+            try:
+                # resolve some typos
+                d = d.lower()
+                d = d.replace('raceface', 'race face')
+                for brand in brands:
+                    if re.search(brand, d, re.IGNORECASE):
+                        return brand
 
             except TypeError:
                 pass
@@ -423,15 +446,26 @@ class Cleaner(object):
                 pass
             return d if return_desc else np.NaN
 
-        return desc.apply(derailleur_replace, return_desc=False)
+        # First parse from values
+        parsed = desc.apply(groupset_replace, return_desc=False)
+
+        # Second pass, fillnas when possible using specific logic
+        for idx in parsed[parsed.isnull()].index:
+            parsed[idx] = brand_replace(parsed[idx], return_desc=False)
+
+        return parsed
 
     def _parse_cassette_type(self, desc: pd.Series) -> pd.Series:
         """Parse cassette groupset data."""
         # First pass using derailleur groupset logic
-        groupset = self._parse_derailleur_types(desc)
+        groupset = self._parse_groupset(desc)
 
         def cassette_replace(d, return_desc=True):
-            CASSETTE_MAP = {
+            # Skip np.NaN
+            if not isinstance(d, str) and math.isnan(d):
+                return d
+
+            cassette_map = {
                 'sunrace': 'sunrace',
                 'shimano hg500': 'shimano tiagra',
                 'shimano hg 500': 'shimano tiagra',
@@ -493,7 +527,7 @@ class Cleaner(object):
                 'cs5700': 'shimano 105'
             }
 
-            SPEEDS_MAP = {
+            speeds_map = {
                 'shimano.*7.{0,1}sp.{0,3}': 'shimano 7-speed',
                 'shimano.*8.{0,1}sp.{0,3}': 'shimano 8-speed',
                 'shimano.*9.{0,1}sp.{0,3}': 'shimano 9-speed',
@@ -521,18 +555,16 @@ class Cleaner(object):
                 d = d.replace('cs-', '')
                 d = d.replace('seam', 'sram')  # fix typo
 
-                for cassette in CASSETTE_MAP.keys():
+                for cassette in cassette_map.keys():
                     # Regex literal search
                     if re.search(re.escape(cassette), d, re.IGNORECASE):
-                        return CASSETTE_MAP[cassette]
+                        return cassette_map[cassette]
 
                 # regex alternative search
-                for cassette in SPEEDS_MAP.keys():
+                for cassette in speeds_map.keys():
                     if re.search(cassette, d, re.IGNORECASE):
-                        return SPEEDS_MAP[cassette]
+                        return speeds_map[cassette]
 
-            except TypeError:
-                pass
             except AttributeError:
                 pass
             return d if return_desc else np.NaN
@@ -543,12 +575,54 @@ class Cleaner(object):
 
         return groupset
 
-    def aggregate_data(self, mapping: dict) -> pd.DataFrame:
-        """Returns pandas dataframe representing data mapping products to specs."""
-        for site, bike_types in mapping.items():
-            for tablename, filepath in bike_types.items():
-                pass
-        return None
+    @staticmethod
+    def _parse_brake_type(field: pd.Series) -> pd.Series:
+        """Categorize brake type by field value."""
+        def brake_replace(brake):
+            # Skip np.NaN
+            if not isinstance(brake, str) and math.isnan(brake):
+                return brake
+
+            # Map specific components
+            disc_components = ['sram guide', 'sram code', 'sram level',
+                               'shimano xt', 'shimano slx', 'shimano deore',
+                               'rotor', 'tektro md', 'spyre', 'shimano zee',
+                               'rs505', 'hayes cx', 'r7070']
+            for comp in disc_components:
+                if re.search(re.escape(comp), brake, re.IGNORECASE):
+                    brake = 'disc'
+            hydraulic_comp = ['tektro hd', 'giant conduct', 'mt500', 'mt400',
+                              'mt200', 'tektro m275']
+            for comp in hydraulic_comp:
+                if re.search(re.escape(comp), brake, re.IGNORECASE):
+                    brake = 'hydraulic'
+            caliper_components = ['shimano 105', 'shimano ultegra', 'br-5810',
+                                  'pivot', 'long reach', 'trp', 'sram force',
+                                  'sram rival', 'shimano sora', 'shimano tiagra',
+                                  'shimano dura ace', 'tektro tk', 'tektro r312']
+            for comp in caliper_components:
+                if re.search(re.escape(comp), brake, re.IGNORECASE):
+                    brake = 'caliper'
+            if re.search(re.escape('direct pull'), brake, re.IGNORECASE):
+                brake = 'v-brake'
+
+            types_list = [
+                'hydraulic', 'mechanical', 'rim', 'caliper', 'coaster',
+                'disc', 'v-brake', 'u-brake', 'linear pull', 'linear-pull'
+            ]
+            normalize_map = {
+                'linear pull': 'linear_pull',
+                'linear-pull': 'linear_pull',
+                'v-brake': 'vbrake',
+                'u-brake': 'ubrake'
+            }
+
+            for material in types_list:
+                if re.search(re.escape(material), brake, re.IGNORECASE):
+                    return normalize_map.get(material, material)
+            return brake  # 'other'
+
+        return field.apply(brake_replace)
 
     def merge_source(self, source, bike_type='all'):
         """Return merged raw data files for given source."""
@@ -567,19 +641,39 @@ class Cleaner(object):
         merged_df = pd.merge(left=prods_df, right=specs_df, how='right', on=['product_id', 'site'])
         return merged_df
 
-    def _normalize_base_fields(self, df: pd.DataFrame) -> pd.DataFrame:
+    def _create_munged_df(self, merged_df: pd.DataFrame) -> pd.DataFrame:
         """
-        Return new munged_df with normalized brand and bike_type
-        and add model_year.
+        Transforms merged df into munged df with necessary fields normalized.
         """
-        munged_df = df.iloc[:, :8]
+        # Initialize munged df with normalized base fields
+        munged_df = merged_df.iloc[:, :8]
         munged_df = self._normalize_brands(munged_df)
         munged_df = self._fill_missing_bike_types(munged_df)
         munged_df = self._normalize_bike_type_values(munged_df)
         munged_df['model_year'] = self._parse_model_year(munged_df.description)
+
+        # Populate other fields
+        munged_df['frame_material'] = self._parse_material(merged_df.frame)
+        munged_df['handlebar_material'] = self._parse_material(merged_df.handlebar)
+        munged_df['fd_groupset'] = self._parse_groupset(merged_df.front_derailleur)
+        munged_df['rd_groupset'] = self._parse_groupset(merged_df.rear_derailleur)
+        munged_df['cassette_groupset'] = self._parse_cassette_type(merged_df.cassette)
+        munged_df['crankset_material'] = self._parse_material(merged_df.crankset)
+        munged_df['crankset_groupset'] = self._parse_groupset(merged_df.crankset)
+        munged_df['brake_type'] = self._parse_brake_type(merged_df.brake_type)
+        munged_df['seatpost_material'] = self._parse_material(merged_df.seatpost)
+        munged_df['fork_material'] = self._parse_material(merged_df.fork)
+        munged_df['chain_groupset'] = self._parse_material(merged_df.chain)
+        munged_df['shifter_groupset'] = self._parse_material(merged_df.shifters)
         return munged_df
 
-    def _jenson_cleaner(self, merged_df: pd.DataFrame):
+    def _save_munged_df(self, df: pd.DataFrame, source: str):
+        """Save munged data frame to appropriate folder using source name."""
+        f = os.path.join(self._save_data_path, f'{source}_munged.csv')
+        df.to_csv(f, index=False, encoding='utf-8')
+
+    def _jenson_cleaner(self, merged_df: pd.DataFrame,
+                        to_csv=True) -> pd.DataFrame:
         """Cleaner for jenson site."""
         # Drop 'Unnamed: 0' column which is duplicate for 'brand'
         merged_df = merged_df.drop(labels='Unnamed: 0', axis=1)
@@ -589,21 +683,18 @@ class Cleaner(object):
         merged_df.front_derailleur.fillna(merged_df.derailleurs, inplace=True)
         merged_df.rear_derailleur.fillna(merged_df.derailleurs, inplace=True)
         merged_df.weight.fillna(merged_df.approximate_weight, inplace=True)
-        merged_df.shifter.fillna(merged_df.shifters, inplace=True)
+        merged_df.shifters.fillna(merged_df.shifter, inplace=True)
+        merged_df['brake_type'] = merged_df.brakes  # map to std field name
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
 
         # Map 'corona_store_exclusives' bike type to 'intended_use'
         for idx in merged_df[merged_df.bike_type == 'corona_store_exclusives'].index:
             merged_df.bike_type[idx] = merged_df.intended_use[idx]
 
-        # Initialize munged df with normalized base fields
-        munged_df = self._normalize_base_fields(df=merged_df)
+        munged_df = self._create_munged_df(merged_df=merged_df)
 
-        # Populate other fields
-        munged_df['frame_material'] = self._parse_material(merged_df.frame)
-        munged_df['handlebar_material'] = self._parse_material(merged_df.handlebar)
-        munged_df['fd_groupset'] = self._parse_derailleur_types(merged_df.front_derailleur)
-        munged_df['rd_groupset'] = self._parse_derailleur_types(merged_df.rear_derailleur)
-        munged_df['cassette_groupset'] = self._parse_cassette_type(merged_df.cassette)
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='jenson')
 
         return munged_df
 
