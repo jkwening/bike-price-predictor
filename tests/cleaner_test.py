@@ -42,6 +42,43 @@ class CleanerTestCase(unittest.TestCase):
             self.assertTrue(field in cols,
                             msg=f'{field} not in merged columns: {cols}')
 
+    def test_nashbar_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='nashbar')
+        munged_df = self._cleaner._nashbar_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_trek_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='trek')
+        munged_df = self._cleaner._trek_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_rei_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='rei')
+        munged_df = self._cleaner._rei_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_competitive_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='competitive')
+        munged_df = self._cleaner._competitive_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
 
 if __name__ == '__main__':
     unittest.main()
+

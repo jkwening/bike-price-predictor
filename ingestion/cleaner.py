@@ -207,13 +207,7 @@ class Cleaner(object):
             'SEAM X01 Eagle': 'sram xO1 eagle',
             'Sram A1': 'sram apex'
         }
-
-    @staticmethod
-    def _fill_missing_bike_types(df: pd.DataFrame) -> pd.DataFrame:
-        """Use description to populate missing bike_types values."""
-
-        def parse_desc(desc):
-            bike_types_list = {  # order matters for fork, frame, kid, girl, and bmx as qualifiers
+        self._BIKE_TYPE = {  # order matters for fork, frame, kid, girl, and bmx as qualifiers
                 'frame', 'fork', 'kid', 'girl', 'e-bike', 'electric', 'folding', 'balance',
                 'push', 'trailer', 'boy', 'bmx', 'city', 'commuter', 'comfort', 'fitness',
                 'cruiser', 'fat', 'triathlon', 'road', 'touring', 'urban',
@@ -221,6 +215,10 @@ class Cleaner(object):
                 'gravel', 'pavement', 'gravel', 'cargo', 'hardtail', 'singlespeed'
             }
 
+    def _fill_missing_bike_types(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Use description to populate missing bike_types values."""
+
+        def parse_desc(desc):
             # relabel some string literals
             desc = desc.lower()
             desc = desc.replace('moutain', 'mountain')  # fix typo
@@ -229,13 +227,11 @@ class Cleaner(object):
             desc = desc.replace('commute', 'commuter')
             desc = desc.replace('step-through', 'urban')
 
-            for bike_type in bike_types_list:
+            for bike_type in self._BIKE_TYPE:
                 if re.search(re.escape(bike_type), desc, re.IGNORECASE):
                     return bike_type
 
-            return np.NaN
-
-        print(len(df[df.bike_type.isnull()]))
+            return desc  # np.NaN
 
         # Populate null values using description field
         for idx in df[df.bike_type.isnull()].index:
@@ -253,17 +249,20 @@ class Cleaner(object):
             year = int(result.group(0))
             return year if year < 2021 else np.NaN  # avoid '20.75' in href parsing
 
-        print('[fill_missing_model_year] Adding model year column.')
-        model_year = desc.apply(parse_model_year)
-        return model_year
+        return desc.apply(parse_model_year)
 
-    @staticmethod
-    def _normalize_bike_type_values(df: pd.DataFrame) -> pd.DataFrame:
+    def _normalize_bike_type_values(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Clean up bike_type labels and prepare specified categories for removal.
         """
         def bike_type_replace(elem):
+            # Custom cleaning
+            if 'giant defy advanced' in elem:
+                elem = 'road'
+
+            # First pass through mappings
             bike_mapper = {
+                'single_speed_fixed_gear_bikes': 'singlespeed',
                 'mountain_bikes': 'mountain',
                 'Mountain': 'mountain',
                 'Mountain Biking': 'mountain',
@@ -333,10 +332,17 @@ class Cleaner(object):
                 'Urban, Commuter': 'urban',
                 "Cruisin'": 'cruiser', 'Race': 'road',
                 'Cruising to the beach or store': 'cruiser',
-                'Childresn': 'chidrens',
+                'Childrens': 'childrens',
                 'Mountain biking, Town riding': 'mountain'
             }
-            return bike_mapper.get(elem, elem)
+            bike_type = bike_mapper.get(elem, elem)
+
+            # Then second pass for standardization or those missed
+            for bike in self._BIKE_TYPE:
+                if re.search(re.escape(bike), elem, re.IGNORECASE):
+                    bike_type = bike
+
+            return bike_type
 
         # Clean bike_type labels and drop specified categories
         df.bike_type = df.bike_type.apply(bike_type_replace)
@@ -674,7 +680,7 @@ class Cleaner(object):
 
     def _jenson_cleaner(self, merged_df: pd.DataFrame,
                         to_csv=True) -> pd.DataFrame:
-        """Cleaner for jenson site."""
+        """Cleaner for jenson raw data."""
         # Drop 'Unnamed: 0' column which is duplicate for 'brand'
         merged_df = merged_df.drop(labels='Unnamed: 0', axis=1)
 
@@ -695,6 +701,84 @@ class Cleaner(object):
 
         if to_csv:
             self._save_munged_df(df=munged_df, source='jenson')
+
+        return munged_df
+
+    def _nashbar_cleaner(self, merged_df: pd.DataFrame,
+                             to_csv=True) -> pd.DataFrame:
+        """Cleaner for nashbar raw data."""
+        # Drop 'Unnamed: 0' column which is duplicate for 'brand'
+        merged_df = merged_df.drop(labels='Unnamed: 0', axis=1)
+
+        # Preliminary fill some NaNs from redundant columns
+        merged_df.weight.fillna(merged_df.frame_weight, inplace=True)
+        merged_df['brake_type'] = merged_df.brakes  # map to std field name
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brakeset, inplace=True)
+        merged_df.cassette.fillna(merged_df.cog, inplace=True)
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='nashbar')
+
+        return munged_df
+
+    def _trek_cleaner(self, merged_df: pd.DataFrame,
+                             to_csv=True) -> pd.DataFrame:
+        """Cleaner for trek raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brakeset  # map to std field name
+        merged_df['crankset'] = merged_df.crank  # map to std field name
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='trek')
+
+        return munged_df
+
+    def _rei_cleaner(self, merged_df: pd.DataFrame,
+                        to_csv=True) -> pd.DataFrame:
+        """Cleaner for rei raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df.weight.fillna(merged_df.bike_weight, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brakes, inplace=True)
+        merged_df['cassette'] = merged_df.rear_cogs  # map to std field name
+        merged_df.bike_type.fillna(merged_df.best_use)
+        merged_df['seatpost'] = merged_df.seat_post
+
+        # Map 'corona_store_exclusives' bike type to 'intended_use'
+        for idx in merged_df[merged_df.bike_type == 'corona_store_exclusives'].index:
+            merged_df.bike_type[idx] = merged_df.intended_use[idx]
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='rei')
+
+        return munged_df
+
+    def _competitive_cleaner(self, merged_df: pd.DataFrame,
+                             to_csv=True) -> pd.DataFrame:
+        """Cleaner for competitive raw data."""
+        # Drop 'Unnamed: 0' column which is duplicate for 'brand'
+        merged_df = merged_df.drop(labels='Unnamed: 0', axis=1)
+
+        # Preliminary fill some NaNs from redundant columns
+        merged_df.handlebar.fillna(merged_df.handlebars, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.derailleurs, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.derailleurs, inplace=True)
+        merged_df.weight.fillna(merged_df.approximate_weight, inplace=True)
+        merged_df.shifters.fillna(merged_df.shifter, inplace=True)
+        merged_df['brake_type'] = merged_df.brakes  # map to std field name
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='competitive')
 
         return munged_df
 
