@@ -746,7 +746,7 @@ class Cleaner(object):
         merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
         merged_df.brake_type.fillna(merged_df.brakes, inplace=True)
         merged_df['cassette'] = merged_df.rear_cogs  # map to std field name
-        merged_df.bike_type.fillna(merged_df.best_use)
+        merged_df.bike_type.fillna(merged_df.best_use, inplace=True)
         merged_df['seatpost'] = merged_df.seat_post
 
         # Map 'corona_store_exclusives' bike type to 'intended_use'
@@ -757,6 +757,149 @@ class Cleaner(object):
 
         if to_csv:
             self._save_munged_df(df=munged_df, source='rei')
+
+        return munged_df
+
+    def _citybikes_cleaner(self, merged_df: pd.DataFrame,
+                        to_csv=True) -> pd.DataFrame:
+        """Cleaner for citybikes raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brakes
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df['handlebar'] = merged_df.handlebars
+        merged_df['cassette'] = merged_df.rear_cogs  # map to std field name
+        merged_df.cassette.fillna(merged_df.cassette_rear_cogs, inplace=True)
+        merged_df.cassette.fillna(merged_df.bicycle_drivetrain, inplace=True)
+        merged_df.cassette.fillna(merged_df.chainrings, inplace=True)
+        merged_df.crankset.fillna(merged_df.chainrings, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.bicycle_drivetrain, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.bicycle_drivetrain, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seat_post, inplace=True)
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='citybikes')
+
+        return munged_df
+
+    def _proshop_cleaner(self, merged_df: pd.DataFrame,
+                        to_csv=True) -> pd.DataFrame:
+        """Cleaner for proshop raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brakes
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df['handlebar'] = merged_df.handlebars
+        merged_df['cassette'] = merged_df.rear_cogs  # map to std field name
+        merged_df.cassette.fillna(merged_df.cassette_rear_cogs, inplace=True)
+        merged_df.cassette.fillna(merged_df.chainrings, inplace=True)
+        merged_df.crankset.fillna(merged_df.chainrings, inplace=True)
+        merged_df.cassette.fillna(merged_df.drive_system, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.drive_system, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.drive_system, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seat_post, inplace=True)
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='proshop')
+
+        return munged_df
+
+    def _contebikes_cleaner(self, merged_df: pd.DataFrame,
+                        to_csv=True) -> pd.DataFrame:
+        """Cleaner for contebikes raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brakes
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df['handlebar'] = merged_df.handlebars
+        merged_df['cassette'] = merged_df.rear_cogs  # map to std field name
+        merged_df.cassette.fillna(merged_df.cassette_rear_cogs, inplace=True)
+        merged_df.cassette.fillna(merged_df.chainrings, inplace=True)
+        merged_df.crankset.fillna(merged_df.chainrings, inplace=True)
+        merged_df.cassette.fillna(merged_df.drive_system, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.drive_system, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.drive_system, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seat_post, inplace=True)
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='contebikes')
+
+        return munged_df
+
+    def _giant_cleaner(self, merged_df: pd.DataFrame,
+                        to_csv=True) -> pd.DataFrame:
+        """Cleaner for giant raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brakes
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='giant')
+
+        return munged_df
+
+    def _litespeed_cleaner(self, merged_df: pd.DataFrame,
+                           to_csv=True) -> pd.DataFrame:
+        """Cleaner for litespeed raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brakes
+        merged_df.brake_type.fillna(merged_df.brakeset, inplace=True)
+        merged_df.shifters.fillna(merged_df.rear_shifter, inplace=True)
+        merged_df['frame'] = ['titanium'] * merged_df.shape[0]
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='litespeed')
+
+        return munged_df
+
+    def _lynskey_cleaner(self, merged_df: pd.DataFrame,
+                           to_csv=True) -> pd.DataFrame:
+        """Cleaner for lynskey raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.lever_brakeset
+        merged_df.brake_type.fillna(merged_df.lever_brakeset, inplace=True)
+        merged_df.brake_type.fillna(merged_df.lever_brake, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_calipers, inplace=True)
+        merged_df.brake_type.fillna(merged_df.disc_brake_calipers, inplace=True)
+        merged_df.crankset.fillna(merged_df.chainring, inplace=True)
+        merged_df['frame'] = merged_df.frame_material
+        merged_df['shifters'] = merged_df.shifter
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='lynskey')
+
+        return munged_df
+
+    def _spokes_cleaner(self, merged_df: pd.DataFrame,
+                           to_csv=True) -> pd.DataFrame:
+        """Cleaner for spokes raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brakes
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_compatibility, inplace=True)
+        merged_df['handlebar'] = merged_df.handlebars
+        merged_df['cassette'] = merged_df.rear_cogs  # map to std field name
+        merged_df.cassette.fillna(merged_df.cassette_rear_cogs, inplace=True)
+        merged_df.cassette.fillna(merged_df.chainrings, inplace=True)
+        merged_df.crankset.fillna(merged_df.chainrings, inplace=True)
+        merged_df.cassette.fillna(merged_df.drive_system, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.drive_system, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.drive_system, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seat_post, inplace=True)
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='spokes')
 
         return munged_df
 

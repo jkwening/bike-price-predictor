@@ -69,6 +69,69 @@ class CleanerTestCase(unittest.TestCase):
             self.assertTrue(field in cols,
                             msg=f'{field} not in merged columns: {cols}')
 
+    def test_citybikes_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='citybikes')
+        munged_df = self._cleaner._citybikes_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_proshop_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='proshop')
+        munged_df = self._cleaner._proshop_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_contebikes_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='contebikes')
+        munged_df = self._cleaner._contebikes_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_giant_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='giant')
+        munged_df = self._cleaner._giant_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_litespeed_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='litespeed')
+        munged_df = self._cleaner._litespeed_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_lynskey_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='lynskey')
+        munged_df = self._cleaner._lynskey_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_spokes_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='spokes')
+        munged_df = self._cleaner._spokes_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
     def test_competitive_cleaner(self):
         merged_df = self._cleaner.merge_source(source='competitive')
         munged_df = self._cleaner._competitive_cleaner(merged_df)
