@@ -139,13 +139,51 @@ class IngestionMediator:
         """Get spec fieldnames from all spec data files in manifest.csv."""
         return self._manifest.get_unique_spec_fieldnames()
 
-    def aggregate_data(self):
-        mapping = self._manifest.get_table_pairs()
-        return mapping
+    def aggregate_data(self, from_raw=False, to_csv=True):
+        """Aggregate transformed data into single dataframe.
 
-    def clean_source(self, source, bike_type='all'):
+        Args:
+            from_raw(bool): If True, clean each raw data file and then
+                aggregate; else, aggregate using munged manifest.
+            to_csv(bool): If True, save combined transformed data to csv.
+        """
+        # TODO: Utilize transform_from_manifest() from_raw=True
+        if from_raw:
+            self.transform_from_manifest(update_munged_manifest=False,
+                                         save_cleaned_data=False,
+                                         combine=True, save_combined=to_csv)
+        # TODO: Combine latest munged data using munged manifest as source
+        else:
+            pass
+
+    def transform_raw_data(self, source, bike_type='all'):
         """Clean and merge raw data files for given source."""
-        return self._cleaner.merge_source(source, bike_type)
+        munged_df = self._cleaner.clean_source(source, bike_type)
+        row_data = self._cleaner.save_munged_df(df=munged_df, source=source)
+        return self.update_munged_manifest(rows=[row_data])
+
+    def transform_from_manifest(self, update_munged_manifest=True,
+                                save_cleaned_data=True,
+                                combine=False, save_combined=False):
+        """Using manifest as source, process all available data.
+
+        Args:
+            update_munged_manifest(bool): If True, update munged manifest.
+            save_cleaned_data(bool): If True, save each transformed source.
+            combine(bool): If True, aggregate munged data into single dataframe.
+            save_combined(bool): If True, save the combined dataframe to csv.
+        """
+        # TODO: get all unique source, bike_type pairings in manifest
+        # TODO: iterate through each pairing and clean raw data
+        # TODO: save transformed data if requested
+        # TODO: if combine, append to aggregate dataframe
+        # TODO: update munged manifest if requested
+        # TODO: save combined if reqeusted
+        pass
+
+    def update_munged_manifest(self, rows: list) -> bool:
+        """Update munged manifest with new row data."""
+        return self._munged_manifest.update(from_list=rows)
 
 
 if __name__ == '__main__':

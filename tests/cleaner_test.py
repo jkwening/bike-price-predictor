@@ -18,7 +18,7 @@ class CleanerTestCase(unittest.TestCase):
         specs_df = pd.read_csv(self._mediator.get_filepath_for_manifest_row(specs_row))
         num_rows, num_cols = specs_df.shape
 
-        df = self._cleaner.merge_source(source='jenson')
+        df = self._cleaner._merge_source(source='jenson')
         print('[test_merge_source]: columns\n', df.columns)
 
         # Case 1; Same number of rows but more columns
@@ -34,7 +34,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_jenson_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='jenson')
+        merged_df = self._cleaner._merge_source(source='jenson')
         munged_df = self._cleaner._jenson_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -43,7 +43,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_nashbar_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='nashbar')
+        merged_df = self._cleaner._merge_source(source='nashbar')
         munged_df = self._cleaner._nashbar_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -52,7 +52,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_trek_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='trek')
+        merged_df = self._cleaner._merge_source(source='trek')
         munged_df = self._cleaner._trek_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -61,7 +61,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_rei_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='rei')
+        merged_df = self._cleaner._merge_source(source='rei')
         munged_df = self._cleaner._rei_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -70,7 +70,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_citybikes_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='citybikes')
+        merged_df = self._cleaner._merge_source(source='citybikes')
         munged_df = self._cleaner._citybikes_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -79,7 +79,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_proshop_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='proshop')
+        merged_df = self._cleaner._merge_source(source='proshop')
         munged_df = self._cleaner._proshop_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -88,7 +88,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_contebikes_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='contebikes')
+        merged_df = self._cleaner._merge_source(source='contebikes')
         munged_df = self._cleaner._contebikes_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -97,7 +97,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_giant_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='giant')
+        merged_df = self._cleaner._merge_source(source='giant')
         munged_df = self._cleaner._giant_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -106,7 +106,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_litespeed_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='litespeed')
+        merged_df = self._cleaner._merge_source(source='litespeed')
         munged_df = self._cleaner._litespeed_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -115,7 +115,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_lynskey_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='lynskey')
+        merged_df = self._cleaner._merge_source(source='lynskey')
         munged_df = self._cleaner._lynskey_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -124,7 +124,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_spokes_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='spokes')
+        merged_df = self._cleaner._merge_source(source='spokes')
         munged_df = self._cleaner._spokes_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -133,7 +133,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_specialized_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='specialized')
+        merged_df = self._cleaner._merge_source(source='specialized')
         munged_df = self._cleaner._specialized_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -142,7 +142,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_backcountry_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='backcountry')
+        merged_df = self._cleaner._merge_source(source='backcountry')
         munged_df = self._cleaner._backcountry_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -151,7 +151,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_eriks_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='eriks')
+        merged_df = self._cleaner._merge_source(source='eriks')
         munged_df = self._cleaner._eriks_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -160,7 +160,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_canyon_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='canyon')
+        merged_df = self._cleaner._merge_source(source='canyon')
         munged_df = self._cleaner._canyon_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()
@@ -169,7 +169,7 @@ class CleanerTestCase(unittest.TestCase):
                             msg=f'{field} not in merged columns: {cols}')
 
     def test_competitive_cleaner(self):
-        merged_df = self._cleaner.merge_source(source='competitive')
+        merged_df = self._cleaner._merge_source(source='competitive')
         munged_df = self._cleaner._competitive_cleaner(merged_df)
 
         cols = munged_df.columns.tolist()

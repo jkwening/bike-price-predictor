@@ -5,7 +5,7 @@ from ingestion.ingestion_mediator import IngestionMediator
 from tests.unit_test_utils import DATA_PATH
 
 
-class ManifestTestCase(unittest.TestCase):
+class IngestionMediatorTestCase(unittest.TestCase):
     def setUp(self):
         self._mediator = IngestionMediator(data_path=DATA_PATH)
 
@@ -47,8 +47,8 @@ class ManifestTestCase(unittest.TestCase):
         self._mediator.update(sources=sources, from_manifest=True,
                               drop_tables=True)
 
-    def test_clean_source(self):
-        df = self._mediator.clean_source(source='jenson')
+    def test_transform_raw_data(self):
+        df = self._mediator.transform_raw_data(source='jenson')
 
         # Case 1: prod fields in merged dateframe
         cols = df.columns.tolist()
@@ -61,7 +61,7 @@ class ManifestTestCase(unittest.TestCase):
         print(df.shape)
         print(df.description.count())
 
-    def test_get_table_pairs(self):
+    def test_aggregate_data(self):
         result = self._mediator.aggregate_data()
         pprint(result)
 

@@ -8,13 +8,15 @@ import pandas as pd
 import numpy as np
 
 # Project modules
-from utils.utils import MUNGED_DATA_PATH
+from utils.utils import MUNGED_DATA_PATH, TIMESTAMP
+from utils.utils import create_directory_if_missing
 
 
 class Cleaner(object):
     def __init__(self, mediator, save_data_path=MUNGED_DATA_PATH):
         self._mediator = mediator
         self._save_data_path = save_data_path
+        self._TIMESTAMP = TIMESTAMP
         self._FIELD_NAMES = [
             'site', 'bike_type', 'product_id', 'href', 'description',
             'brand', 'price', 'msrp', 'frame_material',
@@ -630,7 +632,7 @@ class Cleaner(object):
 
         return field.apply(brake_replace)
 
-    def merge_source(self, source, bike_type='all'):
+    def _merge_source(self, source, bike_type='all'):
         """Return merged raw data files for given source."""
         manifest_rows = self._mediator.get_rows_matching(sources=[source],
                                                          bike_types=[bike_type])
@@ -673,10 +675,63 @@ class Cleaner(object):
         munged_df['shifter_groupset'] = self._parse_material(merged_df.shifters)
         return munged_df
 
-    def _save_munged_df(self, df: pd.DataFrame, source: str):
+    def clean_source(self, source, bike_type='all'):
+        """Return munged data frame for source and bike_type arguments.
+
+        Raises:
+            ValueError - If cleaner logic doesn't exist for source.
+        """
+        merged_df = self._merge_source(source, bike_type)
+
+        if source == 'jenson':
+            return self._jenson_cleaner(merged_df, to_csv=False)
+        elif source == 'nashbar':
+            return self._nashbar_cleaner(merged_df, to_csv=False)
+        elif source == 'trek':
+            return self._trek_cleaner(merged_df, to_csv=False)
+        elif source == 'rei':
+            return self._rei_cleaner(merged_df, to_csv=False)
+        elif source == 'citybikes':
+            return self._citybikes_cleaner(merged_df, to_csv=False)
+        elif source == 'proshop':
+            return self._proshop_cleaner(merged_df, to_csv=False)
+        elif source == 'contebikes':
+            return self._contebikes_cleaner(merged_df, to_csv=False)
+        elif source == 'eriks':
+            return self._eriks_cleaner(merged_df, to_csv=False)
+        elif source == 'canyon':
+            return self._canyon_cleaner(merged_df, to_csv=False)
+        elif source == 'giant':
+            return self._giant_cleaner(merged_df, to_csv=False)
+        elif source == 'litespeed':
+            return self._litespeed_cleaner(merged_df, to_csv=False)
+        elif source == 'lynskey':
+            return self._lynskey_cleaner(merged_df, to_csv=False)
+        elif source == 'spokes':
+            return self._spokes_cleaner(merged_df, to_csv=False)
+        elif source == 'specialized':
+            return self._specialized_cleaner(merged_df, to_csv=False)
+        elif source == 'backcountry':
+            return self._backcountry_cleaner(merged_df, to_csv=False)
+        else:
+            # Source cleaner not found
+            raise ValueError(f'Cleaner for {source} not found!')
+
+    def save_munged_df(self, df: pd.DataFrame, source: str):
         """Save munged data frame to appropriate folder using source name."""
-        f = os.path.join(self._save_data_path, f'{source}_munged.csv')
-        df.to_csv(f, index=False, encoding='utf-8')
+        fname = f'{source}_munged.csv'
+        path = os.path.join(self._save_data_path, self._TIMESTAMP, fname)
+        create_directory_if_missing(path)
+
+        df.to_csv(path, index=False, encoding='utf-8')
+
+        # Return munged manifest row object for csv file
+        return {
+            'site': source, 'tablename': 'munged',
+            'filename': fname,
+            'timestamp': self._TIMESTAMP, 'loaded': False,
+            'date_loaded': None
+        }
 
     def _jenson_cleaner(self, merged_df: pd.DataFrame,
                         to_csv=True) -> pd.DataFrame:
@@ -700,7 +755,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='jenson')
+            self.save_munged_df(df=munged_df, source='jenson')
 
         return munged_df
 
@@ -720,7 +775,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='nashbar')
+            self.save_munged_df(df=munged_df, source='nashbar')
 
         return munged_df
 
@@ -734,7 +789,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='trek')
+            self.save_munged_df(df=munged_df, source='trek')
 
         return munged_df
 
@@ -756,7 +811,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='rei')
+            self.save_munged_df(df=munged_df, source='rei')
 
         return munged_df
 
@@ -779,7 +834,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='citybikes')
+            self.save_munged_df(df=munged_df, source='citybikes')
 
         return munged_df
 
@@ -802,7 +857,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='proshop')
+            self.save_munged_df(df=munged_df, source='proshop')
 
         return munged_df
 
@@ -825,7 +880,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='contebikes')
+            self.save_munged_df(df=munged_df, source='contebikes')
 
         return munged_df
 
@@ -864,7 +919,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='eriks')
+            self.save_munged_df(df=munged_df, source='eriks')
 
         return munged_df
 
@@ -882,7 +937,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='canyon')
+            self.save_munged_df(df=munged_df, source='canyon')
 
         return munged_df
 
@@ -896,7 +951,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='giant')
+            self.save_munged_df(df=munged_df, source='giant')
 
         return munged_df
 
@@ -912,7 +967,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='litespeed')
+            self.save_munged_df(df=munged_df, source='litespeed')
 
         return munged_df
 
@@ -932,7 +987,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='lynskey')
+            self.save_munged_df(df=munged_df, source='lynskey')
 
         return munged_df
 
@@ -956,7 +1011,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='spokes')
+            self.save_munged_df(df=munged_df, source='spokes')
 
         return munged_df
 
@@ -976,7 +1031,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='specialized')
+            self.save_munged_df(df=munged_df, source='specialized')
 
         return munged_df
 
@@ -990,7 +1045,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='backcountry')
+            self.save_munged_df(df=munged_df, source='backcountry')
         return munged_df
 
     def _competitive_cleaner(self, merged_df: pd.DataFrame,
@@ -1011,7 +1066,7 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self._save_munged_df(df=munged_df, source='competitive')
+            self.save_munged_df(df=munged_df, source='competitive')
 
         return munged_df
 
