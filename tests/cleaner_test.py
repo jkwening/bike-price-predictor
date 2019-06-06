@@ -132,6 +132,42 @@ class CleanerTestCase(unittest.TestCase):
             self.assertTrue(field in cols,
                             msg=f'{field} not in merged columns: {cols}')
 
+    def test_specialized_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='specialized')
+        munged_df = self._cleaner._specialized_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_backcountry_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='backcountry')
+        munged_df = self._cleaner._backcountry_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_eriks_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='eriks')
+        munged_df = self._cleaner._eriks_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
+    def test_canyon_cleaner(self):
+        merged_df = self._cleaner.merge_source(source='canyon')
+        munged_df = self._cleaner._canyon_cleaner(merged_df)
+
+        cols = munged_df.columns.tolist()
+        for field in self._cleaner._FIELD_NAMES:
+            self.assertTrue(field in cols,
+                            msg=f'{field} not in merged columns: {cols}')
+
     def test_competitive_cleaner(self):
         merged_df = self._cleaner.merge_source(source='competitive')
         munged_df = self._cleaner._competitive_cleaner(merged_df)

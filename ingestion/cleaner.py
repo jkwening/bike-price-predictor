@@ -829,6 +829,63 @@ class Cleaner(object):
 
         return munged_df
 
+    def _eriks_cleaner(self, merged_df: pd.DataFrame,
+                        to_csv=True) -> pd.DataFrame:
+        """Cleaner for eriks raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brakes
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df.brake_type.fillna(merged_df.front_and_rear_brakes, inplace=True)
+        merged_df.brake_type.fillna(merged_df.front_brake, inplace=True)
+        merged_df.brake_type.fillna(merged_df.rear_brake, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_rotor, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_rotors, inplace=True)
+        merged_df.brake_type.fillna(merged_df.disc_rotor, inplace=True)
+        merged_df.brake_type.fillna(merged_df.rotor, inplace=True)
+        merged_df.brake_type.fillna(merged_df.rotors, inplace=True)
+        merged_df.handlebar.fillna(merged_df.handlebars, inplace=True)
+        merged_df.cassette.fillna(merged_df.cog, inplace=True)
+        merged_df.cassette.fillna(merged_df.freewheel_cassette, inplace=True)
+        merged_df.cassette.fillna(merged_df.drivetrain, inplace=True)
+        merged_df.cassette.fillna(merged_df.cogset, inplace=True)
+        merged_df.crankset.fillna(merged_df.crank_set, inplace=True)
+        merged_df.crankset.fillna(merged_df.cranks, inplace=True)
+        merged_df.crankset.fillna(merged_df.crank_arm_set, inplace=True)
+        merged_df.crankset.fillna(merged_df.chainrings, inplace=True)
+        merged_df.crankset.fillna(merged_df.drivetrain, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.drivetrain, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.drivetrain, inplace=True)
+        merged_df.shifters.fillna(merged_df.shifter, inplace=True)
+        merged_df.shifters.fillna(merged_df.derailleur_shifter, inplace=True)
+        merged_df.shifters.fillna(merged_df.derailleur_shifters, inplace=True)
+        merged_df['seatpost'] = merged_df.seat_post
+        merged_df.frame.fillna(merged_df.material, inplace=True)
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='eriks')
+
+        return munged_df
+
+    def _canyon_cleaner(self, merged_df: pd.DataFrame,
+                        to_csv=True) -> pd.DataFrame:
+        """Cleaner for canyon raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brakes
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_shift_levers, inplace=True)
+        merged_df['crankset'] = merged_df.cranks
+        merged_df.crankset.fillna(merged_df.chainrings, inplace=True)
+        merged_df['seatpost'] = merged_df.seat_post
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='canyon')
+
+        return munged_df
+
     def _giant_cleaner(self, merged_df: pd.DataFrame,
                         to_csv=True) -> pd.DataFrame:
         """Cleaner for giant raw data."""
@@ -901,6 +958,39 @@ class Cleaner(object):
         if to_csv:
             self._save_munged_df(df=munged_df, source='spokes')
 
+        return munged_df
+
+    def _specialized_cleaner(self, merged_df: pd.DataFrame,
+                             to_csv=True) -> pd.DataFrame:
+        """Cleaner for specialized raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brake_levers  # map to std field name
+        merged_df.brake_type.fillna(merged_df.front_brake, inplace=True)
+        merged_df.brake_type.fillna(merged_df.rear_brake, inplace=True)
+        merged_df.brake_type.fillna(merged_df.front_wheel, inplace=True)
+        merged_df.brake_type.fillna(merged_df.rear_wheel, inplace=True)
+        merged_df.crankset.fillna(merged_df.chainrings, inplace=True)
+        merged_df['shifters'] = merged_df.shift_levers  # map to std field name
+        merged_df['handlebar'] = merged_df.handlebars
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='specialized')
+
+        return munged_df
+
+    def _backcountry_cleaner(self, merged_df: pd.DataFrame,
+                             to_csv=True) -> pd.DataFrame:
+        """Cleaner for backcountry raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df.brake_type.fillna(merged_df.brakeset, inplace=True)
+        merged_df['frame'] = merged_df.frame_material  # map to std field name
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self._save_munged_df(df=munged_df, source='backcountry')
         return munged_df
 
     def _competitive_cleaner(self, merged_df: pd.DataFrame,
