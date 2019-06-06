@@ -5,6 +5,7 @@ from configparser import ConfigParser
 
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 DATA_PATH = os.path.abspath(os.path.join(ROOT_PATH, 'data'))
+MUNGED_DATA_PATH = os.path.abspath(os.path.join(ROOT_PATH, 'munged_data'))
 TIMESTAMP = datetime.now().strftime('%m%d%Y')
 CONFIG_FILE = os.path.abspath(os.path.join(ROOT_PATH, 'config.ini'))
 
@@ -29,7 +30,7 @@ def get_fieldnames_from_file(filepath: str) -> list:
     return fieldnames
 
 
-def config(section:str, filename=CONFIG_FILE,):
+def config(section: str, filename=CONFIG_FILE,):
     """Returns parameters for given section of the config.ini file."""
     parser = ConfigParser()
     parser.read(filename)

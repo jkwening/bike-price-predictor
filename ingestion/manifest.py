@@ -1,7 +1,7 @@
 import os
 from csv import DictWriter, DictReader
 
-from utils.utils import DATA_PATH
+from utils.utils import DATA_PATH, MUNGED_DATA_PATH
 
 
 class Manifest(object):
@@ -189,3 +189,33 @@ class Manifest(object):
     def get_filepath_for_row(self, row: dict) -> str:
         """Returns the absolute filepath for the data in manifest row."""
         return os.path.join(self._DATA_PATH, row['timestamp'], row['filename'])
+
+    def get_table_pairs(self) -> dict:
+        """For each site, bike_type get filepath for prods and specs data.
+
+        Return dict: {site: {bike_type: {tablename: filepath}} where
+            tablename is "products" or "product_specs"
+        """
+        pairs = dict()
+
+        for row in self.get_all_rows():
+            print('\n[manifest]: ', row)
+            # Get or set default for site
+            site_dict = pairs.setdefault(row['site'], {})
+            # Get or set default for bike_type
+            bike_type_dict = site_dict.setdefault(row['bike_type'], {})
+            # Set value for tablename
+            file_path = self.get_filepath_for_row(row)
+            bike_type_dict[row['tablename']] = file_path
+        return pairs
+
+
+class MungedManifest(Manifest):
+    def __init__(self, mediator, path=MUNGED_DATA_PATH,
+                 filename='munged_manifest.csv'):
+        super(MungedManifest, self).__init__(mediator, path, filename)
+        # Reset modify default headers
+        self._HEADERS = [
+            'site', 'tablename', 'filename', 'timestamp',
+            'loaded', 'date_loaded'
+        ]
