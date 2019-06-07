@@ -217,6 +217,9 @@ class Cleaner(object):
                 'gravel', 'pavement', 'gravel', 'cargo', 'hardtail', 'singlespeed'
             }
 
+    def get_field_names(self):
+        return self._FIELD_NAMES
+
     def _fill_missing_bike_types(self, df: pd.DataFrame) -> pd.DataFrame:
         """Use description to populate missing bike_types values."""
 

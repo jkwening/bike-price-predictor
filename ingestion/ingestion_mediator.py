@@ -1,5 +1,6 @@
 import os
 import sys
+import pandas as pd
 
 # Add project path into sys.path if not already so can be run from cmd line
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
@@ -28,9 +29,10 @@ class IngestionMediator:
     def __init__(self, data_path=DATA_PATH, manifest_filename='manifest.csv',
                  munged_data_path=MUNGED_DATA_PATH,
                  munged_manifest_filename='munged_manifest.csv'):
+        self._munged_data_path = munged_data_path
         self._ingest = Ingest(mediator=self)
         self._collect = Collect(mediator=self, save_data_path=data_path)
-        self._cleaner = Cleaner(mediator=self, save_data_path=MUNGED_DATA_PATH)
+        self._cleaner = Cleaner(mediator=self, save_data_path=munged_data_path)
         self._manifest = Manifest(mediator=self, path=data_path,
                                   filename=manifest_filename)
         self._munged_manifest = MungedManifest(mediator=self, path=munged_data_path,
@@ -147,20 +149,31 @@ class IngestionMediator:
                 aggregate; else, aggregate using munged manifest.
             to_csv(bool): If True, save combined transformed data to csv.
         """
-        # TODO: Utilize transform_from_manifest() from_raw=True
+        # Initialize empty df for combining purpose
+        agg_df = pd.DataFrame(columns=self._cleaner.get_field_names())
+
+        # Utilize transform_from_manifest() when from_raw=True
         if from_raw:
             self.transform_from_manifest(update_munged_manifest=False,
                                          save_cleaned_data=False,
                                          combine=True, save_combined=to_csv)
-        # TODO: Combine latest munged data using munged manifest as source
+        # Combine latest munged data using munged manifest as source
         else:
-            pass
+            for row in self._munged_manifest.get_all_rows():
+                munged_df = pd.read_csv(self._munged_manifest.get_filepath_for_row(row))
+                agg_df = agg_df.append(munged_df, ignore_index=True, sort=False)
+
+        if to_csv:
+            fname = f'combined_munged_{TIMESTAMP}.csv'
+            path = os.path.join(self._munged_data_path, fname)
+            agg_df.to_csv(path, index=False, encoding='utf-8')
 
     def transform_raw_data(self, source, bike_type='all'):
         """Clean and merge raw data files for given source."""
         munged_df = self._cleaner.clean_source(source, bike_type)
         row_data = self._cleaner.save_munged_df(df=munged_df, source=source)
-        return self.update_munged_manifest(rows=[row_data])
+        self.update_munged_manifest(rows=[row_data])
+        return row_data
 
     def transform_from_manifest(self, update_munged_manifest=True,
                                 save_cleaned_data=True,
@@ -173,13 +186,34 @@ class IngestionMediator:
             combine(bool): If True, aggregate munged data into single dataframe.
             save_combined(bool): If True, save the combined dataframe to csv.
         """
-        # TODO: get all unique source, bike_type pairings in manifest
-        # TODO: iterate through each pairing and clean raw data
-        # TODO: save transformed data if requested
-        # TODO: if combine, append to aggregate dataframe
-        # TODO: update munged manifest if requested
-        # TODO: save combined if reqeusted
-        pass
+        # Initialize empty df for combining purpose
+        agg_df = pd.DataFrame(columns=self._cleaner.get_field_names())
+
+        # Get all unique source, bike_type pairings in manifest
+        source_pairs = self._manifest.get_table_pairs()
+        for source, label_dict in source_pairs.items():
+            # Iterate through each pairing and clean raw data
+            for bike_type in label_dict:
+                try:
+                    munged_df = self._cleaner.clean_source(source, bike_type)
+                except ValueError:
+                    continue
+                # If combine, append to aggregate dataframe
+                if combine or save_combined:
+                    agg_df = agg_df.append(munged_df, ignore_index=True,
+                                           sort=False)
+                # Save transformed data if requested
+                if save_cleaned_data or update_munged_manifest:
+                    row = self._cleaner.save_munged_df(df=munged_df, source=source)
+                    # Update munged manifest if requested
+                    if update_munged_manifest:
+                        self._munged_manifest.update(from_list=[row])
+
+        # Save combined if requested
+        if save_combined:
+            fname = f'combined_munged_{TIMESTAMP}.csv'
+            path = os.path.join(self._munged_data_path, fname)
+            agg_df.to_csv(path, index=False, encoding='utf-8')
 
     def update_munged_manifest(self, rows: list) -> bool:
         """Update munged manifest with new row data."""

@@ -3,7 +3,7 @@ import os
 from csv import DictReader, DictWriter
 
 from ingestion.manifest import Manifest
-from tests.unit_test_utils import DATA_PATH, TEST_DATA_PATH
+from utils.unit_test_utils import DATA_PATH, TEST_DATA_PATH
 
 
 class ManifestTestCase(unittest.TestCase):
@@ -216,8 +216,19 @@ class ManifestTestCase(unittest.TestCase):
                          msg='case 7 should return all 16 rows')
 
     def test_get_table_pairs(self):
-        # TODO: get_table_pairs
-        pass
+        expected = {
+            'competitive': ['road', 'mountain', 'triathlon', 'kid'],
+            'nashbar': ['all'],
+            'rei': ['all']
+        }
+        result = self._manifest.get_table_pairs()
+
+        for source in expected:
+            self.assertTrue(source in result,
+                            msg=f'{source} not in {result.keys()}')
+            for bike_type in expected[source]:
+                self.assertTrue(bike_type in result[source],
+                                msg=f'{bike_type} not in {result[source].keys()}')
 
 
 if __name__ == '__main__':
