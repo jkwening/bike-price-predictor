@@ -2,12 +2,13 @@ import unittest
 from pprint import pprint
 
 from ingestion.ingestion_mediator import IngestionMediator
-from tests.unit_test_utils import DATA_PATH
+from utils.unit_test_utils import DATA_PATH, MUNGED_DATA_PATH
 
 
 class IngestionMediatorTestCase(unittest.TestCase):
     def setUp(self):
-        self._mediator = IngestionMediator(data_path=DATA_PATH)
+        self._mediator = IngestionMediator(data_path=DATA_PATH,
+                                           munged_data_path=MUNGED_DATA_PATH)
 
     # TODO: add more testing data, needs another specs and two prods
     def test_load_manifest_row_to_db(self):
@@ -48,22 +49,31 @@ class IngestionMediatorTestCase(unittest.TestCase):
                               drop_tables=True)
 
     def test_transform_raw_data(self):
-        df = self._mediator.transform_raw_data(source='jenson')
+        result = self._mediator.transform_raw_data(source='jenson')
 
-        # Case 1: prod fields in merged dateframe
-        cols = df.columns.tolist()
-        for field in self._mediator._cleaner._FIELD_NAMES[:8]:
-            self.assertTrue(field in cols,
-                            msg=f'{field} not in merged columns: {cols}')
+        # Case 1: check returns appropriate field headings
+        for field in result:
+            self.assertTrue(field in self._mediator._munged_manifest._HEADERS,
+                            msg=f'{field} not in self._mediator._munged_manifest._HEADERS')
 
-        print(df.head())
-        print('\n', df.columns)
-        print(df.shape)
-        print(df.description.count())
+        # Case 2: check correct values
+        self.assertEqual('jenson', result['site'])
+        self.assertEqual('munged', result['tablename'],)
+        self.assertEqual('jenson_munged.csv', result['filename'],)
+        self.assertEqual(self._mediator._cleaner._TIMESTAMP, result['timestamp'],)
+        self.assertEqual(False, result['loaded'],)
+        self.assertEqual(None, result['date_loaded'],)
+
+    def test_transform_from_manifest(self):
+        # Case 1: only update munged manifest and save cleaned data
+        self._mediator.transform_from_manifest()
+        # Case 2: only create combine df and save to csv
+        self._mediator.transform_from_manifest(update_munged_manifest=False,
+                                               save_cleaned_data=False, combine=True,
+                                               save_combined=True)
 
     def test_aggregate_data(self):
-        result = self._mediator.aggregate_data()
-        pprint(result)
+        self._mediator.aggregate_data()
 
 
 if __name__ == '__main__':

@@ -115,12 +115,6 @@ class Manifest(object):
 
         return rows
 
-    # TODO - remove? Doesn't actually seem useful since will loop over
-    def get_each_row(self):
-        """Returns an iterator object for getting each row in manifest.csv."""
-        rows = self.get_all_rows()
-        return iter(rows)
-
     def get_unique_spec_fieldnames(self):
         """Return set of fieldnames used in all spec files in manifest.csv."""
         exclude_fieldnames = ['site', 'product_id']  # exclude primary key fieldnames
@@ -199,7 +193,6 @@ class Manifest(object):
         pairs = dict()
 
         for row in self.get_all_rows():
-            print('\n[manifest]: ', row)
             # Get or set default for site
             site_dict = pairs.setdefault(row['site'], {})
             # Get or set default for bike_type
