@@ -210,12 +210,13 @@ class Cleaner(object):
             'Sram A1': 'sram apex'
         }
         self._BIKE_TYPE = {  # order matters for fork, frame, kid, girl, and bmx as qualifiers
-                'frame', 'fork', 'kid', 'girl', 'e-bike', 'electric', 'folding', 'balance',
-                'push', 'trailer', 'boy', 'bmx', 'city', 'commuter', 'comfort', 'fitness',
-                'cruiser', 'fat', 'triathlon', 'road', 'touring', 'urban',
-                'track', 'adventure', 'mountain', 'cyclocross', 'hybrid',
-                'gravel', 'pavement', 'gravel', 'cargo', 'hardtail', 'singlespeed'
-            }
+            'frame', 'frameset', 'fork', 'kid', 'girl', 'e-bike', 'electric',
+            'folding', 'balance', 'push', 'trailer', 'boy', 'bmx', 'city',
+            'commuter', 'comfort', 'fitness', 'cruiser', 'fat', 'triathlon',
+            'road', 'touring', 'urban', 'track', 'adventure', 'mountain',
+            'cyclocross', 'hybrid', 'gravel', 'pavement', 'gravel', 'cargo',
+            'hardtail', 'singlespeed'
+        }
 
     def get_field_names(self):
         return self._FIELD_NAMES
@@ -290,8 +291,9 @@ class Cleaner(object):
                 'girl': 'childrens',
                 'gravel': 'cyclocross',
                 'fat': 'mountain',
-                'frame': np.NaN,  # prep for dropping since not a complete bike
-                'fork': np.NaN,  # prep for dropping since not a complete bike
+                # 'frame': np.NaN,  # prep for dropping since not a complete bike
+                # 'frameset': np.NaN,  # prep for dropping since not a complete bike
+                # 'fork': np.NaN,  # prep for dropping since not a complete bike
                 'Bike Touring': 'touring',
                 'Bike Commuting': 'urban',
                 'Road Cycling, Bikepacking': 'touring',
@@ -302,7 +304,7 @@ class Cleaner(object):
                 'balance': 'childrens',
                 'push': 'childrens',
                 'cargo': 'cargo',
-                'trailer': np.NaN,  # prep for dropping since accessory
+                # 'trailer': np.NaN,  # prep for dropping since accessory
                 'Bikepacking, Bike Touring': 'touring',
                 'Mountain Biking, Bikepacking': 'touring',
                 'Bikepacking, Mountain Biking': 'touring',
@@ -315,7 +317,7 @@ class Cleaner(object):
                 'triathlon': 'triathlon',
                 'track': 'track',
                 'cyclocross_gravel_bikes': 'cyclocross',
-                'commuter_urban_bikes': 'commuter',
+                'commuter_urban_bikes': 'urban',
                 'kids_bikes': 'childrens',
                 'Kids': 'childrens',
                 'Trail, All-Mountain, Enduro': 'mountain',
@@ -468,7 +470,7 @@ class Cleaner(object):
 
     def _parse_cassette_type(self, desc: pd.Series) -> pd.Series:
         """Parse cassette groupset data."""
-        # First pass using derailleur groupset logic
+        # First pass using groupset logic
         groupset = self._parse_groupset(desc)
 
         def cassette_replace(d, return_desc=True):
@@ -674,8 +676,8 @@ class Cleaner(object):
         munged_df['brake_type'] = self._parse_brake_type(merged_df.brake_type)
         munged_df['seatpost_material'] = self._parse_material(merged_df.seatpost)
         munged_df['fork_material'] = self._parse_material(merged_df.fork)
-        munged_df['chain_groupset'] = self._parse_material(merged_df.chain)
-        munged_df['shifter_groupset'] = self._parse_material(merged_df.shifters)
+        munged_df['chain_groupset'] = self._parse_groupset(merged_df.chain)
+        munged_df['shifter_groupset'] = self._parse_groupset(merged_df.shifters)
         return munged_df
 
     def clean_source(self, source, bike_type='all'):
