@@ -21,7 +21,6 @@ class Scraper(ABC):
         self._num_bikes = 0
         self._specs_fieldnames = {'site', 'product_id'}
         self._bike_type = 'all'
-        # self._req_sess = requests.Session()
 
     @staticmethod
     def _fetch_html(url, method='GET', params=None, data=None,
