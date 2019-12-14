@@ -13,7 +13,6 @@ class Jenson(Scraper):
                          source='jenson', save_data_path=save_data_path)
         self._page_size = page_size
         self._PROD_PAGE_ENDPOINT = '/Complete-Bikes'
-        self._BIKE_CATEGORIES = None
 
     def _fetch_prod_listing_view(self, endpoint, page_size=None, page=None):
         req_url = f'{self._BASE_URL}{endpoint}'
@@ -25,40 +24,7 @@ class Jenson(Scraper):
         """Raise error: Not implemented in this module."""
         raise NotImplemented
 
-    def _parse_prod_specs(self, soup):
-        """Return dictionary representation of the product's specification."""
-        prod_specs = dict()
-        try:
-            id_prod_specs = soup.find('div', id='prod-tab-frame-D')
-            table_specs = id_prod_specs.find_all('table', class_='spec')
-            table_spec = table_specs[0]
-
-            # Handle multiple table specs
-            if len(table_specs) > 1:
-                for table in table_specs:
-                    caption = table.caption.string.lower().strip()
-                    if caption == 'bike specifications':
-                        table_spec = table
-                        break
-
-            # Get each spec_name, value pairing for bike product
-            specs = table_spec.find_all('tr')
-            for spec in specs:
-                name = spec.th.string
-                value = spec.td.text
-                spec_name = self._normalize_spec_fieldnames(name)
-                prod_specs[spec_name] = value.strip()
-                self._specs_fieldnames.add(spec_name)
-
-            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
-        except AttributeError as err:
-            print(f'\tError: {err}')
-        except IndexError:
-            print('f\tError: Specifications table not available!')
-
-        return prod_specs
-
-    def _get_categories(self, soup=None):
+    def _get_categories(self):
         """Bike category endpoint encodings.
 
         Returns:
@@ -67,10 +33,8 @@ class Jenson(Scraper):
         categories = dict()
         # categories that should be skipped
         exlude = ['jenson_usa_exclusive_builds', 'bikes_on_sale']
-
-        if soup is None:
-            page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
-            soup = BeautifulSoup(page, 'lxml')
+        page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
+        soup = BeautifulSoup(page, 'lxml')
 
         div_cat = soup.find('div', class_='list-links')
         cats = div_cat.find_all('a')
@@ -94,12 +58,11 @@ class Jenson(Scraper):
         self._num_bikes = 0
 
         # Populate categories if missing
-        if self._BIKE_CATEGORIES is None:
-            self._BIKE_CATEGORIES = self._get_categories()
+        categories = self._get_categories()
 
         # Scrape pages for each available category
-        for bike_type in self._BIKE_CATEGORIES:
-            endpoint = self._BIKE_CATEGORIES[bike_type]['href']
+        for bike_type in categories.keys():
+            endpoint = categories[bike_type]['href']
             soup = BeautifulSoup(self._fetch_prod_listing_view(
                 endpoint, page=0, page_size=self._page_size), 'lxml')
             print(f'Parsing {bike_type}...')
@@ -154,10 +117,44 @@ class Jenson(Scraper):
             product['price'] = float(price.strip('$').replace(',', ''))
 
             try:
-                msrp = prod.find('dv', class_='product-price-defprice').string.strip()
+                msrp = prod.find('div', class_='product-price-defprice').string.strip()
+                msrp = msrp.replace('MSRP', '').strip()
                 product['msrp'] = float(msrp.strip('$').replace(',', ''))
             except AttributeError:
                 product['msrp'] = product['price']
 
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
+
+    def _parse_prod_specs(self, soup):
+        """Return dictionary representation of the product's specification."""
+        prod_specs = dict()
+        try:
+            id_prod_specs = soup.find('div', id='prod-tab-frame-D')
+            table_specs = id_prod_specs.find_all('table', class_='spec')
+            table_spec = table_specs[0]
+
+            # Handle multiple table specs
+            if len(table_specs) > 1:
+                for table in table_specs:
+                    caption = table.caption.string.lower().strip()
+                    if caption == 'bike specifications':
+                        table_spec = table
+                        break
+
+            # Get each spec_name, value pairing for bike product
+            specs = table_spec.find_all('tr')
+            for spec in specs:
+                name = spec.th.string
+                value = spec.td.text
+                spec_name = self._normalize_spec_fieldnames(name)
+                prod_specs[spec_name] = value.strip()
+                self._specs_fieldnames.add(spec_name)
+
+            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
+        except AttributeError as err:
+            print(f'\tError: {err}')
+        except IndexError:
+            print('f\tError: Specifications table not available!')
+
+        return prod_specs

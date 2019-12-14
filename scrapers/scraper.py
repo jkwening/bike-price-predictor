@@ -30,7 +30,7 @@ class Scraper(ABC):
         # Configure default header values
         if headers is None:
             headers = dict()
-        headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.96 Safari/537.36'
+        headers['User-Agent'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36'
         headers['Connection'] = 'keep-alive'
 
         print(f'Performing {method} request for: {url}')
