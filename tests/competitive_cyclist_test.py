@@ -172,7 +172,7 @@ class CompetitiveCyclistTestCase(unittest.TestCase):
                           get_prods_from='memory', to_csv=False)
 
         # case 2: scrape site to get available products but don't write to file
-        result = self._cc.get_product_specs(get_prods_from='site', to_csv=False)
+        result = self._cc.get_product_specs(get_prods_from='site', to_csv=True)
         self.assertEqual(len(self._cc._products), len(result))
         for key in self._cc._products.keys():
             self.assertTrue(key in result.keys())

@@ -38,7 +38,7 @@ class CompetitiveCyclist(Scraper):
         return self._get_num_pages
 
     def _get_prods_on_current_listings_page(self, soup):
-        div_id_products = soup.find('div', attrs={'id': 'products'})
+        div_id_products = soup.find('div', class_='results')
         div_products_list = div_id_products.find_all('div', class_='product')
 
         for prod_info in div_products_list:
@@ -66,19 +66,14 @@ class CompetitiveCyclist(Scraper):
 
             # get current and msrp price
             try:  # handle possible "TEMPORARILY OUT OF STOCK" scenario
-                prod_retail = prod_info.find('span', class_='price-retail')
+                high_price = prod_info.find('span', class_='js-item-price-high')
+                prod_msrp = high_price.contents[0]
 
-                if prod_retail is not None:
-                    retail = prod_retail.contents[0]
-                    prod_price = retail
-                    prod_msrp = prod_price
+                low_price = prod_info.find('span', class_='js-item-price-low')
+                if low_price is not None:
+                    prod_price = low_price.contents[0]
                 else:
-                    prod_price = prod_info.find('span',
-                                                class_='ui-pl-pricing-low-price').contents[
-                        0]
-                    prod_msrp = prod_info.find('span',
-                                               class_='ui-pl-pricing-high-price').contents[
-                        0]
+                    prod_price = prod_msrp
 
                 product['price'] = float(prod_price.strip('$').replace(',', ''))
                 product['msrp'] = float(prod_msrp.strip('$').replace(',', ''))

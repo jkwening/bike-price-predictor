@@ -66,109 +66,79 @@ CROSS_TRAIL_SPECS = {
 
 class CityBikesTestCase(unittest.TestCase):
     def setUp(self):
-        self._citybikes = CityBikes(save_data_path=DATA_PATH)
+        self._scraper = CityBikes(save_data_path=DATA_PATH)
 
     def test_fetch_prod_listing_view(self):
-        text = self._citybikes._fetch_prod_listing_view(
-            endpoint=self._citybikes._PROD_PAGE_ENDPOINT, page_size=30)
+        text = self._scraper._fetch_prod_listing_view(page_size=30)
         soup = BeautifulSoup(text, 'lxml')
-        self._citybikes._get_prods_on_current_listings_page(
+        self._scraper._get_prods_on_current_listings_page(
             soup, bike_type='all')
-        self.assertEqual(30, len(self._citybikes._products),
+        self.assertEqual(30, len(self._scraper._products),
                          msg='First page should return 30 products.')
 
     def test_get_categories(self):
-        categories = {
-            'road': {'filter_par': 'rb_ct', 'filter_val': 1001, 'count': 24},
-            'mountain': {'filter_par': 'rb_ct', 'filter_val': 1006, 'count':
-                19},
-            'commuter_urban': {'filter_par': 'rb_ct', 'filter_val': 1017,
-                               'count': 65},
-            'comfort': {'filter_par': 'rb_ct', 'filter_val': 1020, 'count':
-                13},
-            'cruiser': {'filter_par': 'rb_ct', 'filter_val': 1021, 'count':
-                1},
-            'fitness': {'filter_par': 'rb_ct', 'filter_val': 1249, 'count':
-                32},
-            'hybrid': {'filter_par': 'rb_ct', 'filter_val': 1022, 'count':
-                40},
-            'childrens': {'filter_par': 'rb_ct', 'filter_val': 1023, 'count':
-                20},
-            'other': {'filter_par': 'rb_ct', 'filter_val': 1037, 'count':
-                28}
-        }
+        categories = ['road', 'mountain', 'commuter_urban', 'comfort',
+                      'fitness', 'hybrid', 'childrens',
+                      'other', 'cyclocross']
 
-        with open(SHOP_BIKES_HTML_PATH, mode='r', encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        result = self._citybikes._get_categories(soup)
-        for title in categories.keys():
-            cat = categories[title]
-            r_cat = result[title]
-            for key in cat.keys():
-                self.assertTrue(cat[key] == r_cat[key],
-                                msg=f'{title}-{key}: result={r_cat[key]} - '
-                                    f'expected:'
-                                    f'{cat[key]}')
+        text = self._scraper._fetch_prod_listing_view(page_size=30)
+        soup = BeautifulSoup(text, 'lxml')
+        result = self._scraper._get_categories(soup)
+        print('\nCategories:', result)
+        for key in result.keys():
+            self.assertTrue(key in categories,
+                            msg=f'{key} not in {categories}')
 
-    def test_get_prod_listings(self):
-        with open(COMMUTER_BIKES_HTML_PATH, mode='r',
-                  encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        self._citybikes._get_prods_on_current_listings_page(
-            soup, 'commuter_urban')
-        self.assertEqual(30, len(self._citybikes._products),
-                         msg='First page should return 60 products.')
+    def test_get_prods_listing(self):
+        bike_type = 'road'
+        bike_cats = self._scraper._get_categories()
+        qs = '&rb_ct=' + str(bike_cats[bike_type]['filter_val'])
+        soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
+            qs=qs), 'lxml')
+
+        # Verify product listings fetch
+        self._scraper._get_prods_on_current_listings_page(soup, bike_type)
+        num_prods = len(self._scraper._products)
+        expected_num_prods = int(bike_cats[bike_type]['count'])
+        self.assertEqual(expected_num_prods, num_prods,
+                         msg=f'{num_prods} product, expected: {expected_num_prods}.')
+        self._scraper._write_prod_listings_to_csv()
+
+    def test_parse_specs(self):
+        bike_type = 'road'
+        prods_csv_path = os.path.join(DATA_PATH, TIMESTAMP,
+                                      'citybikes_prods_all.csv')
+        # Verify parsing product specs
+        specs = self._scraper.get_product_specs(get_prods_from=prods_csv_path,
+                                                bike_type=bike_type,
+                                                to_csv=False)
+        num_prods = len(self._scraper._products)
+        num_specs = len(specs)
+        self.assertEqual(num_prods, num_specs,
+                         msg=f'Products size: {num_prods}, Specs size: {num_specs}')
+        self._scraper._write_prod_specs_to_csv(specs=specs,
+                                               bike_type=bike_type)
+
+        # Verify spec fieldnames has minimum general fields:
+        expected = ['site', 'product_id', 'frame',
+                    'fork', 'cassette_rear_cogs', 'saddle', 'seatpost']
+        print('\nSpec Fieldnames\n', self._scraper._specs_fieldnames)
+        for field in expected:
+            self.assertTrue(field in self._scraper._specs_fieldnames,
+                            msg=f'{field} not in {self._scraper._specs_fieldnames}.')
 
     def test_get_all_available_prods(self):
-        result = self._citybikes.get_all_available_prods()
+        result = self._scraper.get_all_available_prods()
 
         total_bikes = 0
-        for values in self._citybikes._BIKE_CATEGORIES.values():
+        text = self._scraper._fetch_prod_listing_view(page_size=30)
+        soup = BeautifulSoup(text, 'lxml')
+        for values in self._scraper._get_categories(soup).values():
             total_bikes += values['count']
-        num_prods = len(self._citybikes._products)
+        num_prods = len(self._scraper._products)
         # There are dupes so expect less num_prods
         self.assertTrue(total_bikes >= num_prods,
                         msg=f'expected: {total_bikes} - found: {num_prods}')
-
-    def test_parse_prod_spec(self):
-        # load test prod details into memory
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'citybikes-Specialized-CrossTrail-Hydraulic-Disc.html'))
-        with open(html_path, encoding='utf-8') as f:
-            cross_trail_prod_detail_text = f.read()
-
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'citybikes-Jamis-Dragonfly-Women.html'))
-        with open(html_path, encoding='utf-8') as f:
-            dragonfly_prod_detail_text = f.read()
-
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'citybikes-Specialized-Boys-Hotwalk.html'))
-        with open(html_path, encoding='utf-8') as f:
-            generic_error = f.read()
-
-        cross_trail_detail_soup = BeautifulSoup(
-            cross_trail_prod_detail_text, 'lxml')
-        dragonfly_detail_soup = BeautifulSoup(
-            dragonfly_prod_detail_text, 'lxml')
-        generic_error_soup = BeautifulSoup(generic_error, 'lxml')
-
-        # case 1: exact match per example data
-        result = self._citybikes._parse_prod_specs(cross_trail_detail_soup)
-        self.assertEqual(len(CROSS_TRAIL_SPECS), len(result))
-        for key in CROSS_TRAIL_SPECS.keys():
-            self.assertEqual(
-                CROSS_TRAIL_SPECS[key], result[key])
-
-        # case 2: using second data, exact match in components
-        result = self._citybikes._parse_prod_specs(dragonfly_detail_soup)
-        self.assertEqual(len(DRAGONFLY_SPECS), len(result))
-        for key in DRAGONFLY_SPECS.keys():
-            self.assertEqual(DRAGONFLY_SPECS[key], result[key])
-
-        # case 3: safely handle missing specs
-        result = self._citybikes._parse_prod_specs(generic_error_soup)
-        self.assertEqual(0, len(result))
 
 
 if __name__ == '__main__':

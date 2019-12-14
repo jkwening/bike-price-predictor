@@ -5,7 +5,7 @@ from ingestion.ingestion_mediator import IngestionMediator
 from scrapers.competitive_cyclist import CompetitiveCyclist
 from scrapers.nashbar import NashBar
 from scrapers.specialized import Specialized
-from tests.unit_test_utils import DATA_PATH
+from utils.unit_test_utils import DATA_PATH
 
 
 class ManifestTestCase(unittest.TestCase):

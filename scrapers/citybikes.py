@@ -15,41 +15,18 @@ class CityBikes(Scraper):
                          source='citybikes', save_data_path=save_data_path)
         self._page_size = page_size
         self._PROD_PAGE_ENDPOINT = '/product-list/bikes-1000/'
-        self._BIKE_CATEGORIES = self._get_categories()
 
-    def _fetch_prod_listing_view(self, endpoint, page_size=60, page=1):
+    def _fetch_prod_listing_view(self, page_size=60, page=1,
+                                 qs=''):
         start_row = ((page - 1) * page_size) + 1
-        req_url = f'{self._BASE_URL}{endpoint}?&startrow=' \
-                  f'{start_row}&maxItems={page_size}'
+        req_url = f'{self._BASE_URL}{self._PROD_PAGE_ENDPOINT}?&startrow=' \
+                  f'{start_row}&maxItems={page_size}{qs}'
         return self._fetch_html(req_url)
 
     # TODO: seems unnecessary, remove and embed directly into get_all_available_prods()
     def _get_max_num_prods(self, soup):
         """Raise error: Not implemented in this module."""
         raise NotImplemented
-
-    def _parse_prod_specs(self, soup):
-        """Return dictionary representation of the product's specification."""
-        prod_specs = dict()
-        try:
-            id_prod_specs = soup.find('div', attrs={'id': 'ProductSpecs'})
-            table_specs = id_prod_specs.find('table',
-                                             class_='seProductSpecTable')
-            specs = table_specs.find_all('tr')
-
-            # Get each spec_name, value pairing for bike product
-            for spec in specs:
-                name = spec.th.contents[0]
-                value = spec.td.contents[0]
-                spec_name = self._normalize_spec_fieldnames(name)
-                prod_specs[spec_name] = value.strip()
-                self._specs_fieldnames.add(spec_name)
-
-            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
-        except AttributeError as err:
-            print(f'\tError: {err}')
-
-        return prod_specs
 
     def _get_categories(self, soup=None):
         """Bike category endpoint encodings.
@@ -60,7 +37,7 @@ class CityBikes(Scraper):
         categories = dict()
 
         if soup is None:
-            page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
+            page = self._fetch_prod_listing_view()
             soup = BeautifulSoup(page, 'lxml')
 
         facet_cat = soup.find('div', attrs={'id': 'Facets-categories'})
@@ -87,18 +64,17 @@ class CityBikes(Scraper):
         self._num_bikes = 0
 
         # Scrape pages for each available category
-        for bike_type in self._BIKE_CATEGORIES.keys():
+        categories = self._get_categories()
+        for bike_type in categories.keys():
             print(f'Getting {bike_type} bikes...')
-            endpoint = self._PROD_PAGE_ENDPOINT + bike_type + '-'
-            endpoint += str(self._BIKE_CATEGORIES[bike_type]['filter_val'])
-            num_bikes = self._BIKE_CATEGORIES[bike_type]['count']
+            qs = '&rb_ct=' + str(categories[bike_type]['filter_val'])
+            num_bikes = categories[bike_type]['count']
             pages = math.ceil(num_bikes / self._page_size)
 
             # Scrape all pages for bike category
             for page in range(pages):
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
-                    endpoint, page=page + 1, page_size=self._page_size
-                ), 'lxml')
+                    page=page + 1, page_size=self._page_size, qs=qs), 'lxml')
                 self._get_prods_on_current_listings_page(soup, bike_type)
 
         if to_csv:
@@ -121,8 +97,8 @@ class CityBikes(Scraper):
             product['href'] = href
             prod_id = href.split('-')[-2]
             product['product_id'] = prod_id
-            item_name = product_title.find('span',
-                                           class_='seItemName').contents[0]
+            item_name = product_title.a['title']
+
             try:  # Handle no title year
                 title_year = product_title.find(
                     'span', class_='seCleanTitleYear').contents[0]
@@ -164,3 +140,26 @@ class CityBikes(Scraper):
 
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
+
+    def _parse_prod_specs(self, soup):
+        """Return dictionary representation of the product's specification."""
+        prod_specs = dict()
+        try:
+            id_prod_specs = soup.find('div', attrs={'id': 'ProductSpecs'})
+            table_specs = id_prod_specs.find('table',
+                                             class_='seProductSpecTable')
+            specs = table_specs.find_all('tr')
+
+            # Get each spec_name, value pairing for bike product
+            for spec in specs:
+                name = spec.th.contents[0]
+                value = spec.td.contents[0]
+                spec_name = self._normalize_spec_fieldnames(name)
+                prod_specs[spec_name] = value.strip()
+                self._specs_fieldnames.add(spec_name)
+
+            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
+        except AttributeError as err:
+            print(f'\tError: {err}')
+
+        return prod_specs
