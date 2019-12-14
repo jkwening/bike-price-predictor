@@ -143,7 +143,7 @@ class Scraper(ABC):
         """
         # determine how to get bike products
         if self._products and get_prods_from == 'memory':
-            print('Have bike products listing in memory - PROCESSING...')
+            print('\nHave bike products listing in memory - PROCESSING...')
         elif get_prods_from == 'site':
             print('Getting bike products from site - SCRAPING SITE...')
             self.get_all_available_prods()
