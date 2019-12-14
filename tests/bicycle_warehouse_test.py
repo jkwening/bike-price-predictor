@@ -85,7 +85,32 @@ class SpecializedTestCase(unittest.TestCase):
         self.assertFalse(result[0],
                          msg=f'Expected no next page endpoint! Result: {result}')
 
-    def test_get_prod_listings(self):
+    def test_get_prods_and_specs(self):
+        bike_type = 'road_bikes'
+        bike_cats = self._scraper._get_categories()
+        endpoint = bike_cats[bike_type]['href']
+        soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
+            endpoint), 'lxml')
+
+        # Verify product listings fetch
+        self._scraper._get_prods_on_current_listings_page(soup, 'road_bikes')
+        num_prods = len(self._scraper._products)
+        self.assertTrue(num_prods > 1,
+                        msg=f'There are {num_prods} product first page.')
+        self._scraper._write_prod_listings_to_csv()
+
+        # Verify parsing product specs
+        specs = self._scraper.get_product_specs(get_prods_from='memory',
+                                                bike_type=bike_type,
+                                                to_csv=False)
+        num_specs = len(specs)
+        self.assertEqual(num_prods, num_specs,
+                         msg=f'Products size: {num_prods}, Specs size: {num_specs}')
+        self._scraper._write_prod_specs_to_csv(specs=specs,
+                                               bike_type=bike_type)
+        print('\nSpec Fieldnames\n', self._scraper._specs_fieldnames)
+
+    def test_get_prod_listings_from_saved_html(self):
         expected = 24
         with open(SHOP_ROAD_HTML_PATH, mode='r',
                   encoding='utf-8') as html:

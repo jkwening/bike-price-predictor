@@ -24,8 +24,8 @@ class BicycleWarehouse(Scraper):
     @staticmethod
     def _get_next_page(soup):
         """Returns (success, endpoint) for next page url."""
-        div = soup.find('div', class_='pagination--container')
-        li = div.find('li', class_='pagination--next')
+        # nav = soup.find('nav', class_='pagination--container')
+        li = soup.find('li', class_='pagination--next')
 
         if li is None:
             return False, ''
@@ -161,7 +161,7 @@ class BicycleWarehouse(Scraper):
 
     def _get_prods_on_current_listings_page(self, soup, bike_type):
         """Parse products on page."""
-        products = soup.find_all('article', class_='productgrid--item')
+        products = soup.find_all(class_='productgrid--item')
 
         for prod in products:
             product = dict()
@@ -176,8 +176,8 @@ class BicycleWarehouse(Scraper):
             product['brand'] = product['description'].split()[0].strip()
 
             # Get prod id
-            div_id = item.find('div', class_='yotpo')
-            prod_id = div_id['data-product-id']
+            prod_id = item.find(class_='shopify-product-reviews-badge')['data-id']
+            # prod_id = div_id['data-product-id']
             product['product_id'] = prod_id
 
             # Parse price
@@ -188,7 +188,8 @@ class BicycleWarehouse(Scraper):
 
             # Parse msrp accordingly
             try:
-                msrp = div_price.find('div', class_='price--compare-at').span.string
+                comp_span = div_price.find('div', class_='price--compare-at')
+                msrp = comp_span.find('span', class_='money').string
                 product['msrp'] = float(
                     msrp.strip().strip('$').replace(',', ''))
             except AttributeError:  # handle not on sale

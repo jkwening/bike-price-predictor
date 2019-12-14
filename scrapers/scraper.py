@@ -19,7 +19,7 @@ class Scraper(ABC):
         self._TIMESTAMP = TIMESTAMP
         self._products = {}  # href, desc key,value pairs
         self._num_bikes = 0
-        self._specs_fieldnames = {'site'}
+        self._specs_fieldnames = {'site', 'product_id'}
         self._bike_type = 'all'
         self._req_sess = requests.Session()
 
@@ -192,7 +192,7 @@ class Scraper(ABC):
                 # For REI check for garage products
                 if self._SOURCE == 'rei' and 'garage' in bike_href:
                     result = self._parse_prod_specs(bike_spec_soup,
-                                                         garage=True)
+                                                    garage=True)
                 else:
                     result = self._parse_prod_specs(bike_spec_soup)
 
@@ -214,8 +214,6 @@ class Scraper(ABC):
         print(f'Runtime for scraping specs: {running_time}')
 
         if to_csv:
-            self._specs_fieldnames.add(
-                'product_id')  # ensure id is field in specs file
             return self._write_prod_specs_to_csv(specs=specs,
                                                  bike_type=bike_type)
 
