@@ -34,27 +34,7 @@ class BackCountry(Scraper):
 
         return True, li.a['href']
 
-    def _parse_prod_specs(self, soup):
-        """Return dictionary representation of the product's specification."""
-        prod_specs = dict()
-
-        # Default: spec div tab with two or more columns
-        div_info = soup.find('div', id='accordion-parent')
-        rows = div_info.find_all('div', class_='tr')
-
-        for row in rows:
-            spec = self._normalize_spec_fieldnames(row.find(
-                'div', class_='product-details-accordion__techspec-name').string)
-            value = row.find('div',
-                             class_='product-details-accordion__techspec-value'
-                             ).string.strip()
-            self._specs_fieldnames.add(spec)
-            prod_specs[spec] = value
-
-        print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
-        return prod_specs
-
-    def _get_categories(self, soup=None) -> dict:
+    def _get_categories(self) -> dict:
         """Bike category endpoint encodings.
 
         Returns:
@@ -63,9 +43,8 @@ class BackCountry(Scraper):
         categories = dict()
         exclude = ['kids_bikes']
 
-        if soup is None:
-            page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
-            soup = BeautifulSoup(page, 'lxml')
+        page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
+        soup = BeautifulSoup(page, 'lxml')
 
         div_facet = soup.find('div', id='facet-Categories')
         div_items = div_facet.find('div', class_='facet-list__items')
@@ -153,3 +132,23 @@ class BackCountry(Scraper):
 
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
+
+    def _parse_prod_specs(self, soup):
+        """Return dictionary representation of the product's specification."""
+        prod_specs = dict()
+
+        # Default: spec div tab with two or more columns
+        div_info = soup.find('div', id='accordion-parent')
+        rows = div_info.find_all('div', class_='tr')
+
+        for row in rows:
+            spec = self._normalize_spec_fieldnames(row.find(
+                'div', class_='product-details-accordion__techspec-name').string)
+            value = row.find('div',
+                             class_='product-details-accordion__techspec-value'
+                             ).string.strip()
+            self._specs_fieldnames.add(spec)
+            prod_specs[spec] = value
+
+        print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
+        return prod_specs

@@ -31,69 +31,59 @@ class SpecializedTestCase(unittest.TestCase):
     def setUp(self):
         self._scraper = BackCountry(save_data_path=DATA_PATH)
 
-    def test_get_max_num_prods(self):
-        expected = 489
-        with open(SHOP_BIKES_HTML_PATH, mode='r', encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        num_prods = self._scraper._get_max_num_prods(soup)
-        self.assertEqual(expected, num_prods,
-                         msg=f'Expected: {expected}; result: {num_prods}')
-
     def test_get_categories(self):
         categories = [
             'road_bikes',
             'mountain_bikes',
             'ebikes',
-            # 'kids_bikes',
             'gravel_cyclocross_bikes',
             'triathlon_tt_bikes'
         ]
 
-        # Case 1: saved html
-        with open(SHOP_BIKES_HTML_PATH, mode='r', encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        result = self._scraper._get_categories(soup)
-        print('html categories:', result)
+        result = self._scraper._get_categories()
+        print('\nCategories:', result)
         self.assertEqual(len(categories), len(result),
                          msg=f'Expected {len(categories)}; result {len(result)}')
         for key in categories:
             self.assertTrue(key in result,
                             msg=f'{key} is not in result!')
 
-        # Case 2: api call
-        result = self._scraper._get_categories(soup=None)
-        print('api categories:', result)
-        self.assertEqual(len(categories), len(result),
-                         msg=f'Expected {len(categories)}; result {len(result)}')
-        for key in categories:
-            self.assertTrue(key in result,
-                            msg=f'{key} is not in result!')
+    def test_get_prods_listings(self):
+        bike_type = 'road_bikes'
+        bike_cats = self._scraper._get_categories()
+        endpoint = bike_cats[bike_type]['href']
+        soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
+            endpoint), 'lxml')
 
-    def test_get_next_page(self):
-        # Case 1: next page button exists
-        with open(SHOP_BIKES_HTML_PATH, mode='r', encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        result = self._scraper._get_next_page(soup)
-        self.assertTrue(result[0],
-                        msg=f'Expected next page endpoint! Result: {result}')
+        # Verify product listings fetch
+        self._scraper._get_prods_on_current_listings_page(soup, bike_type)
+        num_prods = len(self._scraper._products)
+        self.assertTrue(num_prods > 1,
+                        msg=f'There are {num_prods} product first page.')
+        self._scraper._write_prod_listings_to_csv()
 
-        # Case 2: no next page button
-        with open(SHOP_NO_NEXT_HTML_PATH, mode='r', encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        result = self._scraper._get_next_page(soup)
-        self.assertFalse(result[0],
-                         msg=f'Expected no next page endpoint! Result: {result}')
+    def test_parse_specs(self):
+        bike_type = 'road_bikes'
+        prods_csv_path = os.path.join(DATA_PATH, TIMESTAMP,
+                                      'backcountry_prods_all.csv')
+        # Verify parsing product specs
+        specs = self._scraper.get_product_specs(get_prods_from=prods_csv_path,
+                                                bike_type=bike_type,
+                                                to_csv=False)
+        num_prods = len(self._scraper._products)
+        num_specs = len(specs)
+        self.assertEqual(num_prods, num_specs,
+                         msg=f'Products size: {num_prods}, Specs size: {num_specs}')
+        self._scraper._write_prod_specs_to_csv(specs=specs,
+                                               bike_type=bike_type)
 
-    def test_get_prod_listings(self):
-        expected = 40
-        with open(SHOP_SALE_HTML_PATH, mode='r',
-                  encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        self._scraper._get_prods_on_current_listings_page(
-            soup, bike_type='road')
-        num_bikes = len(self._scraper._products)
-        self.assertEqual(num_bikes, expected,
-                         msg=f'Expected: {expected}; parsed: {num_bikes}')
+        # Verify spec fieldnames has minimum general fields:
+        expected = ['site', 'product_id', 'frame_material',
+                    'fork', 'cassette', 'saddle', 'seatpost']
+        print('\nSpec Fieldnames\n', self._scraper._specs_fieldnames)
+        for field in expected:
+            self.assertTrue(field in self._scraper._specs_fieldnames,
+                            msg=f'{field} not in {self._scraper._specs_fieldnames}.')
 
     def test_get_all_available_prods(self):
         expected = 24 * 5
@@ -103,48 +93,6 @@ class SpecializedTestCase(unittest.TestCase):
         # There are dupes so expect less num_prods
         self.assertTrue(num_prods > expected,
                         msg=f'expected: {expected} - found: {num_prods}')
-
-    def test_parse_prod_spec(self):
-        # load test prod details into memory
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'backcountry-hightower.html'))
-        with open(html_path, encoding='utf-8') as f:
-            prod_detail_text1 = f.read()
-
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'backcountry-ridley.html'))
-        with open(html_path, encoding='utf-8') as f:
-            prod_detail_text2 = f.read()
-
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'backcountry-alchemy.html'))
-        with open(html_path, encoding='utf-8') as f:
-            prod_detail_text3 = f.read()
-
-        detail_soup1 = BeautifulSoup(prod_detail_text1, 'lxml')
-        detail_soup2 = BeautifulSoup(prod_detail_text2, 'lxml')
-        detail_soup3 = BeautifulSoup(prod_detail_text3, 'lxml')
-
-        # case 1: exact match per example data
-        result = self._scraper._parse_prod_specs(detail_soup1)
-        self.assertEqual(len(SAMPLE_SPECS1), len(result))
-        for key in SAMPLE_SPECS1.keys():
-            self.assertEqual(
-                SAMPLE_SPECS1[key], result[key])
-
-        # case 2: using second data, exact match in components
-        result = self._scraper._parse_prod_specs(detail_soup2)
-        self.assertEqual(len(SAMPLE_SPECS2), len(result))
-        for key in SAMPLE_SPECS2.keys():
-            self.assertEqual(SAMPLE_SPECS2[key], result[key])
-
-        # case 3: using third data, exact match in components
-        result = self._scraper._parse_prod_specs(detail_soup3)
-        self.assertEqual(len(SAMPLE_SPECS3), len(result))
-        for key in SAMPLE_SPECS3.keys():
-            self.assertEqual(SAMPLE_SPECS3[key], result[key],
-                             msg=f'{key}: Expected - {SAMPLE_SPECS3[key]}; '
-                             f'Result - {result[key]}')
 
 
 if __name__ == '__main__':

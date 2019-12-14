@@ -2,7 +2,6 @@
 import unittest
 import os
 from datetime import datetime
-import json
 
 from bs4 import BeautifulSoup
 

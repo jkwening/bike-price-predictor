@@ -100,7 +100,7 @@ class BicycleWarehouse(Scraper):
 
         return prod_specs
 
-    def _get_categories(self, soup=None) -> dict:
+    def _get_categories(self) -> dict:
         """Bike category endpoint encodings.
 
         Returns:
@@ -109,9 +109,8 @@ class BicycleWarehouse(Scraper):
         categories = dict()
         exclude = ['kids_bikes']
 
-        if soup is None:
-            page = self._fetch_prod_listing_view('')
-            soup = BeautifulSoup(page, 'lxml')
+        page = self._fetch_prod_listing_view('')
+        soup = BeautifulSoup(page, 'lxml')
 
         nav_cat = soup.find('nav', class_='site-navigation')
         li_bikes = nav_cat.find('li', class_='navmenu-id-bikes')
