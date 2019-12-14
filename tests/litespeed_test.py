@@ -27,16 +27,41 @@ class SpecializedTestCase(unittest.TestCase):
     def setUp(self):
         self._scraper = LiteSpeed(save_data_path=DATA_PATH)
 
-    def test_get_prod_listings(self):
-        expected = 30  # 10 rows of 3 products
-        with open(SHOP_ROAD_HTML_PATH, mode='r',
-                  encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        self._scraper._get_prods_on_current_listings_page(
-            soup, bike_type='road')
-        num_bikes = len(self._scraper._products)
-        self.assertEqual(num_bikes, expected,
-                         msg=f'Expected: {expected}; parsed: {num_bikes}')
+    def test_get_prods_listings(self):
+        bike_type = 'road'
+        endpoint = self._scraper._CATEGORIES[bike_type]
+        soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
+            endpoint), 'lxml')
+
+        # Verify product listings fetch
+        self._scraper._get_prods_on_current_listings_page(soup, bike_type)
+        num_prods = len(self._scraper._products)
+        self.assertTrue(num_prods > 5,
+                        msg=f'There are {num_prods} product first page.')
+        self._scraper._write_prod_listings_to_csv()
+
+    def test_parse_specs(self):
+        bike_type = 'road'
+        prods_csv_path = os.path.join(DATA_PATH, TIMESTAMP,
+                                      'litespeed_prods_all.csv')
+        # Verify parsing product specs
+        specs = self._scraper.get_product_specs(get_prods_from=prods_csv_path,
+                                                bike_type=bike_type,
+                                                to_csv=False)
+        num_prods = len(self._scraper._products)
+        num_specs = len(specs)
+        self.assertEqual(num_prods, num_specs,
+                         msg=f'Products size: {num_prods}, Specs size: {num_specs}')
+        self._scraper._write_prod_specs_to_csv(specs=specs,
+                                               bike_type=bike_type)
+
+        # Verify spec fieldnames has minimum general fields:
+        expected = ['site', 'product_id', 'shifters',
+                    'fork', 'cassette', 'saddle', 'seatpost']
+        print('\nSpec Fieldnames\n', self._scraper._specs_fieldnames)
+        for field in expected:
+            self.assertTrue(field in self._scraper._specs_fieldnames,
+                            msg=f'{field} not in {self._scraper._specs_fieldnames}.')
 
     def test_get_all_available_prods(self):
         expected = 36
@@ -46,55 +71,6 @@ class SpecializedTestCase(unittest.TestCase):
         # There are dupes so expect less num_prods
         self.assertTrue(num_prods > expected,
                         msg=f'expected: {expected} - found: {num_prods}')
-
-    def test_parse_prod_spec(self):
-        # load test prod details into memory
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'litespeed-t2.html'))
-        with open(html_path, encoding='utf-8') as f:
-            prod_detail_text1 = f.read()
-
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'litespeed-gravel-di2.html'))
-        with open(html_path, encoding='utf-8') as f:
-            prod_detail_text2 = f.read()
-
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'litespeed-unicoi.html'))
-        with open(html_path, encoding='utf-8') as f:
-            prod_detail_text3 = f.read()
-
-        detail_soup1 = BeautifulSoup(
-            prod_detail_text1, 'lxml')
-        detail_soup2 = BeautifulSoup(
-            prod_detail_text2, 'lxml')
-        detail_soup3 = BeautifulSoup(
-            prod_detail_text3, 'lxml'
-        )
-
-        # case 1: exact match per example data
-        result = self._scraper._parse_prod_specs(detail_soup1)
-        self.assertEqual(len(SAMPLE_SPECS1), len(result))
-        for i, specs in enumerate(SAMPLE_SPECS1):
-            self.assertEqual(len(specs), len(result[i]))
-            for key in specs:
-                self.assertEqual(specs[key], result[i][key])
-
-        # case 2: using second data, exact match in components
-        result = self._scraper._parse_prod_specs(detail_soup2)
-        self.assertEqual(len(SAMPLE_SPECS2), len(result))
-        for i, specs in enumerate(SAMPLE_SPECS2):
-            self.assertEqual(len(specs), len(result[i]))
-            for key in specs:
-                self.assertEqual(specs[key], result[i][key])
-
-        # case 3: using third data, exact match in components
-        result = self._scraper._parse_prod_specs(detail_soup3)
-        self.assertEqual(len(SAMPLE_SPECS3), len(result))
-        for i, specs in enumerate(SAMPLE_SPECS3):
-            self.assertEqual(len(specs), len(result[i]))
-            for key in specs:
-                self.assertEqual(specs[key], result[i][key])
 
 
 if __name__ == '__main__':
