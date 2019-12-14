@@ -28,7 +28,7 @@ class CityBikes(Scraper):
         """Raise error: Not implemented in this module."""
         raise NotImplemented
 
-    def _get_categories(self, soup=None):
+    def _get_categories(self):
         """Bike category endpoint encodings.
 
         Returns:
@@ -36,9 +36,8 @@ class CityBikes(Scraper):
         """
         categories = dict()
 
-        if soup is None:
-            page = self._fetch_prod_listing_view()
-            soup = BeautifulSoup(page, 'lxml')
+        page = self._fetch_prod_listing_view(page_size=30)
+        soup = BeautifulSoup(page, 'lxml')
 
         facet_cat = soup.find('div', attrs={'id': 'Facets-categories'})
         cats = facet_cat.find_all('li', class_='seFacet')

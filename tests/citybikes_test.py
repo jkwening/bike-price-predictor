@@ -81,9 +81,7 @@ class CityBikesTestCase(unittest.TestCase):
                       'fitness', 'hybrid', 'childrens',
                       'other', 'cyclocross']
 
-        text = self._scraper._fetch_prod_listing_view(page_size=30)
-        soup = BeautifulSoup(text, 'lxml')
-        result = self._scraper._get_categories(soup)
+        result = self._scraper._get_categories()
         print('\nCategories:', result)
         for key in result.keys():
             self.assertTrue(key in categories,
@@ -100,8 +98,12 @@ class CityBikesTestCase(unittest.TestCase):
         self._scraper._get_prods_on_current_listings_page(soup, bike_type)
         num_prods = len(self._scraper._products)
         expected_num_prods = int(bike_cats[bike_type]['count'])
-        self.assertEqual(expected_num_prods, num_prods,
-                         msg=f'{num_prods} product, expected: {expected_num_prods}.')
+        if expected_num_prods > self._scraper._page_size:
+            self.assertEqual(num_prods, self._scraper._page_size,
+                             msg=f'{num_prods} product, expected: {self._scraper._page_size}.')
+        else:
+            self.assertEqual(expected_num_prods, num_prods,
+                             msg=f'{num_prods} product, expected: {expected_num_prods}.')
         self._scraper._write_prod_listings_to_csv()
 
     def test_parse_specs(self):
