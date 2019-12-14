@@ -33,23 +33,20 @@ class NashBar(Scraper):
         super().__init__(base_url='https://www.nashbar.com',
                          source='nashbar', save_data_path=save_data_path)
         self._BIKE_FRAMES_ENDPOINT = '/bikes-frames/c14941'
-        self._BIKE_CATEGORIES = self._get_categories()
 
     def _fetch_prod_listing_view(self, endpoint, params=None):
         req_url = f'{self._BASE_URL}{endpoint}'
         return self._fetch_html(url=req_url, params=params)
 
-    def _get_categories(self, soup=None):
+    def _get_categories(self):
         """Bike category endpoint encodings.
 
         Returns:
             dictionary of dictionaries
         """
         categories = dict()
-
-        if soup is None:
-            page = self._fetch_prod_listing_view(endpoint=self._BIKE_FRAMES_ENDPOINT)
-            soup = BeautifulSoup(page, 'lxml')
+        page = self._fetch_prod_listing_view(endpoint=self._BIKE_FRAMES_ENDPOINT)
+        soup = BeautifulSoup(page, 'lxml')
 
         main_content = soup.find('div', attrs={'id': 'maincontent'})
         category_page = main_content.find('div', attrs={'id': 'categorypage'})
