@@ -15,7 +15,6 @@ class Spokes(Scraper):
                          source='spokes', save_data_path=save_data_path)
         self._page_size = page_size
         self._PROD_PAGE_ENDPOINT = '/product-list/bikes-1000/'
-        self._BIKE_CATEGORIES = None
 
     def _fetch_prod_listing_view(self, endpoint, page_size=None, page=None):
         if page is None or page_size is None:
@@ -53,17 +52,15 @@ class Spokes(Scraper):
 
         return prod_specs
 
-    def _get_categories(self, soup=None):
+    def _get_categories(self):
         """Bike category endpoint encodings.
 
         Returns:
             dictionary of dictionaries
         """
         categories = dict()
-
-        if soup is None:
-            page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
-            soup = BeautifulSoup(page, 'lxml')
+        page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
+        soup = BeautifulSoup(page, 'lxml')
 
         facet_cat = soup.find('div', attrs={'id': 'Facets-categories'})
         cats = facet_cat.find_all('li', class_='seFacet')
@@ -88,15 +85,12 @@ class Spokes(Scraper):
         self._products = dict()
         self._num_bikes = 0
 
-        # Populate categories if missing
-        if self._BIKE_CATEGORIES is None:
-            self._BIKE_CATEGORIES = self._get_categories()
-
         # Scrape pages for each available category
-        for bike_type in self._BIKE_CATEGORIES.keys():
+        categories = self._get_categories()
+        for bike_type in categories.keys():
             print(f'Getting {bike_type} bikes...')
-            endpoint = self._BIKE_CATEGORIES[bike_type]['href']
-            num_bikes = self._BIKE_CATEGORIES[bike_type]['count']
+            endpoint = categories[bike_type]['href']
+            num_bikes = categories[bike_type]['count']
             pages = math.ceil(num_bikes / self._page_size)
 
             # Scrape all pages for bike category
