@@ -7,8 +7,8 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
-from scrapers.scraper_utils import DATA_PATH, TIMESTAMP
-from scrapers.scraper_utils import create_directory_if_missing
+from utils.utils import DATA_PATH, TIMESTAMP
+from utils.utils import create_directory_if_missing
 
 
 class Scraper(ABC):
