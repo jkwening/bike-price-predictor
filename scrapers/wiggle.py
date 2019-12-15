@@ -15,7 +15,7 @@ returns html
   - returns all bike types
 
 """
-
+from math import ceil
 from bs4 import BeautifulSoup
 
 from scrapers.scraper import Scraper
@@ -24,26 +24,52 @@ from scrapers.scraper_utils import DATA_PATH
 
 class Wiggle(Scraper):
     def __init__(self, save_data_path=DATA_PATH, page_size=96):
-        self._page_size = page_size
-        self._BIKE_ENDPOINTS = {
-            'road': 'road-bikes',
-            'mountain': 'mountain-bikes',
-            'cyclocross': 'cyclocross-bikes',
-            'adventure': 'adventure-bikes',
-            'touring': 'touring-bikes',
-            'urban': 'urban-bikes',
-            'track': 'track-bikes',
-            'single-speed': 'single-speed-bikes',
-            'time-trial': 'time-trial-bikes',
-            'bmx': 'bmx-bikes',
-            'kid': 'kids-bikes'
-        }
+        """Class for scraping www.wiggle.com website.
+
+        :param save_data_path: The base path for saving data.
+        :param page_size: Number of products on page. For this site, options
+            are 24, 48, and 96.
+        """
         super().__init__(base_url='http://www.wiggle.com',
                          source='wiggle', save_data_path=save_data_path)
+        self._page_size = page_size
+        self._CYCLE_URL = f'{self._BASE_URL}/cycle/bikes'
 
-    def _fetch_prod_listing_view(self, prod_num=0, page_size=96):
-        req_url = f'{self._BASE_URL}/cycle/bikes/?g={prod_num}&ps={page_size}'
+    def _fetch_prod_listing_view(self, url, page_size=96, prod_num=1):
+        req_url = f'{url}?g={prod_num}&ps={page_size}'
+        # req_url = f'{self._BASE_URL}/cycle/bikes/?g={prod_num}&ps={page_size}'
         return self._fetch_html(req_url)
+
+    def _get_categories(self) -> dict:
+        """Fetch bike type categories and hrefs."""
+        categories = dict()
+        exclude = ['view_all']
+
+        # fetch and parse main cycles page
+        soup = BeautifulSoup(
+            self._fetch_prod_listing_view(url=self._CYCLE_URL, page_size=24),
+            'lxml'
+        )
+        content_bikes = soup.find(id='content-category')
+        a_tags = content_bikes.find_all('a',
+                                        class_='bem-left-hand-navigation__item-link')
+
+        # parse all hrefs
+        for a in a_tags:
+            href = a['href']
+            bike_type = a.span.string.strip()
+            bike_type, count = bike_type.split('(')
+            bike_type = self._normalize_spec_fieldnames(bike_type)
+            bike_type = bike_type.replace('_bikes', '').strip()
+            count = count.replace(')', '').strip()
+            if bike_type in exclude:
+                continue
+            categories[bike_type] = {
+                'href': href,
+                'count': int(count)
+            }
+
+        return categories
 
     def _get_max_num_prods(self, soup):
         """Get total number of products available."""
@@ -54,7 +80,7 @@ class Wiggle(Scraper):
 
         return 0  # implies no products on page
 
-    def _get_prods_on_current_listings_page(self, soup):
+    def _get_prods_on_current_listings_page(self, soup, bike_type):
         div_id_products = soup.find('div', attrs={'id': 'search-results'})
         div_products_list = div_id_products.find_all('div',
                                                      class_='js-result-list-item')
@@ -62,6 +88,7 @@ class Wiggle(Scraper):
         for prod_info in div_products_list:
             product = dict()
             product['site'] = self._SOURCE
+            product['bike_type'] = bike_type
 
             # get id
             prod_id = prod_info['data-id']
@@ -131,24 +158,24 @@ class Wiggle(Scraper):
         self._products = dict()
         self._num_bikes = 0
 
-        # Get initial page and determine total number of products pages to scrape
-        page_soup = BeautifulSoup(
-            self._fetch_prod_listing_view(),
-            'lxml')
-        total_products = self._get_max_num_prods(soup=page_soup)
+        # get categories and fetch all products for each category
+        categories = self._get_categories()
+        for bike_type in categories.keys():
+            page_url = categories[bike_type]['href']
+            num_prods = categories[bike_type]['count']
 
-        # Scrape first page while its in memory then fetch and scrape the remaining pages
-        self._get_prods_on_current_listings_page(soup=page_soup)
-        self._num_bikes = len(self._products)
-        print(f'Current number of products: {len(self._products)}')
-
-        while self._num_bikes < total_products:
-            page_soup = BeautifulSoup(
-                self._fetch_prod_listing_view(prod_num=self._num_bikes + 1),
-                'lxml')
-            self._get_prods_on_current_listings_page(soup=page_soup)
-            self._num_bikes = len(self._products)
-            print(f'Current number of products: {self._num_bikes}')
+            # get all products for bike type fetch max num of prods per page
+            self._page_size = 96
+            num_pages = ceil(num_prods / self._page_size)
+            for i in range(num_pages):
+                print(f'\nParsing page {i + 1} for {bike_type}...')
+                prod_num = i * 96 + 1  # set query str for next page
+                soup = BeautifulSoup(
+                    self._fetch_prod_listing_view(page_url, prod_num=prod_num,
+                                                  page_size=self._page_size),
+                    'lxml'
+                )
+                self._get_prods_on_current_listings_page(soup, bike_type)
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
