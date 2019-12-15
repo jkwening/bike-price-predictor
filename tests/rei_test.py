@@ -18,7 +18,7 @@ DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
 TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
 HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
 TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH, 'performance_prod_listing_test_data.csv')
-SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'rei.html'))
+SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, '_scraper.html'))
 STROMER_SPECS = {
     'best_use': 'Bike Commuting',
     'motor': 'SYNO Drive 500W 40Nm',
@@ -94,98 +94,59 @@ SYNAPSE_SPECS = {
 
 class ReiTestCase(unittest.TestCase):
     def setUp(self):
-        self.rei = Rei(save_data_path=DATA_PATH)
+        self._scraper = Rei(save_data_path=DATA_PATH)
 
     def test_get_categories(self):
-        expected = {
-            'mountain': {'href': '/c/mountain-bikes', 'total': 81},
-            'road': {'href': '/c/road-bikes', 'total': 52},
-            "kids'": {'href': '/c/kids-bikes', 'total': 51},
-            'specialty': {'href': '/c/specialty-bikes', 'total': 38},
-            'hybrid': {'href': '/c/hybrid-bikes', 'total': 29},
-            'electric': {'href': '/c/electric-bikes', 'total': 27}
-        }
+        categories = ['mountain', 'road', 'kids',
+                      'specialty', 'hybrid', 'electric']
 
-        # load test bikes rei page
-        html_path = os.path.abspath(os.path.join(HTML_PATH,
-                                                 'rei.html'))
-        with open(html_path, encoding='utf-8') as f:
-            html = f.read()
-
-        categories = self.rei.get_categories(soup=BeautifulSoup(html, 'lxml'))
-        for key in expected:
+        result = self._scraper._get_categories()
+        print('\nCategories:', result)
+        self.assertEqual(len(categories), len(result),
+                         msg=f'Expected {len(categories)}; result {len(result)}')
+        for key in result.keys():
             self.assertTrue(key in categories,
-                            msg=f'{key} not in {categories}')
-            self.assertDictEqual(expected[key], categories[key],
-                                 msg=f'Dictionary does not match for {key}')
+                            msg=f'{key} is not in {categories}!')
 
-    def test_fetch_prod_listing_view(self):
-        # required data fields expected in JSON repsonse
-        req_data_keys = [
-            'searchStatus', 'results', 'query'
-        ]
-        req_query_keys = [
-            'totalResults', 'upperResult'
-        ]
-        req_results_keys = [
-            'cleanTitle', 'brand', 'prodId', 'link', 'displayPrice'
-        ]
-        req_display_price_keys = [
-            'max', 'compareAt'
-        ]
+    def test_get_prods_listings(self):
+        bike_type = 'road'
+        categories = self._scraper._get_categories()
+        bike = categories[bike_type]['href'].split('/')[-1]
+        data = json.loads(
+            self._scraper._fetch_prod_listing_view(
+                page_size=self._scraper._page_size, bike=bike
+            )
+        )
 
-        # convert to response to JSON and validate required fields
-        data = json.loads(self.rei._fetch_prod_listing_view())
-        for expected in req_data_keys:
-            self.assertTrue(expected in data.keys(),
-                msg=f'{expected} not in response keys: {data.keys()}')
-        for expected in req_query_keys:
-            query = data['query']
-            self.assertTrue(expected in query.keys(),
-                msg=f'{expected} not in query keys: {query.keys()}')
-        for expected in req_results_keys:
-            result = data['results'][0]
-            self.assertTrue(expected in result.keys(),
-                msg=f'{expected} not in result keys: {result.keys()}')
-        for expected in req_display_price_keys:
-            display_price = data['results'][0]['displayPrice']
-            self.assertTrue(expected in display_price.keys(),
-                msg=f'{expected} not in display price keys: {display_price.keys()}')
-    
-    def test_get_prod_listings(self):
-        data = json.loads(self.rei._fetch_prod_listing_view(page_size=self.rei._page_size))
-        num_prods = int(data['query']['totalResults'])
-        self.rei.get_all_available_prods(to_csv=True)
-        self.assertEqual(num_prods, self.rei._num_bikes,
-                         msg=f'Number of bikes = {num_prods}, parsed: {self.rei._num_bikes}')
+        # Verify product listings fetch
+        self._scraper._get_prods_on_current_listings_page(data, bike_type)
+        num_prods = len(self._scraper._products)
+        self.assertTrue(num_prods > 5,
+                        msg=f'There are {num_prods} product first page.')
+        self._scraper._write_prod_listings_to_csv()
 
-    def test_parse_prod_spec(self):
-        # load test prod details into memory
-        html_path = os.path.abspath(os.path.join(HTML_PATH,
-            'rei-STROMER-Electric-Bike.html'))
-        with open(html_path, encoding='utf-8') as f:            
-            stromer_prod_detail_text = f.read()
+    def test_parse_specs(self):
+        bike_type = 'road'
+        prods_csv_path = os.path.join(DATA_PATH, TIMESTAMP,
+                                      'rei_prods_all.csv')
+        # Verify parsing product specs
+        specs = self._scraper.get_product_specs(get_prods_from=prods_csv_path,
+                                                bike_type=bike_type,
+                                                to_csv=False)
+        num_prods = len(self._scraper._products)
+        num_specs = len(specs)
+        self.assertEqual(num_prods, num_specs,
+                         msg=f'Products size: {num_prods}, Specs size: {num_specs}')
+        self._scraper._write_prod_specs_to_csv(specs=specs,
+                                               bike_type=bike_type)
 
-        html_path = os.path.abspath(os.path.join(HTML_PATH,
-            'REI-Outlet-Synapse.html'))
-        with open(html_path, encoding='utf-8') as f:
-            synapse_prod_detail_text = f.read()
-
-        stromer_detail_soup = BeautifulSoup(stromer_prod_detail_text, 'lxml')
-        synapse_detail_soup = BeautifulSoup(synapse_prod_detail_text,
-                                                  'lxml')
-
-        # case 1: exact match per example data
-        result = self.rei._parse_prod_specs(stromer_detail_soup)
-        self.assertEqual(len(STROMER_SPECS), len(result))
-        for key in STROMER_SPECS.keys():
-            self.assertEqual(STROMER_SPECS[key], result[key])
-
-        # case 2: using second data, exact match in components
-        result = self.rei._parse_prod_specs(synapse_detail_soup, garage=True)
-        self.assertEqual(len(SYNAPSE_SPECS), len(result))
-        for key in SYNAPSE_SPECS.keys():
-            self.assertEqual(SYNAPSE_SPECS[key], result[key])
+        # Verify spec fieldnames has minimum general fields:
+        expected = ['site', 'product_id', 'frame',
+                    'fork', 'number_of_gears', 'saddle', 'seat_post']
+        print('\nSpec Fieldnames\n', self._scraper._specs_fieldnames)
+        for field in expected:
+            self.assertTrue(field in self._scraper._specs_fieldnames,
+                            msg=f'{field} not in {self._scraper._specs_fieldnames}.')
 
 
 if __name__ == '__main__':
