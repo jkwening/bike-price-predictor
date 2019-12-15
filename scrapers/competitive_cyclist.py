@@ -7,14 +7,6 @@ from scrapers.scraper_utils import DATA_PATH
 class CompetitiveCyclist(Scraper):
     def __init__(self, save_data_path=DATA_PATH, page_size=42):
         self._page_size = page_size
-        self._BIKE_ENDPOINTS = {
-            'road': 'road-bikes',
-            'mountain': 'mountain-bikes',
-            'cyclocross': 'cyclocross-bikes',
-            'triathlon': 'triathlon-bike',
-            'fat': 'fat-bikes',
-            'kid': 'kid-bikes'
-        }
         super().__init__(base_url='https://www.competitivecyclist.com',
                          source='competitive', save_data_path=save_data_path)
 
@@ -60,7 +52,7 @@ class CompetitiveCyclist(Scraper):
 
     def _get_max_num_prods(self, soup):
         """Get number of pages instead since number of products not easily presented."""
-        return self._get_num_pages
+        pass
 
     def _get_prods_on_current_listings_page(self, soup, bike_type):
         div_id_products = soup.find('div', class_='results')

@@ -11,7 +11,6 @@ from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 
 class CompetitiveCyclistTestCase(unittest.TestCase):
     def setUp(self):
-        # use smaller page_size for testing purposes
         self._scraper = CompetitiveCyclist(save_data_path=DATA_PATH)
 
     def test_get_categories(self):

@@ -1,67 +1,12 @@
 # python modules
-import unittest
 import os
+import unittest
+
 from bs4 import BeautifulSoup
-from datetime import datetime
 
 # package modules
 from scrapers.nashbar import NashBar
-
-#######################################
-#  MODULE CONSTANTS
-#######################################
-TIMESTAMP = datetime.now().strftime('%m%d%Y')
-MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
-DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
-TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
-HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
-TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH, 'nashbar_prod_listing_test_data.csv')
-SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'nashbar.html'))
-RITCHEY_SPECS = {'frame': 'Ritchey SwissCross Disc',
-                'fork': 'Ritchey Cross WCS Carbon',
-                'headset': 'Ritchey WCS Drop In 1-1/8"',
-                'rear_derailleur': 'Shimano Ultegra 11s',
-                'front_derailleur': 'Shimano Ultegra 2s',
-                'shifters': 'Shimano RS685 Hydraulic Disc',
-                'brakes': 'Shimano RS785 Hydraulic Disc',
-                'rotors': 'Shimano RT99-S 160mm',
-                'crankset': 'Shimano Ultegra 50/34 \x96 170mm (49/51cm),172.5mm (53/55cm), 175mm (57/59cm)',
-                'bb_set': 'Shimano Ultegra BBR60 (BSA)',
-                'handlebar': 'Ritchey EvoMax WCS Blatte \x96 42cm (49/51cm), 44cm (53/55cm), 46cm (57/59cm)',
-                'bar_tape': 'Ritchey Cork Black',
-                'stem': 'Ritchey C-220 WCS Blatte \x96 80mm (49/51cm), 90mm (53cm), 100mm (55cm), 110mm (57/59cm)',
-                'seatpost': 'Ritchey Link WCS 350x27.2mm Blatte',
-                'saddle': 'Ritchey Streem WCS Black',
-                'wheelset': 'Ritchey Zeta Disc WCS',
-                'chain': 'Shimano Ultegra HG700 11s',
-                'cassette': 'Shimano CS-5800 11s 11/28T',
-                'tires': 'Ritchey Shield 700x35 Comp foldable',
-                'color': 'Black'
-                }
-FUJI_SPECS = {
-    'sizes': 'XS (13"), S (15"),',
-    'color': 'Light Orange',
-    'frame': 'Fuji A1-SL alloy front and rear triangle, cold-forged dropout and replaceable hanger',
-    'fork': 'Zoom CH-565 w/ 60mm travel',
-    'crankset': 'Prowheel, alloy, 48/38/28T w/ chainguard',
-    'bottom_bracket': 'Semi-cartridge bearing',
-    'pedals': 'Resin platform',
-    'front_derailleur': 'Shimano Tourney, 31.8mm',
-    'rear_derailleur': 'Shimano Tourney, 7-speed',
-    'shifters': 'Shimano EF41, EZ Fire, 7-speed',
-    'cassette': 'Shimano freewheel, 14-28T, 7-speed',
-    'chain': 'KMC Z50, 7-speed',
-    'wheelset': 'Fuji Aluminum rims, Formula DC-20 front, DC-31 rear disc hub, 14g black spokes',
-    'tires': 'Vera Eos, 27.5" x 2.1", 30tpi',
-    'brakeset': 'Tektro M-280, mechanical disc, 160mm rotors',
-    'brake_levers': 'Shimano EF41, 2-finger brake/shifter combo',
-    'headset': '1 1/8", caged bearings',
-    'handlebar': 'Steel riser bar, 25.4mm, 6 sweep, 30mm rise',
-    'stem': 'Steel, +/-25°',
-    'grips': 'Single density Kraton',
-    'saddle': 'Padded MTB, steel rail',
-    'seatpost': 'Alloy, 27.2mm'
-}
+from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 
 
 class NashBarTestCase(unittest.TestCase):

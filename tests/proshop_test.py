@@ -1,68 +1,12 @@
 # python modules
-import unittest
 import os
-from datetime import datetime
-import json
+import unittest
 
 from bs4 import BeautifulSoup
 
 # package modules
 from scrapers.proshop import Proshop
-
-#######################################
-#  MODULE CONSTANTS
-#######################################
-TIMESTAMP = datetime.now().strftime('%m%d%Y')
-MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
-DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
-TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
-HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
-SHOP_BIKES_HTML_PATH = os.path.abspath(
-    os.path.join(HTML_PATH, 'proshop.html'))
-MOUNTAIN_BIKES_HTML_PATH = os.path.abspath(
-    os.path.join(HTML_PATH, 'proshop-mountain.html')
-)
-SIRRUS_SPECS = {
-    'frame': 'Specialized A1 Premium aluminum',
-    'fork': 'Specialized steel',
-    'rims_wheels': 'Aluminum, double-wall',
-    'hubs': 'Aluminum, sealed',
-    'spokes': '14-gauge, stainless-steel',
-    'tires': 'Specialized Nimbus, 700 x 32c w/Flak Jacket puncture protection',
-    'crankset': 'Specialized Stout',
-    'chainrings': '48/38/28',
-    'front_derailleur': 'Shimano',
-    'rear_derailleur': 'Shimano Altus',
-    'rear_cogs': 'Shimano, 8-speed: 11-32',
-    'shifters': 'Shimano',
-    'handlebars': 'Specialized flat, aluminum',
-    'tape_grips': 'Specialized Body Geometry Targa',
-    'stem': 'Aluminum',
-    'brakes': 'V-Brake',
-    'pedals': 'Platform',
-    'saddle': 'Specialized Canopy Sport',
-    'seatpost': 'Aluminum'}
-SURLY_SPECS = {
-    'frame': 'Surly 4130 chromoly steel; custom double-butted, externally flared tubing; horizontal slotted with derailleur hanger; Surly “Gnot Boost” 142 or 148mm hub spacing compatibility',
-    'fork': '4130 chromoly, 483mm axle-to-crown x 47mm offset, 110mm hub spacing, tapered and butted straight blade, 51mm I.S. disc mount',
-    'headset': 'Cane Creek',
-    'axles': 'Front: 110 x 15mm TA',
-    'rims_wheels': 'Alex MD40',
-    'hubs': 'Salsa 32h',
-    'tires': 'Surly Dirt Wizard 29 x 3, 60 tpi',
-    'crankset': 'SRAM NX',
-    'chainrings': '30T',
-    'bottom_bracket': 'SRAM',
-    'chain': 'KMX X11-1',
-    'rear_derailleur': 'SRAM NX',
-    'cassette_rear_cogs': 'Sun Race, 11-speed: 11-42',
-    'shifters': 'SRAM NX',
-    'handlebars': 'Answer Pro Taper, 31.8mm',
-    'stem': 'H.L. 4-bolt',
-    'brake_levers': 'SRAM Level',
-    'brakes': 'SRAM Level hydraulic disc, 180mm rotors',
-    'saddle': 'WTB Volt Sport',
-    'seat_post': 'H.L. 30.9mm'}
+from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 
 
 class ProshopTestCase(unittest.TestCase):

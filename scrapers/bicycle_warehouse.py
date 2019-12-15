@@ -129,7 +129,7 @@ class BicycleWarehouse(Scraper):
         return categories
 
     def get_all_available_prods(self, to_csv=True) -> list:
-        """Scrape wiggle site for prods."""
+        """Scrape bicycle_warehouse site for prods."""
         # Reset scraper related variables
         self._products = dict()
         self._num_bikes = 0
