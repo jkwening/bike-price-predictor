@@ -1,88 +1,17 @@
 # python modules
-import unittest
 import os
-from datetime import datetime
+import unittest
 
 from bs4 import BeautifulSoup
 
 # package modules
 from scrapers.contebikes import ConteBikes
-
-#######################################
-#  MODULE CONSTANTS
-#######################################
-TIMESTAMP = datetime.now().strftime('%m%d%Y')
-MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
-DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
-TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
-HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
-TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH,
-                                      'performance_prod_listing_test_data.csv')
-SHOP_BIKES_HTML_PATH = os.path.abspath(
-    os.path.join(HTML_PATH, 'conte.html'))
-ROAD_BIKES_HTML_PATH = os.path.abspath(
-    os.path.join(HTML_PATH, 'conte-Road-Bikes.html')
-)
-GIANT_DEFY_SPECS = {
-    'frame': 'Advanced-grade composite',
-    'fork': 'Advanced-grade composite, Hybrid OverDrive steerer',
-    'rims_wheels': 'Giant PR-2 Disc, Tubeless',
-    'hubs': 'Giant Performance Tracker Road Disc, Sealed Bearings, 12mm axles, 28h',
-    'spokes': 'Sapim Race 14/15g',
-    'tires': 'Giant Gavia AC 1 Tubeless, 700x25, Folding',
-    'crankset': 'Shimano FC-R510',
-    'chainrings': '34/50',
-    'bottom_bracket': 'Shimano, Press Fit',
-    'chain': 'KMC X11EL-1',
-    'front_derailleur': 'Shimano 105',
-    'rear_derailleur': 'Shimano 105',
-    'cassette_rear_cogs': 'Shimano 105 11x32, 11-Speed',
-    'shifters': 'Shimano 105',
-    'handlebars': 'Giant Contact, 31.8mm',
-    'stem': 'Giant Connect',
-    'brake_levers': 'Shimano 105',
-    'brakes': 'Giant Conduct, hydraulic disc, 140mm',
-    'pedals': 'N/A',
-    'saddle': 'Contact Neutral',
-    'seat_post': 'Giant D-Fuse composite'}
-CANNONDALE_TRAIL_SPECS = {
-    'frame': 'Trail, SmartForm C2 Alloy, SAVE, 1-1/8” head tube',
-    'fork': 'SR Suntour XCM, 100mm, Coil, 51mm offset',
-    'headset': 'Sealed Semi Integrated, 1-1/8 reducer',
-    'axles': 'Front: QR',
-    'rims_wheels': 'WTB SX19, 32h',
-    'hubs': 'Formula w/ HG driver',
-    'spokes': 'Stainless Steel, 14g',
-    'tires': 'WTB Ranger Comp, 27.5/29 x 2.25" DNA Compound',
-    'crankset': 'FSA Comet, Alpha Drive',
-    'chainrings': '36/22',
-    'bottom_bracket': 'Sealed Bearing BSA',
-    'chain': 'KMC HG53, 9-speed',
-    'front_derailleur': 'MicroShift Direct Mount',
-    'rear_derailleur': 'Shimano Altus',
-    'cassette_rear_cogs': 'Sunrace, 11-36, 9-speed',
-    'shifters': 'Shimano Easy Fire EF505, 2x9',
-    'handlebars': 'Cannondale C4 Riser, 6061 Alloy, 25mm rise, 8° sweep, 6° rise, 720mm',
-    'tape_grips': 'Cannondale Dual-Density',
-    'stem': 'Cannondale C4, 3D Forged 6061 Alloy, 1-1/8", 31.8, 7°',
-    'brake_levers': 'Shimano MT200 hydro disc',
-    'brakes': 'Shimano MT200 hydro disc, 160/160mm RT26 rotors',
-    'pedals': 'Cannondale Platform',
-    'saddle': 'Cannondale Stage 3',
-    'seat_post': 'Cannondale C4, 6061 Alloy, 31.6 x 400mm'}
+from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 
 
 class ConteBikesTestCase(unittest.TestCase):
     def setUp(self):
         self._scraper = ConteBikes(save_data_path=DATA_PATH)
-
-    def test_fetch_prod_listing_view(self):
-        text = self._scraper._fetch_prod_listing_view(page_size=30)
-        soup = BeautifulSoup(text, 'lxml')
-        self._scraper._get_prods_on_current_listings_page(
-            soup, bike_type='all')
-        self.assertEqual(30, len(self._scraper._products),
-                         msg='First page should return 30 products.')
 
     def test_get_categories(self):
         categories = [
@@ -147,17 +76,6 @@ class ConteBikesTestCase(unittest.TestCase):
         for field in expected:
             self.assertTrue(field in self._scraper._specs_fieldnames,
                             msg=f'{field} not in {self._scraper._specs_fieldnames}.')
-
-    def test_get_all_available_prods(self):
-        result = self._scraper.get_all_available_prods()
-
-        total_bikes = 0
-        for values in self._scraper._get_categories().values():
-            total_bikes += values['count']
-        num_prods = len(self._scraper._products)
-        # There are dupes so expect less num_prods
-        self.assertTrue(total_bikes >= num_prods,
-                        msg=f'expected: {total_bikes} - found: {num_prods}')
 
 
 if __name__ == '__main__':

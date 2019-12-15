@@ -7,43 +7,60 @@ from scrapers.scraper_utils import DATA_PATH
 class CompetitiveCyclist(Scraper):
     def __init__(self, save_data_path=DATA_PATH, page_size=42):
         self._page_size = page_size
-        self._BIKE_ENDPOINTS = {
-            'road': 'road-bikes',
-            'mountain': 'mountain-bikes',
-            'cyclocross': 'cyclocross-bikes',
-            'triathlon': 'triathlon-bike',
-            'fat': 'fat-bikes',
-            'kid': 'kid-bikes'
-        }
         super().__init__(base_url='https://www.competitivecyclist.com',
                          source='competitive', save_data_path=save_data_path)
 
-    def _fetch_prod_listing_view(self, bike_type='road', page=0, page_size=42):
-        req_url = f'{self._BASE_URL}/{self._BIKE_ENDPOINTS[bike_type]}?page={page}&pagesize={page_size}'
+    def _fetch_prod_listing_view(self, endpoint):
+        req_url = f'{self._BASE_URL}/{endpoint}'
         return self._fetch_html(req_url)
 
+    def _get_categories(self):
+        """Get bike type categories and hrefs."""
+        categories = dict()
+        exclude = ['sale']
+
+        # fetch and identify categories a tags
+        soup = BeautifulSoup(
+            self._fetch_html(url=self._BASE_URL),
+            'lxml'
+        )
+        nav = soup.find('nav', class_='header-nav')
+        bikes_li = nav.find('li', attrs={'data-title': 'Bikes'})
+        nav = bikes_li.find('nav')
+        nav_a = nav.find_all('a')
+
+        # parse bike types and hrefs
+        for a in nav_a:
+            href = a['href']
+            bike_type = a.string.strip()
+            bike_type = self._normalize_spec_fieldnames(bike_type)
+            if bike_type in exclude:
+                continue
+            categories[bike_type] = href
+        return categories
+
     @staticmethod
-    def _get_num_pages(soup):
-        """Get number of result pages for products listing."""
-        page_num_links = soup.find_all('li', 'page-number')
+    def _get_next_page(soup):
+        """Return (bool, href) regarding if next page button exists."""
+        li = soup.find('li', class_='pag-next')
 
-        if page_num_links:
-            last_page_num_link = page_num_links.pop()
-            return int(last_page_num_link.a.contents[0])
-
-        return 1  # implies no additional pages available
+        if li is None:
+            return False, ''
+        else:
+            href = li.a['href']
+            return True, href
 
     def _get_max_num_prods(self, soup):
         """Get number of pages instead since number of products not easily presented."""
-        return self._get_num_pages
+        pass
 
-    def _get_prods_on_current_listings_page(self, soup):
+    def _get_prods_on_current_listings_page(self, soup, bike_type):
         div_id_products = soup.find('div', class_='results')
         div_products_list = div_id_products.find_all('div', class_='product')
 
         for prod_info in div_products_list:
             product = dict()
-            product['bike_type'] = self._bike_type
+            product['bike_type'] = bike_type
             product['site'] = self._SOURCE
 
             # get id
@@ -107,55 +124,35 @@ class CompetitiveCyclist(Scraper):
         except AttributeError as err:
             print(f'\tError: {err}')
 
-        # print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
+        print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         return prod_specs
 
-    def get_all_available_prods(self, bike_type_list=[], to_csv=True) -> list:
-        """Collect raw data for each bike type.
-
-    Args:
-      bike_type_list (:obj: list of str): list of bike types to scrape.
-        Note: Must be match key values in self._BIKE_ENDPOINTS in this class
-    """
-        manifest_row_datas = list()
-        if bike_type_list:
-            for bike_type in bike_type_list:
-                manifest_row_datas.append(self._get_prods(bike_type=bike_type))
-        else:
-            for bike_type in self._BIKE_ENDPOINTS:
-                manifest_row_datas.append(self._get_prods(bike_type=bike_type))
-        return manifest_row_datas
-
-    def _get_prods(self, bike_type, to_csv=True) -> dict:
+    def get_all_available_prods(self, to_csv=True) -> dict:
         """Scrape competitive cyclist site for prods."""
         # Reset scraper related variables
         self._products = dict()
         self._num_bikes = 0
-        self._bike_type = bike_type
 
-        # Get initial page and determine total number of products pages to scrape
-        page_soup = BeautifulSoup(
-            self._fetch_prod_listing_view(bike_type=bike_type),
-            'lxml')
-        num_pages = self._get_num_pages(soup=page_soup)
+        # Scrape pages for each available category
+        bike_categories = self._get_categories()
+        for bike_type in bike_categories:
+            print(f'Parsing first page for {bike_type}...')
+            endpoint = bike_categories[bike_type]
+            soup = BeautifulSoup(self._fetch_prod_listing_view(
+                endpoint), 'lxml')
+            self._get_prods_on_current_listings_page(soup, bike_type)
+            next_page, endpoint = self._get_next_page(soup)
 
-        # Scrape first page while its in memory then fetch and scrape the remaining pages
-        self._get_prods_on_current_listings_page(soup=page_soup)
-        self._num_bikes = len(self._products)
-        print(f'Current number of products: {len(self._products)}')
-
-        for page_num in range(1, num_pages):
-            page_soup = BeautifulSoup(
-                self._fetch_prod_listing_view(bike_type=bike_type,
-                                              page=page_num),
-                'lxml')
-            self._get_prods_on_current_listings_page(soup=page_soup)
-            self._num_bikes = len(self._products)
-            print(f'Current number of products: {self._num_bikes}')
+            counter = 1
+            while next_page:
+                counter += 1
+                print('\tparsing page:', counter)
+                soup = BeautifulSoup(self._fetch_prod_listing_view(
+                    endpoint), 'lxml')
+                self._get_prods_on_current_listings_page(soup, bike_type)
+                next_page, endpoint = self._get_next_page(soup)
 
         if to_csv:
             return self._write_prod_listings_to_csv()
 
         return {}
-        # if get_specs: #TODO: remove
-        #   self.get_product_specs(get_prods_from='memory')

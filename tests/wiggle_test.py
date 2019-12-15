@@ -1,78 +1,12 @@
 # python modules
-import unittest
 import os
+import unittest
+
 from bs4 import BeautifulSoup
-from datetime import datetime
 
 # package modules
 from scrapers.wiggle import Wiggle
-
-#######################################
-#  MODULE CONSTANTS
-#######################################
-TIMESTAMP = datetime.now().strftime('%m%d%Y')
-MODULE_DIR = os.path.abspath(os.path.dirname(__file__))
-DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
-TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
-HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
-TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH, 'performance_prod_listing_test_data.csv')
-SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, '_scraper.html'))
-KIDDIMOTO_SPECS = {
-    'wheel_size': '12" (203)'
-    }
-ORRO_SPECS = {
-    'frame': 'Orro Pyro Carbon Disc Brake Frame',
-    'fork': 'Orro Superlight 2.0 Full Carbon Disc Brake',
-    'brake_shift_levers': 'Shimano 105 R7000',
-    'brakes': 'TRP Spyre mechanical disc brake, flat mount. Shimano Shimano 105 R7000 levers',
-    'derailleur': 'Shimano 105 R7000',
-    'cassette': 'Shimano 105 R7000, 11-28T',
-    'chainset': 'FSA Omega, 50/34T',
-    'wheelset': 'Fulcrum Racing 600 DB',
-    'tyres': 'Continental Grand Sport Race 25C',
-    'fork_material': 'Carbon',
-    'bottle_cage_mounts': 'Double',
-    'groupset_manufacturer': 'Shimano',
-    'chainset_type': 'Double',
-    'tires': 'Continental Grand Sport Race 25C',
-    'brake_type': 'Hydraulic Disc Brake',
-    'bar_tape_grips': 'Token Lock On',
-    'handlebars': 'FSA Vero Compact',
-    'stem': 'Integrated',
-    'seat_post': 'Orro Superlite Alloy',
-    'saddle': 'Prologo Kappa RS',
-    'model_year': '2019',
-    'road': 'Yes'
-    }
-VITUS_SPECS = {
-    'weight': '7.9kg',
-    'frame': 'Carbon',
-    'fork': 'Carbon',
-    'fork_material': 'Carbon',
-    'steerer': 'Tapered 1 1/8 - 1 1/2',
-    'bottle_cage_mounts': 'Double',
-    'cable_routing': 'External',
-    'mudguard_mounts': 'Yes',
-    'rear_rack_mounts': 'Yes',
-    'groupset_manufacturer': 'Shimano',
-    'number_of_gears': '22 Speed',
-    'chainset': 'Shimano Ultegra',
-    'chainset_type': 'Double',
-    'chain': 'KMC X11L',
-    'cassette': 'Shimano Ultegra',
-    'wheel_size': '700c (622)',
-    'tires': 'Mavic Yksion Pro',
-    'brake_type': 'Hydraulic Disc Brake',
-    'brakes': 'Shimano Ultegra R8020',
-    'brake_calipers': 'Shimano Ultegra R8020',
-    'handlebars': 'Ritchey Comp Streem II',
-    'stem': 'Ritchey Comp 4 Axis',
-    'seat_post': 'Prime carbon',
-    'saddle': 'Fizik Antares R5',
-    'model_year': '2018',
-    'bike_weight': '7.9kg / 17.41 lbs',
-    'road': 'Yes'
-    }
+from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 
 
 class WiggleTestCase(unittest.TestCase):
