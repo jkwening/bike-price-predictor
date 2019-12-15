@@ -23,11 +23,7 @@ class Trek(Scraper):
         if page_size is not None:  # add page_size query
             req_url += f'?pageSize={page_size}&page={page}'
 
-        # Spoof browser to avoid 403 error code
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.96 Safari/537.36'
-        }
-        return self._fetch_html(req_url, headers=headers)
+        return self._fetch_html(req_url)
 
     def _get_max_num_prods(self, soup):
         """Get max num of products on current page."""
@@ -35,28 +31,7 @@ class Trek(Scraper):
         num = int(num.split()[0])
         return num
 
-    def _parse_prod_specs(self, soup):
-        """Return dictionary representation of the product's specification."""
-        prod_specs = dict()
-        try:
-            section = soup.find('section', id='trekProductSpecificationsComponent')
-            ul_specs = section.find('ul')
-            dls = ul_specs.find_all('dl')
-
-            for dl in dls:
-                spec = dl.find('dt').string.strip()
-                spec = self._normalize_spec_fieldnames(spec)
-                value = dl.find('dd').string.strip()
-                prod_specs[spec] = value
-                self._specs_fieldnames.add(spec)
-
-            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
-        except AttributeError as err:
-            print(f'\tError: {err}')
-
-        return prod_specs
-
-    def _get_categories(self, soup=None) -> dict:
+    def _get_categories(self) -> dict:
         """Bike category endpoint encodings.
 
         Returns:
@@ -65,10 +40,8 @@ class Trek(Scraper):
         categories = dict()
         exclude_list = ['help_me_choose', 'customize',
                         'shop_all_bikes']
-
-        if soup is None:
-            page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
-            soup = BeautifulSoup(page, 'lxml')
+        page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
+        soup = BeautifulSoup(page, 'lxml')
 
         nav_cat = soup.find('div', attrs={'id': 'ShopByCategoryNavNode'})
         ul_cat = nav_cat.find('ul', class_='primary-navigation__links')
@@ -165,3 +138,56 @@ class Trek(Scraper):
 
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
+
+    def _parse_prod_specs(self, soup):
+        """Return dictionary representation of the product's specification."""
+        try:
+            # use appropriate parser per specs html DOM structure
+            section = soup.find('section', id='trekProductSpecificationsComponent')
+            if section is None:
+                section = soup.find('section', id='trekProductSpecificationsComponentBOM')
+                prod_specs = self._specs_table_parser(section)
+            else:
+                prod_specs = self._specs_ul_parser(section)
+            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
+            return prod_specs
+        except AttributeError as err:
+            print(f'\tError: {err}')
+            return dict()
+
+    def _specs_ul_parser(self, section):
+        """Product specs parser for ul based structure."""
+        prod_specs = dict()
+        ul_specs = section.find('ul')
+        dls = ul_specs.find_all('dl')
+
+        for dl in dls:
+            spec = dl.find('dt').string.strip()
+            spec = self._normalize_spec_fieldnames(spec)
+            value = dl.find('dd').string.strip()
+            prod_specs[spec] = value
+            self._specs_fieldnames.add(spec)
+        return prod_specs
+
+    def _specs_table_parser(self, section):
+        """Product specs parser for table based structure."""
+        prod_specs = dict()
+        tr_tags = section.find_all('tr')
+
+        spec_prev = 'default'
+        for tr in tr_tags:
+            # hand situations where spec has multiple rows and th are empty
+            # for subsequent rows
+            spec = tr.find('th')
+            if spec is None:
+                spec = spec_prev
+                value = prod_specs[spec] + '_'  # extend prev value str
+            else:
+                spec = spec.string.strip()
+                spec = self._normalize_spec_fieldnames(spec)
+                spec_prev = spec
+                value = ''  # init empty value str
+            value += tr.find('td').text.strip()
+            prod_specs[spec] = value
+            self._specs_fieldnames.add(spec)
+        return prod_specs
