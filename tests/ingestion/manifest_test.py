@@ -1,5 +1,5 @@
-import unittest
 import os
+import unittest
 from csv import DictReader, DictWriter
 
 from ingestion.manifest import Manifest
