@@ -3,7 +3,7 @@ import pandas as pd
 
 from ingestion.cleaner import Cleaner
 from ingestion.ingestion_mediator import IngestionMediator
-from tests.unit_test_utils import DATA_PATH, MUNGED_DATA_PATH
+from utils.unit_test_utils import DATA_PATH, MUNGED_DATA_PATH
 
 
 class CleanerTestCase(unittest.TestCase):

@@ -45,45 +45,17 @@ class SpecializedTestCase(unittest.TestCase):
             'road_bikes',
             'mountain_bikes',
             'electric_bikes',
-            # 'kids_bikes',
-            'path_pavement_bikes',
-            'bmx'
+            'path_pavement',
+            'bmx_bikes'
         ]
 
-        # Case 1: saved html
-        with open(SHOP_BIKES_HTML_PATH, mode='r', encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        result = self._scraper._get_categories(soup)
-        print('html categories:', result)
+        result = self._scraper._get_categories()
+        print('\nCategories:', result)
         self.assertEqual(len(categories), len(result),
                          msg=f'Expected {len(categories)}; result {len(result)}')
         for key in categories:
             self.assertTrue(key in result,
-                            msg=f'{key} is not in result!')
-
-        # Case 2: api call
-        result = self._scraper._get_categories(soup=None)
-        print('api categories:', result)
-        self.assertEqual(len(categories), len(result),
-                         msg=f'Expected {len(categories)}; result {len(result)}')
-        for key in categories:
-            self.assertTrue(key in result,
-                            msg=f'{key} is not in result!')
-
-    def test_get_next_page(self):
-        # Case 1: next page button exists
-        with open(SHOP_ROAD_HTML_PATH, mode='r', encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        result = self._scraper._get_next_page(soup)
-        self.assertTrue(result[0],
-                        msg=f'Expected next page endpoint! Result: {result}')
-
-        # Case 2: no next page button
-        with open(SHOP_NO_NEXT_HTML_PATH, mode='r', encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        result = self._scraper._get_next_page(soup)
-        self.assertFalse(result[0],
-                         msg=f'Expected no next page endpoint! Result: {result}')
+                            msg=f'{key} is not in {result}!')
 
     def test_get_prods_listings(self):
         bike_type = 'road_bikes'
@@ -95,7 +67,7 @@ class SpecializedTestCase(unittest.TestCase):
         # Verify product listings fetch
         self._scraper._get_prods_on_current_listings_page(soup, bike_type)
         num_prods = len(self._scraper._products)
-        self.assertTrue(num_prods > 1,
+        self.assertTrue(num_prods > 5,
                         msg=f'There are {num_prods} product first page.')
         self._scraper._write_prod_listings_to_csv()
 

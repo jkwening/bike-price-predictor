@@ -15,7 +15,6 @@ class EriksBikes(Scraper):
                          source='eriks', save_data_path=save_data_path)
         self._page_size = 30  # can't control via fetch
         self._PROD_PAGE_ENDPOINT = '/eriks-bicycle-buying-guide.aspx'
-        self._BIKE_CATEGORIES = self._get_categories()
 
     def _fetch_prod_listing_view(self, endpoint, page=1,
                                  guide=False):
@@ -30,45 +29,16 @@ class EriksBikes(Scraper):
         """Raise error: Not implemented in this module."""
         raise NotImplemented
 
-    def _parse_prod_specs(self, soup):
-        """Return dictionary representation of the product's specification."""
-        prod_specs = dict()
-        try:
-            # div_feat = soup.find('div', class_='feat')
-            gspecs_div = soup.find('div', class_='specs')
-            table_specs = gspecs_div.find('table')
-            specs = table_specs.find_all('tr')
-
-            # Get each spec_name, value pairing for bike product
-            for spec in specs:
-                name = ''
-                for str in spec.th.stripped_strings:
-                    name += str
-                value = ''
-                for str in spec.td.stripped_strings:
-                    value += str
-                spec_name = self._normalize_spec_fieldnames(name)
-                prod_specs[spec_name] = value
-                self._specs_fieldnames.add(spec_name)
-
-            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
-        except AttributeError as err:
-            print(f'\tError: {err}')
-
-        return prod_specs
-
-    def _get_categories(self, soup=None):
+    def _get_categories(self):
         """Bike category endpoint encodings.
 
         Returns:
             dictionary of dictionaries
         """
         categories = dict()
-
-        if soup is None:
-            page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT,
-                                                 guide=True)
-            soup = BeautifulSoup(page, 'lxml')
+        page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT,
+                                             guide=True)
+        soup = BeautifulSoup(page, 'lxml')
 
         bucket_cont = soup.find('div', class_='GBucketCont')
         cats = bucket_cont.find_all('div', class_='GBucket')
@@ -95,9 +65,10 @@ class EriksBikes(Scraper):
         self._num_bikes = 0
 
         # Scrape pages for each available category
-        for bike_type in self._BIKE_CATEGORIES.keys():
+        categories = self._get_categories()
+        for bike_type in categories.keys():
             print(f'Getting {bike_type}...')
-            endpoint = self._BIKE_CATEGORIES[bike_type]['href']
+            endpoint = categories[bike_type]['href']
 
             # Scrape first page, get num bikes, and determine num pages
             soup = BeautifulSoup(self._fetch_prod_listing_view(
@@ -168,3 +139,30 @@ class EriksBikes(Scraper):
             heading_info = soup.find('div', class_='searchHeadingInfo')
             results = heading_info.span.span.contents[0].split()[0]
             return int(results)
+
+    def _parse_prod_specs(self, soup):
+        """Return dictionary representation of the product's specification."""
+        prod_specs = dict()
+        try:
+            # div_feat = soup.find('div', class_='feat')
+            gspecs_div = soup.find('div', class_='specs')
+            table_specs = gspecs_div.find('table')
+            specs = table_specs.find_all('tr')
+
+            # Get each spec_name, value pairing for bike product
+            for spec in specs:
+                name = ''
+                for str in spec.th.stripped_strings:
+                    name += str
+                value = ''
+                for str in spec.td.stripped_strings:
+                    value += str
+                spec_name = self._normalize_spec_fieldnames(name)
+                prod_specs[spec_name] = value
+                self._specs_fieldnames.add(spec_name)
+
+            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
+        except AttributeError as err:
+            print(f'\tError: {err}')
+
+        return prod_specs

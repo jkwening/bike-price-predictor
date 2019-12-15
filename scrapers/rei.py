@@ -16,7 +16,6 @@ class Rei(Scraper):
         super().__init__(base_url='http://www.rei.com',
                          source='rei', save_data_path=save_data_path)
         self._BIKES_ENDPOINT = 'c/bikes'
-        self._BIKE_CATEGORIES = self.get_categories()
 
     def _fetch_prod_listing_view(self, endpoint=None, bike='bikes',
                                  page=1, page_size=90):
@@ -30,23 +29,22 @@ class Rei(Scraper):
 
         return self._fetch_html(req_url)
 
-    def get_categories(self, soup=None):
+    def _get_categories(self):
         """Return bike category links from general bike page."""
         categories = dict()
+        html = self._fetch_prod_listing_view(endpoint=self._BIKES_ENDPOINT)
+        soup = BeautifulSoup(html, 'lxml')
 
-        if soup is None:
-            html = self._fetch_prod_listing_view(endpoint=self._BIKES_ENDPOINT)
-            soup = BeautifulSoup(html, 'lxml')
-
-        div_categories = soup.find('div',
-                                   attrs={'id': 'accordion-facet-header-Categories'})
+        div_categories = soup.find(id='filter-Categories')
         a_tags = div_categories.find_all('a')
 
         for a in a_tags:
             cat = dict()
             cat['href'] = a['href']
-            bike_type, count = a.span.string.strip().lower().split('(')
+            bike_type = a.text.strip().lower().split(':')[1]
+            bike_type, count = bike_type.split('(')
             bike_type = bike_type.replace('bikes', '').strip()
+            bike_type = self._normalize_spec_fieldnames(bike_type)
             count = int(count.strip(')').strip())
             cat['total'] = count
             categories[bike_type] = cat
@@ -58,6 +56,60 @@ class Rei(Scraper):
         """Get total number of products available."""
         data = json.loads(self._fetch_prod_listing_view(page_size=self._page_size))
         return int(data['query']['totalResults'])
+
+    def get_all_available_prods(self, to_csv=True) -> list:
+        """Scrape wiggle site for prods."""
+        # Reset scraper related variables
+        self._products = dict()
+        self._num_bikes = 0
+
+        # Get products for each bike type category
+        categories = self._get_categories()
+        for bike_type in categories.keys():
+            bike = categories[bike_type]['href'].split('/')[-1]
+            page_num = 1
+            data = json.loads(
+                self._fetch_prod_listing_view(
+                    page_size=self._page_size, bike=bike
+                )
+            )
+
+            num_pages = math.ceil(int(data['query']['totalResults']) / int(data['query']['upperResult']))
+
+            # Scrape first page while its in memory then fetch and scrape the remaining pages
+            self._get_prods_on_current_listings_page(data, bike_type)
+            while True:
+                page_num += 1
+                if page_num > num_pages:
+                    break
+                else:
+                    data = json.loads(self._fetch_prod_listing_view(
+                        page=page_num, page_size=self._page_size, bike=bike)
+                    )
+                    self._get_prods_on_current_listings_page(data, bike_type)
+
+        if to_csv:
+            return [self._write_prod_listings_to_csv()]
+
+        return list()
+
+    def _get_prods_on_current_listings_page(self, data, bike_type):
+        results = data['results']
+
+        for prod in results:
+            product = {'site': 'rei', 'bike_type': bike_type}
+            brand = prod['brand']
+            title = prod['cleanTitle']
+            product['brand'] = brand
+            product['description'] = f'{brand} {title}'
+            product['product_id'] = prod['prodId']
+            product['href'] = prod['link']
+            display_price = prod['displayPrice']
+            product['price'] = display_price['max']
+            product['msrp'] = display_price['compareAt']
+
+            self._products[prod['prodId']] = product
+            print(f'[{len(self._products)}] New bike: ', product)
 
     def _parse_prod_specs(self, soup, garage=False):
         """Return dictionary representation of the product's specification."""
@@ -89,59 +141,3 @@ class Rei(Scraper):
             print(f'\tError: {err}')
 
         return prod_specs
-
-    def get_all_available_prods(self, to_csv=True) -> list:
-        """Scrape wiggle site for prods."""
-        # Reset scraper related variables
-        self._products = dict()
-        self._num_bikes = 0
-
-        # Get products for each bike type category
-        for bike_type in self._BIKE_CATEGORIES:
-            bike = self._BIKE_CATEGORIES[bike_type]['href'].split('/')[-1]
-            page_num = 1
-            data = json.loads(
-                self._fetch_prod_listing_view(
-                    page_size=self._page_size, bike=bike
-                )
-            )
-
-            num_pages = math.ceil(int(data['query']['totalResults']) / int(data['query']['upperResult']))
-
-            # Scrape first page while its in memory then fetch and scrape the remaining pages
-            while True:
-                results = data['results']
-
-                for prod in results:
-                    product = {'site': 'rei', 'bike_type': bike_type}
-                    brand = prod['brand']
-                    title = prod['cleanTitle']
-                    product['brand'] = brand
-                    product['description'] = f'{brand} {title}'
-                    product['product_id'] = prod['prodId']
-                    product['href'] = prod['link']
-                    display_price = prod['displayPrice']
-                    product['price'] = display_price['max']
-                    product['msrp'] = display_price['compareAt']
-                    self._products[prod['prodId']] = product
-                    print(f'[{len(self._products)}] New bike: ', product)
-
-                self._num_bikes = len(self._products)
-                print(f'Current number of products: {self._num_bikes}')
-
-                page_num += 1
-                if page_num > num_pages:
-                    break
-                else:
-                    data = json.loads(self._fetch_prod_listing_view(page=page_num,
-                                                                    page_size=self._page_size))
-
-        if to_csv:
-            return [self._write_prod_listings_to_csv()]
-
-        return list()
-
-    # TODO: remove this method and embed within get_all_available_prods
-    # then remove from scraper module.
-    def _get_prods_on_current_listings_page(self, data):
-        pass

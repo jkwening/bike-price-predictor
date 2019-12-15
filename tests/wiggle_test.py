@@ -16,7 +16,7 @@ DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'data'))
 TEST_DATA_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_data'))
 HTML_PATH = os.path.abspath(os.path.join(MODULE_DIR, 'test_html'))
 TEST_PROD_LISTING_PATH = os.path.join(TEST_DATA_PATH, 'performance_prod_listing_test_data.csv')
-SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, 'wiggle.html'))
+SHOP_BIKES_HTML_PATH = os.path.abspath(os.path.join(HTML_PATH, '_scraper.html'))
 KIDDIMOTO_SPECS = {
     'wheel_size': '12" (203)'
     }
@@ -77,86 +77,59 @@ VITUS_SPECS = {
 
 class WiggleTestCase(unittest.TestCase):
     def setUp(self):
-        self.wiggle = Wiggle(save_data_path=DATA_PATH)
+        self._scraper = Wiggle(save_data_path=DATA_PATH)
 
-    def test_fetch_prod_listing_view(self):
-        text = self.wiggle._fetch_prod_listing_view()
-        soup = BeautifulSoup(text, 'lxml')
-        self.wiggle._get_prods_on_current_listings_page(soup)
-        self.assertEqual(self.wiggle._page_size, len(self.wiggle._products))
+    def test_get_categories(self):
+        expected = ['road', 'mountain', 'cyclocross', 'adventure',
+                    'touring', 'urban', 'track', 'time_trial',
+                    'bmx', 'kids']
+        result = self._scraper._get_categories()
+        print('\nCategories', result)
+        for key in result.keys():
+            self.assertTrue(key in expected,
+                            msg=f'{key} not in {expected}.')
 
-    def test_get_max_num_prods(self):
-        # load test html into memory
-        with open(SHOP_BIKES_HTML_PATH, encoding='utf-8') as f:
-            prod_list_text = f.read()
+    def test_get_prods_listings(self):
+        bike_type = 'road'
+        bike_cats = self._scraper._get_categories()
+        endpoint = bike_cats[bike_type]['href']
+        soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
+            url=endpoint), 'lxml')
 
-        prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
+        # Verify product listings fetch
+        self._scraper._get_prods_on_current_listings_page(soup, bike_type)
+        num_prods = len(self._scraper._products)
+        expected_num_prods = bike_cats[bike_type]['count']
+        if expected_num_prods > self._scraper._page_size:
+            self.assertEqual(num_prods, self._scraper._page_size,
+                             msg=f'{num_prods} product, expected: {self._scraper._page_size}.')
+        else:
+            self.assertEqual(expected_num_prods, num_prods,
+                             msg=f'{num_prods} product, expected: {expected_num_prods}.')
+        self._scraper._write_prod_listings_to_csv()
 
-        expected = 352  # from html file: 352 bikes
-        result = self.wiggle._get_max_num_prods(prod_list_soup)
-        self.assertEqual(expected, result)
+    def test_parse_specs(self):
+        bike_type = 'road'
+        prods_csv_path = os.path.join(DATA_PATH, TIMESTAMP,
+                                      'wiggle_prods_all.csv')
+        # Verify parsing product specs
+        specs = self._scraper.get_product_specs(get_prods_from=prods_csv_path,
+                                                bike_type=bike_type,
+                                                to_csv=False)
+        num_prods = len(self._scraper._products)
+        num_specs = len(specs)
+        self.assertEqual(num_prods, num_specs,
+                         msg=f'Products size: {num_prods}, Specs size: {num_specs}')
+        self._scraper._write_prod_specs_to_csv(specs=specs,
+                                               bike_type=bike_type)
 
-    def test_get_prods_on_page(self):
-        # load test html into memory
-        with open(SHOP_BIKES_HTML_PATH, encoding='utf-8') as f:
-            prod_list_text = f.read()
-
-        prod_list_soup = BeautifulSoup(prod_list_text, 'lxml')
-        self.wiggle._get_prods_on_current_listings_page(prod_list_soup)
-        self.assertEqual(self.wiggle._page_size, len(self.wiggle._products))
-
-    def test_get_prod_listings(self):
-        self.wiggle.get_all_available_prods(to_csv=True)
-        self.assertTrue(self.wiggle._num_bikes, len(self.wiggle._products))
-
-    def test_parse_prod_spec(self):
-        # load test prod details into memory
-        html_path = os.path.abspath(os.path.join(HTML_PATH,
-            'wiggle-Kiddimoto-Balance-Bikes.html'))
-        with open(html_path, encoding='utf-8') as f:            
-            kiddimoto_prod_detail_text = f.read()
-
-        html_path = os.path.abspath(os.path.join(HTML_PATH,
-            'wiggle-Orro-PYRO-Disc-Road-Bikes.html'))
-        with open(html_path, encoding='utf-8') as f:
-            orro_prod_detail_text = f.read()
-
-        html_path = os.path.abspath(os.path.join(HTML_PATH,
-            'wiggle-Vitus-Vitesse-Road-Bike.html'))
-        with open(html_path, encoding='utf-8') as f:
-            vitus_prod_detail_text = f.read()
-
-        # html_path = os.path.abspath(os.path.join(HTML_PATH, 'bike-eli-elliptigo-sub-31-8914.html'))
-        # with open(html_path, encoding='utf-8') as f:
-        #     generic_error = f.read()
-
-        kiddimoto_detail_soup = BeautifulSoup(kiddimoto_prod_detail_text, 'lxml')
-        orro_detail_soup = BeautifulSoup(orro_prod_detail_text,
-                                                  'lxml')
-        vitus_detail_soup = BeautifulSoup(vitus_prod_detail_text, 'lxml')
-        # generic_error_soup = BeautifulSoup(generic_error, 'lxml')
-
-        # case 1: exact match per example data
-        result = self.wiggle._parse_prod_specs(kiddimoto_detail_soup)
-        self.assertEqual(len(KIDDIMOTO_SPECS), len(result))
-        for key in KIDDIMOTO_SPECS.keys():
-            self.assertEqual(KIDDIMOTO_SPECS[key], result[key])
-
-        # case 2: using second data, exact match in components
-        result = self.wiggle._parse_prod_specs(orro_detail_soup)
-        self.assertEqual(len(ORRO_SPECS), len(result))
-        for key in ORRO_SPECS.keys():
-            self.assertEqual(ORRO_SPECS[key], result[key])
-
-        # case 3: using third data, exact match in components
-        result = self.wiggle._parse_prod_specs(vitus_detail_soup)
-        self.assertEqual(len(VITUS_SPECS), len(result))
-        for key in VITUS_SPECS.keys():
-            self.assertEqual(VITUS_SPECS[key], result[key])
-
-        # # case 4: safely handle error TODO
-        # result = self.wiggle._parse_prod_specs(generic_error_soup)
-        # self.assertEqual(0, len(result))
+        # Verify spec fieldnames has minimum general fields:
+        expected = ['site', 'product_id', 'frame',
+                    'fork', 'cassette', 'saddle', 'seatpost']
+        print('\nSpec Fieldnames\n', self._scraper._specs_fieldnames)
+        for field in expected:
+            self.assertTrue(field in self._scraper._specs_fieldnames,
+                            msg=f'{field} not in {self._scraper._specs_fieldnames}.')
 
 
 if __name__ == '__main__':

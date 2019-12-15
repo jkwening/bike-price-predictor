@@ -25,46 +25,19 @@ class FoxValley(Scraper):
         """Raise error: Not implemented in this module."""
         raise NotImplemented
 
-    def _parse_prod_specs(self, soup):
-        """Return dictionary representation of the product's specification."""
-        prod_specs = dict()
-        div_specs = soup.find('div', id='specifications')
-        tables = div_specs.find_all('table', class_='specifications')
-        trs = list()
-
-        # Get all tr tags for both table tags
-        for table in tables:
-            trs += table.find_all('tr')
-
-        try:
-            for tr in trs:
-                spec = tr.th.string.strip()
-                spec = self._normalize_spec_fieldnames(spec)
-                value = tr.td.string.strip()
-                prod_specs[spec] = value
-                self._specs_fieldnames.add(spec)
-
-            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
-        except AttributeError as err:
-            print(f'\tError: {err}')
-
-        return prod_specs
-
-    def _get_categories(self, soup=None) -> dict:
+    def _get_categories(self) -> dict:
         """Bike category endpoint encodings.
 
         Returns:
             dictionary of dictionaries
         """
         categories = dict()
-
-        if soup is None:
-            page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
-            soup = BeautifulSoup(page, 'lxml')
+        print('\nFetching categories data...')
+        page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
+        soup = BeautifulSoup(page, 'lxml')
 
         menu = soup.find('div', id='megamenubikes')
-        ul_cat = menu.find('ul')
-        a_tags = ul_cat.find_all('a')
+        a_tags = menu.find_all('ul li a')
 
         for a in a_tags:
             bike_cat = dict()
@@ -130,3 +103,28 @@ class FoxValley(Scraper):
                 p_dict['msrp'] = price
                 self._products[prod_id] = p_dict
                 print(f'\t[{len(self._products)}] New bike: ', p_dict)
+
+    def _parse_prod_specs(self, soup):
+        """Return dictionary representation of the product's specification."""
+        prod_specs = dict()
+        div_specs = soup.find('div', id='specifications')
+        tables = div_specs.find_all('table', class_='specifications')
+        trs = list()
+
+        # Get all tr tags for both table tags
+        for table in tables:
+            trs += table.find_all('tr')
+
+        try:
+            for tr in trs:
+                spec = tr.th.string.strip()
+                spec = self._normalize_spec_fieldnames(spec)
+                value = tr.td.string.strip()
+                prod_specs[spec] = value
+                self._specs_fieldnames.add(spec)
+
+            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
+        except AttributeError as err:
+            print(f'\tError: {err}')
+
+        return prod_specs

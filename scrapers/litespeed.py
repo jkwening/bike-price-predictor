@@ -26,48 +26,6 @@ class LiteSpeed(Scraper):
         """Get max num of products on current page."""
         raise NotImplementedError
 
-    def _parse_prod_specs(self, soup) -> list:
-        """Returns list of dictionary representation of the product's specification."""
-        prod_specs = list()
-        self._specs_fieldnames.add('bike_sub_type')
-        try:
-            li_sect = soup.find('li', id='tab2')
-            sub_name = ''
-            sub_specs = dict()
-            count = 0  # Track number of tables parsed for each section
-            for child in li_sect.children:
-                if child.name == 'h4':
-                    sub_name = child.string.strip()
-                    sub_specs = dict()
-                    continue
-
-                if child.name == 'div':
-                    rows = child.find_all('tr')
-                    for row in rows:
-                        tds = row.find_all('td')
-                        # Parse spec field names
-                        spec = tds[0].text.strip()
-                        spec = self._normalize_spec_fieldnames(spec)
-                        # Parse spec value
-                        value = tds[1].string
-                        if value is None:
-                            continue
-                        sub_specs[spec] = value.strip()
-                        self._specs_fieldnames.add(spec)
-
-                    count += 1
-
-                if count % 2 == 0 and count > 0:
-                    sub_specs['bike_sub_type'] = sub_name  # sub-type as field name
-                    prod_specs.append(sub_specs)
-                    count = 0  # reset count
-
-            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
-        except AttributeError as err:
-            print(f'\tError: {err}')
-
-        return prod_specs
-
     def get_all_available_prods(self, to_csv=True) -> list:
         """Scrape wiggle site for prods."""
         # Reset scraper related variables
@@ -121,3 +79,45 @@ class LiteSpeed(Scraper):
 
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
+
+    def _parse_prod_specs(self, soup) -> list:
+        """Returns list of dictionary representation of the product's specification."""
+        prod_specs = list()
+        self._specs_fieldnames.add('bike_sub_type')
+        try:
+            li_sect = soup.find('li', id='tab2')
+            sub_name = ''
+            sub_specs = dict()
+            count = 0  # Track number of tables parsed for each section
+            for child in li_sect.children:
+                if child.name == 'h4':
+                    sub_name = child.string.strip()
+                    sub_specs = dict()
+                    continue
+
+                if child.name == 'div':
+                    rows = child.find_all('tr')
+                    for row in rows:
+                        tds = row.find_all('td')
+                        # Parse spec field names
+                        spec = tds[0].text.strip()
+                        spec = self._normalize_spec_fieldnames(spec)
+                        # Parse spec value
+                        value = tds[1].string
+                        if value is None:
+                            continue
+                        sub_specs[spec] = value.strip()
+                        self._specs_fieldnames.add(spec)
+
+                    count += 1
+
+                if count % 2 == 0 and count > 0:
+                    sub_specs['bike_sub_type'] = sub_name  # sub-type as field name
+                    prod_specs.append(sub_specs)
+                    count = 0  # reset count
+
+            print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
+        except AttributeError as err:
+            print(f'\tError: {err}')
+
+        return prod_specs

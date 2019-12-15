@@ -78,7 +78,7 @@ RUBY_SPECS = {
 
 class EriksBikesTestCase(unittest.TestCase):
     def setUp(self):
-        self._eriks = EriksBikes(save_data_path=DATA_PATH)
+        self._scraper = EriksBikes(save_data_path=DATA_PATH)
 
     def test_get_categories(self):
         categories = [
@@ -90,101 +90,71 @@ class EriksBikesTestCase(unittest.TestCase):
             'bmx_bikes'
         ]
 
-        with open(SHOP_BIKES_HTML_PATH, mode='r', encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        result = self._eriks._get_categories(soup)
-        print('categories:', result)
-        for key in result:
+        result = self._scraper._get_categories()
+        print('\nCategories:', result)
+        for key in result.keys():
             self.assertTrue(key in categories,
-                            msg=f'{key} is not in categories!')
+                            msg=f'{key} is not in {categories}!')
 
-    def test_get_prod_listings(self):
-        with open(ROAD_BIKES_HTML_PATH, mode='r',
-                  encoding='utf-8') as html:
-            soup = BeautifulSoup(html, 'lxml')
-        num_bikes = self._eriks._get_prods_on_current_listings_page(
-            soup, 'road_bikes', get_num_bikes=True)
-        self.assertEqual(30, len(self._eriks._products),
-                         msg='First page should return 30 products.')
-        self.assertTrue(239, num_bikes)
+    def test_get_prods_listings(self):
+        bike_type = 'road_bikes'
+        bike_cats = self._scraper._get_categories()
+        endpoint = bike_cats[bike_type]['href']
+        soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
+            endpoint), 'lxml')
+
+        # Verify product listings fetch
+        self._scraper._get_prods_on_current_listings_page(soup, bike_type)
+        num_prods = len(self._scraper._products)
+        self.assertTrue(num_prods > 1,
+                        msg=f'There are {num_prods} product first page.')
+        self._scraper._write_prod_listings_to_csv()
+
+    def test_parse_specs(self):
+        bike_type = 'road_bikes'
+        prods_csv_path = os.path.join(DATA_PATH, TIMESTAMP,
+                                      'eriks_prods_all.csv')
+        # Verify parsing product specs
+        specs = self._scraper.get_product_specs(get_prods_from=prods_csv_path,
+                                                bike_type=bike_type,
+                                                to_csv=False)
+        num_prods = len(self._scraper._products)
+        num_specs = len(specs)
+        self.assertEqual(num_prods, num_specs,
+                         msg=f'Products size: {num_prods}, Specs size: {num_specs}')
+        self._scraper._write_prod_specs_to_csv(specs=specs,
+                                               bike_type=bike_type)
+
+        # Verify spec fieldnames has minimum general fields:
+        expected = ['site', 'product_id', 'frame',
+                    'fork', 'cassette', 'saddle', 'seatpost']
+        print('\nSpec Fieldnames\n', self._scraper._specs_fieldnames)
+        for field in expected:
+            self.assertTrue(field in self._scraper._specs_fieldnames,
+                            msg=f'{field} not in {self._scraper._specs_fieldnames}.')
 
     def test_get_all_available_prods(self):
         # Scrape each bike_type first page and get total num bikes
         total_bikes = 0
-        for bike_type in self._eriks._BIKE_CATEGORIES.keys():
-            endpoint = self._eriks._BIKE_CATEGORIES[bike_type]['href']
+        categories = self._scraper._get_categories()
+        for bike_type in categories.keys():
+            endpoint = categories[bike_type]['href']
 
             # Scrape first page, get num bikes, and determine num pages
-            soup = BeautifulSoup(self._eriks._fetch_prod_listing_view(
+            soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
                 endpoint, page=1), 'lxml')
-            num_bikes = self._eriks._get_prods_on_current_listings_page(
+            num_bikes = self._scraper._get_prods_on_current_listings_page(
                 soup, bike_type, get_num_bikes=True
             )
             total_bikes += num_bikes
         print(f'Expecting {total_bikes} total bikes.')
 
         # Validate method
-        self._eriks.get_all_available_prods()
-        num_prods = len(self._eriks._products)
+        self._scraper.get_all_available_prods()
+        num_prods = len(self._scraper._products)
         # There are dupes so expect less num_prods
         self.assertTrue(total_bikes >= num_prods,
                         msg=f'expected: {total_bikes} - found: {num_prods}')
-
-    def test_parse_prod_spec(self):
-        # load test prod details into memory
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'eriks-Bianchi-Road-Bikes.html'))
-        with open(html_path, encoding='utf-8') as f:
-            bianchi_prod_detail_text = f.read()
-
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'eriks-ripper.html'))
-        with open(html_path, encoding='utf-8') as f:
-            strider_prod_detail_text = f.read()
-
-        html_path = os.path.abspath(os.path.join(
-            HTML_PATH, 'eriks-ruby.html'))
-        with open(html_path, encoding='utf-8') as f:
-            ruby_prod_detail_text = f.read()
-
-        # html_path = os.path.abspath(os.path.join(
-        #     HTML_PATH, 'conte-Specialized-Boys-Hotwalk.html'))
-        # with open(html_path, encoding='utf-8') as f:
-        #     generic_error = f.read()
-
-        bianchi_detail_soup = BeautifulSoup(
-            bianchi_prod_detail_text, 'lxml')
-        strider_detail_soup = BeautifulSoup(
-            strider_prod_detail_text, 'lxml')
-        ruby_detail_soup = BeautifulSoup(
-            ruby_prod_detail_text, 'lxml'
-        )
-        # generic_error_soup = BeautifulSoup(generic_error, 'lxml')
-
-        # case 1: exact match per example data
-        result = self._eriks._parse_prod_specs(bianchi_detail_soup)
-        self.assertEqual(len(BIANCHI_SPECS), len(result))
-        for key in BIANCHI_SPECS.keys():
-            self.assertEqual(
-                BIANCHI_SPECS[key], result[key])
-
-        # case 2: using second data, exact match in components
-        result = self._eriks._parse_prod_specs(strider_detail_soup)
-        self.assertEqual(len(STRIDER_SPECS), len(result))
-        for key in STRIDER_SPECS.keys():
-            self.assertEqual(STRIDER_SPECS[key], result[key])
-
-        # case 3: using third data, exact match in components
-        result = self._eriks._parse_prod_specs(ruby_detail_soup)
-        self.assertEqual(len(RUBY_SPECS), len(result))
-        for key in RUBY_SPECS.keys():
-            self.assertEqual(RUBY_SPECS[key], result[key],
-                             msg=f'{key}: Expected - {RUBY_SPECS[key]}; '
-                             f'Result - {result[key]}')
-
-        # # case 4: safely handle missing specs
-        # result = self._eriks._parse_prod_specs(generic_error_soup)
-        # self.assertEqual(0, len(result))
 
 
 if __name__ == '__main__':
