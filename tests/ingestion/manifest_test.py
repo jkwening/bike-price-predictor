@@ -49,7 +49,7 @@ class ManifestTestCase(unittest.TestCase):
             for data in self._DUMMY_DATA:
                 writer.writerow(data)
 
-        # Verify manifest.csv now has 3 lintes: headers + 2 rows dummy data
+        # Verify manifest.csv now has 3 lines: headers + 2 rows dummy data
         with open(self._MANIFEST_PATH) as f:
             rows = f.readlines()
             self.assertEqual(3, len(rows),

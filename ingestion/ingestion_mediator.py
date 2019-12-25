@@ -1,18 +1,12 @@
 import os
-import sys
 import pandas as pd
-
-# Add project path into sys.path if not already so can be run from cmd line
-ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-if ROOT_PATH not in sys.path:
-    sys.path.append(ROOT_PATH)
 
 # Import package modules
 from ingestion.collect import Collect
 from ingestion.ingest import Ingest
 from ingestion.cleaner import Cleaner
 from ingestion.manifest import Manifest, MungedManifest
-from utils.utils import TIMESTAMP, DATA_PATH, MUNGED_DATA_PATH, SOURCES
+from utils.utils import TIMESTAMP, DATA_PATH, MUNGED_DATA_PATH
 
 
 class IngestionMediator:
@@ -34,21 +28,14 @@ class IngestionMediator:
         self._munged_manifest = MungedManifest(mediator=self, path=munged_data_path,
                                                filename=munged_manifest_filename)
 
-    # TODO: remove since redundant with update method
-    def complete_update(self, collect_only=False, drop_tables=False,
-                        get_specs=True):
-        """Run data ingestion from collection to ingest into database for all tables.
-    
-    This involves:
-      1. collect both products and specs for all sources -skipping failed
-      2. loading updated flat files into database accordingly
-    """
-        # attempt to scrape all sources - skipping those that fail
-        self._collect.collect_all_products(get_specs=get_specs, skip_failed=True)
+    def collect_sources(self, sources: list, get_specs=False, skip_failed=True):
+        """Extract products from sources."""
+        self._collect.collect_from_sources(sources=sources, get_specs=get_specs,
+                                           skip_failed=skip_failed)
 
-        # attempt to load into database
-        if not collect_only:
-            self._load_to_database(drop_tables=drop_tables)
+    def collect_all(self, get_specs=False, skip_failed=True):
+        """Extract products from all sources."""
+        self._collect.collect_all_products(get_specs, skip_failed)
 
     def _load_manifest_row_to_db(self, row: dict) -> bool:
         """Attempt to load the given csv file into database."""
@@ -104,6 +91,7 @@ class IngestionMediator:
         else:
             print(f'Database not updated - failed to connect!')
 
+    # TODO: refactor to load process, excluding collect steps
     def update(self, sources: list, from_manifest=True,
                collect_only=False, drop_tables=True,
                get_specs=True):
@@ -217,23 +205,3 @@ class IngestionMediator:
     def update_munged_manifest(self, rows: list) -> bool:
         """Update munged manifest with new row data."""
         return self._munged_manifest.update(from_list=rows)
-
-
-if __name__ == '__main__':
-    # # Configure command line parsing
-    # parser = argparse.ArgumentParser(description='Update data for listed sources, all sources if none listed.')
-    # parser.add_argument('sources', metavar='S', type='string', nargs='?',
-    #   choices=SOURCES, default=[],
-    #   help='Data source options: "competitive", "nashbar", "performance", "rei", "wiggle"')
-    # mode = parser.add_mutually_exclusive_group(required=True)
-    # mode.add_argument('-m', '--from-manifest', dest='from_manifest', action='store_true',
-    #   help='Use downloaded data files currently in manifest.csv', default=False)
-    # mode.add_argument('-c', '--collect-only', dest='collect_only', action='store_true',
-    #   help='Collect data first updating manifest.csv accordingly', default=False)
-    #
-    # # Process args
-    # args = parser.parse_args()
-    mediator = IngestionMediator()
-    # mediator.update(sources=args.sources, from_manifest=args.from_manifest,
-    #   collect_only=args.collect_only, drop_tables=False)
-    mediator.update(sources=['spokes'], from_manifest=False, collect_only=True)

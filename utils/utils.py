@@ -10,13 +10,13 @@ MUNGED_DATA_PATH = os.path.abspath(os.path.join(ROOT_PATH, 'munged_data'))
 TIMESTAMP = datetime.now().strftime('%m%d%Y')
 CONFIG_FILE = os.path.abspath(os.path.join(ROOT_PATH, 'config.ini'))
 SOURCES = [
-    'backcountry', 'bicycle_warehouse', 'canyon', 'citybikes',
+    'backcountry', 'bicycle_warehouse', 'bike_doctor', 'canyon', 'citybikes',
     'competitive', 'contebikes', 'eriks', 'foxvalley', 'giant',
     'jenson', 'litespeed', 'lynskey', 'nashbar', 'proshop',
     'rei', 'specialized', 'spokes', 'trek', 'wiggle'
 ]
 SOURCES_EXCLUDE = [
-    'foxvalley', 'giant'
+    'foxvalley'
 ]
 
 

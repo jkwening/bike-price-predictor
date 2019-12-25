@@ -38,11 +38,11 @@ class ManifestTestCase(unittest.TestCase):
         self._mediator = IngestionMediator(data_path=DATA_PATH,
                                            manifest_filename='collect_manifest.csv')
         self._collect = Collect(mediator=self._mediator, save_data_path=DATA_PATH)
-        self._collect.collect_products_from_source(source='competitive', get_specs=True)
+        self._collect.collect_products_from_source(source='competitive', get_specs=False)
 
     def test_collect_specs_matching(self):
         """Test for Collect.collect_specs_matching()."""
-        self._collect.collect_specs_matching(source='rei', bike_type='kid')
+        self._collect.collect_specs_matching(source='competitive', bike_type='kid')
 
 
 if __name__ == '__main__':

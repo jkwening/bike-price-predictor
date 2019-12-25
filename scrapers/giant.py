@@ -13,7 +13,7 @@ class Giant(Scraper):
     def __init__(self, save_data_path=DATA_PATH):
         super().__init__(base_url='https://www.giant-bicycles.com',
                          source='giant', save_data_path=save_data_path)
-        self._PROD_PAGE_ENDPOINT = '/us/bikes/'
+        self._PROD_PAGE_ENDPOINT = '/us'
 
     def _fetch_prod_listing_view(self, endpoint):
         req_url = f'{self._BASE_URL}{endpoint}'
@@ -52,7 +52,7 @@ class Giant(Scraper):
 
         return prod_specs
 
-    def _get_categories(self, soup=None) -> dict:
+    def _get_categories(self) -> dict:
         """Bike category endpoint encodings.
 
         Returns:
@@ -60,28 +60,18 @@ class Giant(Scraper):
         """
         categories = dict()
 
-        if soup is None:
-            page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
-            soup = BeautifulSoup(page, 'lxml')
+        page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
+        soup = BeautifulSoup(page, 'lxml')
 
         menu = soup.find('div', id='megamenubikes')
         container = menu.find('div', class_='row')
         cols = container.find_all('div', class_='col')
 
         for col in cols:
-            c_append = col.h3.a.text.strip()
-            c_append = self._normalize_spec_fieldnames(c_append)
-
-            lis = col.find_all('li')
-            for li in lis:
-                bike_cat = dict()
-                bike_cat['href'] = li.a['href']
-                title = li.a.string.strip()
-                title = self._normalize_spec_fieldnames(title)
-                if title == 'view_all':
-                    continue
-                title = f'{title}_{c_append}'
-                categories[title] = bike_cat
+            title = col.h3.a.text.strip()
+            title = self._normalize_spec_fieldnames(title)
+            href = col.h3.a['href']
+            categories[title] = href
 
         return categories
 
@@ -95,7 +85,7 @@ class Giant(Scraper):
         bike_categories = self._get_categories()
         for bike_type in bike_categories.keys():
             print(f'[get_all] Getting {bike_type}...')
-            endpoint = bike_categories[bike_type]['href']
+            endpoint = bike_categories[bike_type]
             soup = BeautifulSoup(self._fetch_prod_listing_view(
                 endpoint), 'lxml')
             self._get_prods_on_current_listings_page(soup, bike_type)
@@ -108,11 +98,12 @@ class Giant(Scraper):
     def _get_prods_on_current_listings_page(self, soup, bike_type):
         """Parse products on page."""
         div_prod_list = soup.find('div', id='productsContainer')
-        products = div_prod_list.find_all('div', class_='tile')
+        tiles = div_prod_list.find_all('div', class_='tile')
 
         # Get model hrefs for products on page
-        for prod in products:
-            href = prod.a['href']
+        for tile in tiles:
+            article = tile.find('article', class_='aos-item')
+            href = article.a['href']
             print('\t[get_prods] Getting models for', href)
 
             # Get product info for each model available
@@ -133,7 +124,7 @@ class Giant(Scraper):
                 p_dict['product_id'] = prod_id
 
                 # Parse price
-                price = a_tag.find('span', class_='price').string
+                price = bike.find('span', class_='price').string
                 price = float(price.strip().strip('$').replace(',', ''))
                 p_dict['price'] = price
                 p_dict['msrp'] = price
