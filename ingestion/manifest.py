@@ -83,7 +83,7 @@ class Manifest(object):
     """
         print(f'[Manifest._validate_from_list()]')
         for data in data_list:
-            # check keys in data are fielnames
+            # check keys in data are fieldnames
             for key in data.keys():
                 if key not in self._HEADERS:
                     raise ValueError(f'Not a valid manifest fieldname: {key}')

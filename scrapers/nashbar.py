@@ -1,31 +1,8 @@
 import math
-import time
 
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper
-from scrapers.scraper_utils import DATA_PATH
-from scrapers.scraper_utils import get_bike_type_from_desc
-
-"""
-base url = https://www.bikenashbar.com/cycling/bikes-frames#facet:&productBeginIndex:0&facetLimit:&orderBy:&pageView:grid&minPrice:&maxPrice:&pageSize:&
-
-- pageSize: can be 24, 48, 72 items per page
-- pageView: can be 'grid' or 'list'**
-
-### products tags
-div class'productListingWidget' - main div for product
-div class='product_listing_container' - houses products unordered list
-ul class='grid_mode ?' - ul for grid type ? = grid/list
-li - lists of products
-div class='product' - div container for each product following li tag
-div class='product_info' - house product related info tags
-div class='product_name' - has a tag which includes href and product name
-a ... href='...url_for_product'>...product_name_with_year</a>
-
-div class='title>Products:< - start of getting number products displayed
-span class='num_products'>($nbsp; # - # of # $nbsp;)< - range
-"""
+from scrapers.scraper import Scraper, DATA_PATH
 
 
 class NashBar(Scraper):
@@ -149,15 +126,15 @@ class NashBar(Scraper):
         self._num_bikes = 0
 
         # Get products for each bike category
-        for cat in self._BIKE_CATEGORIES:
+        categories = self._get_categories()
+        for bike_type in categories.keys():
             skip = ['bmx_bikes',
                     'bike_forks_mountain_suspension',
                     'bike_frame_protection', 'bike_frames',
                     'kids_bikes_balance_bikes']
-            if cat in skip:
+            if bike_type in skip:
                 continue
-            bike_type = cat
-            endpoint = self._BIKE_CATEGORIES[cat]['href']
+            endpoint = categories[bike_type]['href']
 
             # Calculate total number of pages
             html = self._fetch_prod_listing_view(endpoint)

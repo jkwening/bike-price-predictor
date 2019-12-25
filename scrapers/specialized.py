@@ -1,13 +1,12 @@
 """
 Module for scraping specialized.com for its bike data.
 """
-import math
 import json
+import re
 
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper
-from scrapers.scraper_utils import DATA_PATH
+from scrapers.scraper import Scraper, DATA_PATH
 
 
 class Specialized(Scraper):
@@ -17,9 +16,9 @@ class Specialized(Scraper):
         self._page_size = 18  # 18 per page or all items
         self._PROD_PAGE_ENDPOINT = '/us/en/shop/bikes/c/bikes'
         self._BIKE_CATEGORIES = {
-            'road': '/us/en/shop/bikes/mountain-bikes/c/mountain',
-            'mountain': '/us/en/shop/bikes/road-bikes/c/road',
-            'fitness': '/us/en/shop/bikes/fitness--urban/c/fitness'
+            'mountain': '/us/en/shop/bikes/mountain-bikes/c/mountain',
+            'road': '/us/en/shop/bikes/road-bikes/c/road',
+            'fitness': '/us/en/shop/bikes/fitness--urban/c/active'
         }
 
     def _fetch_prod_listing_view(self, endpoint, page=1,
@@ -34,6 +33,9 @@ class Specialized(Scraper):
     def _get_max_num_prods(self, soup):
         """Raise error: Not implemented in this module."""
         raise NotImplemented
+
+    def _get_categories(self):
+        return self._BIKE_CATEGORIES
 
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
@@ -86,8 +88,9 @@ class Specialized(Scraper):
             wrapper = prod.find('div', class_='product-list__item-wrapper')
 
             # Get bike_type and prod_id
-            data_json = json.loads(wrapper['data-product-ic'])
-            prod_id = data_json['id']
+            data = wrapper['data-product-ic']
+            prod_id = re.search(r'\"id\":\"\d+\"', data).group().split(":")[1]
+            prod_id = prod_id.strip('"')
             product['product_id'] = prod_id
 
             # Get page href and description

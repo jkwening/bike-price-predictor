@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime
 from csv import DictReader
 from configparser import ConfigParser
@@ -8,6 +9,15 @@ DATA_PATH = os.path.abspath(os.path.join(ROOT_PATH, 'data'))
 MUNGED_DATA_PATH = os.path.abspath(os.path.join(ROOT_PATH, 'munged_data'))
 TIMESTAMP = datetime.now().strftime('%m%d%Y')
 CONFIG_FILE = os.path.abspath(os.path.join(ROOT_PATH, 'config.ini'))
+SOURCES = [
+    'backcountry', 'bicycle_warehouse', 'canyon', 'citybikes',
+    'competitive', 'contebikes', 'eriks', 'foxvalley', 'giant',
+    'jenson', 'litespeed', 'lynskey', 'nashbar', 'proshop',
+    'rei', 'specialized', 'spokes', 'trek', 'wiggle'
+]
+SOURCES_EXCLUDE = [
+    'foxvalley', 'giant'
+]
 
 
 def create_directory_if_missing(file_path: str):
@@ -21,6 +31,21 @@ def create_directory_if_missing(file_path: str):
     """
     directory = os.path.dirname(file_path)
     os.makedirs(directory, exist_ok=True)
+
+
+def get_bike_type_from_desc(desc):
+    bike_types_list = [  # order matters for fork, frame, kid, girl, and bmx as qualifiers
+        'frame', 'frameset', 'fork', 'kid', 'girl', 'e-bike', 'bmx', 'city', 'commuter', 'comfort',
+        'cruiser', 'fat', 'triathlon', 'adventure', 'touring', 'urban',
+        'track', 'road', 'mountain', 'cyclocross', 'hybrid',
+        'gravel'
+    ]
+
+    for bike_type in bike_types_list:
+        if re.search(re.escape(bike_type), desc, re.IGNORECASE):
+            return bike_type
+
+    return None
 
 
 def get_fieldnames_from_file(filepath: str) -> list:

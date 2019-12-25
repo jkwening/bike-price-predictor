@@ -12,11 +12,7 @@ from ingestion.collect import Collect
 from ingestion.ingest import Ingest
 from ingestion.cleaner import Cleaner
 from ingestion.manifest import Manifest, MungedManifest
-from utils.utils import TIMESTAMP, DATA_PATH, MUNGED_DATA_PATH
-
-# Module constants
-SITES = ['competitive', 'nashbar', 'performance', 'rei', 'wiggle',
-         'citybikes']
+from utils.utils import TIMESTAMP, DATA_PATH, MUNGED_DATA_PATH, SOURCES
 
 
 class IngestionMediator:
@@ -39,7 +35,8 @@ class IngestionMediator:
                                                filename=munged_manifest_filename)
 
     # TODO: remove since redundant with update method
-    def complete_update(self, collect_only=False, drop_tables=False):
+    def complete_update(self, collect_only=False, drop_tables=False,
+                        get_specs=True):
         """Run data ingestion from collection to ingest into database for all tables.
     
     This involves:
@@ -47,7 +44,7 @@ class IngestionMediator:
       2. loading updated flat files into database accordingly
     """
         # attempt to scrape all sources - skipping those that fail
-        self._collect.collect_all_products(get_specs=True, skip_failed=True)
+        self._collect.collect_all_products(get_specs=get_specs, skip_failed=True)
 
         # attempt to load into database
         if not collect_only:
@@ -107,8 +104,9 @@ class IngestionMediator:
         else:
             print(f'Database not updated - failed to connect!')
 
-    def update(self, sources: list = [], from_manifest=True,
-               collect_only=False, drop_tables=True):
+    def update(self, sources: list, from_manifest=True,
+               collect_only=False, drop_tables=True,
+               get_specs=True):
         """Update only for the listed sources.
     
     Use downloaded data files currently in manifest.csv by default, else
@@ -116,7 +114,8 @@ class IngestionMediator:
     """
         if not from_manifest or collect_only:
             print('collecting...')
-            self._collect.collect_from_sources(sources, get_specs=True, skip_failed=True)
+            self._collect.collect_from_sources(sources, get_specs=get_specs,
+                                               skip_failed=True)
 
         if not collect_only:
             print('loading to db...')
@@ -224,7 +223,7 @@ if __name__ == '__main__':
     # # Configure command line parsing
     # parser = argparse.ArgumentParser(description='Update data for listed sources, all sources if none listed.')
     # parser.add_argument('sources', metavar='S', type='string', nargs='?',
-    #   choices=SITES, default=[],
+    #   choices=SOURCES, default=[],
     #   help='Data source options: "competitive", "nashbar", "performance", "rei", "wiggle"')
     # mode = parser.add_mutually_exclusive_group(required=True)
     # mode.add_argument('-m', '--from-manifest', dest='from_manifest', action='store_true',

@@ -1,27 +1,26 @@
 """Module for scraping websites to collect raw data."""
 
+from scrapers.backcountry import BackCountry
+from scrapers.bicycle_warehouse import BicycleWarehouse
+from scrapers.canyon import Canyon
 from scrapers.citybikes import CityBikes
 from scrapers.competitive_cyclist import CompetitiveCyclist
-from scrapers.nashbar import NashBar
-# from scrapers.performance_bike import PerformanceBikes
-from scrapers.proshop import Proshop
 from scrapers.contebikes import ConteBikes
 from scrapers.eriks import EriksBikes
-from scrapers.rei import Rei
-from scrapers.wiggle import Wiggle
-from scrapers.trek import Trek
-from scrapers.specialized import Specialized
-from scrapers.canyon import Canyon
-# from scrapers.foxvalley import FoxValley
+from scrapers.foxvalley import FoxValley
 from scrapers.giant import Giant
-from scrapers.bicycle_warehouse import BicycleWarehouse
+from scrapers.jenson import Jenson
 from scrapers.litespeed import LiteSpeed
 from scrapers.lynskey import Lynskey
+from scrapers.nashbar import NashBar
+from scrapers.proshop import Proshop
+from scrapers.rei import Rei
+from scrapers.specialized import Specialized
 from scrapers.spokes import Spokes
-from scrapers.jenson import Jenson
-from scrapers.backcountry import BackCountry
+from scrapers.trek import Trek
+from scrapers.wiggle import Wiggle
 
-from utils.utils import DATA_PATH
+from utils.utils import DATA_PATH, SOURCES, SOURCES_EXCLUDE
 
 
 class Collect:
@@ -30,14 +29,8 @@ class Collect:
     def __init__(self, mediator, save_data_path=DATA_PATH):
         self._mediator = mediator
         self._save_data_path = save_data_path
-        self._SOURCES = [
-            'competitive', 'nashbar', 'trek',
-            'wiggle', 'rei', 'citybikes', 'proshop',
-            'contebikes', 'eriks', 'specialized',
-            'canyon', 'giant', 'jenson',
-            'bicycle_warehouse', 'litespeed', 'lynskey',
-            'spokes', 'backcountry'
-        ]
+        self._sources = SOURCES
+        self._sources_exclude = SOURCES_EXCLUDE
 
     def _get_class_instance(self, source: str):
         """Get appropriate scraper class instance for given source."""
@@ -45,8 +38,6 @@ class Collect:
             return CompetitiveCyclist(save_data_path=self._save_data_path)
         elif source == 'nashbar':
             return NashBar(save_data_path=self._save_data_path)
-        # elif source == 'performance':
-        #     return PerformanceBikes(save_data_path=self._save_data_path)
         elif source == 'wiggle':
             return Wiggle(save_data_path=self._save_data_path)
         elif source == 'rei':
@@ -65,8 +56,8 @@ class Collect:
             return Trek(save_data_path=self._save_data_path)
         elif source == 'canyon':
             return Canyon(save_data_path=self._save_data_path)
-        # elif source == 'foxvalley':
-        #     return FoxValley(save_data_path=self._save_data_path)
+        elif source == 'foxvalley':
+            return FoxValley(save_data_path=self._save_data_path)
         elif source == 'giant':
             return Giant(save_data_path=self._save_data_path)
         elif source == 'bicycle_warehouse':
@@ -86,21 +77,24 @@ class Collect:
 
     def collect_all_products(self, get_specs=True, skip_failed=False):
         """Collect raw data file from all sources."""
-        for source in self._SOURCES:
+        for source in self._sources:
+            # skip if source in exclude list
+            if source in self._sources_exclude:
+                print(f'\nSKIPPING: {source} in exclude list!')
+                continue
+
+            # collect source otherwise
             try:
                 self.collect_products_from_source(source, get_specs=get_specs)
             except FileNotFoundError as e:
                 if not skip_failed:
                     raise FileNotFoundError(e)
                 else:
-                    print(f'Skipping {source}: {e}')
+                    print(f'\nSKIPPING {source}: {e}')
 
     def collect_from_sources(self, sources: list, get_specs=True,
                              skip_failed=False):
         """Collect raw data file from specified sources."""
-        if not sources:  # Assume all sources if empty list
-            sources = self._SOURCES
-
         for source in sources:
             try:
                 self.collect_products_from_source(source, get_specs=get_specs)
@@ -108,15 +102,15 @@ class Collect:
                 if not skip_failed:
                     raise FileNotFoundError(e)
                 else:
-                    print(f'Skipping {source}: {e}')
+                    print(f'\nSKIPPING {source}: {e}')
 
     def collect_products_from_source(self, source: str, get_specs=True):
         """Collect raw data file for specified source."""
         class_ = self._get_class_instance(source)
         row_datas = class_.get_all_available_prods()
-        print(f'{source} row_datas: {row_datas}')
+        print(f'\n{source} row_data: {row_datas}')
         self._mediator.update_manifest(rows=row_datas)
-
+        # TODO: inspect this section - should only be single row data parsed
         if get_specs:
             spec_rows = list()
             for row_data in row_datas:

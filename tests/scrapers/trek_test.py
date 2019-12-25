@@ -14,18 +14,8 @@ class SpecializedTestCase(unittest.TestCase):
         self._scraper = Trek(save_data_path=DATA_PATH)
 
     def test_get_categories(self):
-        categories = [
-            'road',
-            'mountain',
-            'fitness',
-            'electric',
-            'kids',
-            'cyclocross',
-            'gravel',
-            'womens',
-            'cross_country',
-            'downhill'
-        ]
+        categories = ['road', 'mountain', 'electric', 'hybrid',
+                      'adventure_touring', 'kids']
 
         result = self._scraper._get_categories()
         print('\nCategories:', result)
