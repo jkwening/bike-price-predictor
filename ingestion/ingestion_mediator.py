@@ -29,13 +29,18 @@ class IngestionMediator:
                                                filename=munged_manifest_filename)
 
     def collect_sources(self, sources: list, get_specs=False, skip_failed=True):
-        """Extract products from sources."""
+        """Collect products from sources."""
         self._collect.collect_from_sources(sources=sources, get_specs=get_specs,
                                            skip_failed=skip_failed)
 
     def collect_all(self, get_specs=False, skip_failed=True):
-        """Extract products from all sources."""
+        """Collect products from all sources."""
         self._collect.collect_all_products(get_specs, skip_failed)
+
+    # TODO: error handling if product file doesn't exist?!?!
+    def extract_specs(self, source: str, bike_type: str = 'all'):
+        """Collect specs for sources."""
+        self._collect.collect_specs_matching(source=source, bike_type=bike_type)
 
     def _load_manifest_row_to_db(self, row: dict) -> bool:
         """Attempt to load the given csv file into database."""
