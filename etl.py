@@ -6,10 +6,6 @@ import argparse
 from ingestion.ingestion_mediator import IngestionMediator
 from utils.utils import SOURCES
 
-# Add project path into sys.path if not already so can be run from cmd line
-# ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-# if ROOT_PATH not in sys.path:
-#     sys.path.append(ROOT_PATH)
 MEDIATOR = IngestionMediator()
 
 
@@ -24,6 +20,11 @@ def main(args):
     if args.ETL == 'extract':
         for source in args.sources:
             MEDIATOR.extract_specs(source=source)
+
+    # Transform raw data files
+    if args.ETL == 'clean':
+        for source in args.sources:
+            MEDIATOR.transform_raw_data(source=source, bike_type='all')
 
 
 if __name__ == '__main__':
