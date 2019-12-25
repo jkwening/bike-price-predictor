@@ -17,22 +17,22 @@ class SpecializedTestCase(unittest.TestCase):
         categories = [
             'road_bikes',
             'mountain_bikes',
-            'cross_gravel_bikes',
-            'e_bikes',
-            'hybrid_city_bikes',
-            'kids_bikes',
+            'gravel_cross_bikes',
+            'electric_bikes',
+            'kids_bikes'
         ]
 
         result = self._scraper._get_categories()
         print('\nCategories:', result)
+        self.assertTrue(len(result) > 0, msg='No results returned!')
         for key in result.keys():
-            self.assertTrue(key in result,
+            self.assertTrue(key in categories,
                             msg=f'{key} is not in {categories}!')
 
     def test_get_prods_listings(self):
         bike_type = 'road_bikes'
         bike_cats = self._scraper._get_categories()
-        endpoint = bike_cats[bike_type]['href']
+        endpoint = bike_cats[bike_type]
         soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
             endpoint), 'lxml')
 
@@ -46,7 +46,7 @@ class SpecializedTestCase(unittest.TestCase):
     def test_parse_specs(self):
         bike_type = 'road_bikes'
         prods_csv_path = os.path.join(DATA_PATH, TIMESTAMP,
-                                      'bicycle_warehouse_prods_all.csv')
+                                      'giant_prods_all.csv')
         # Verify parsing product specs
         specs = self._scraper.get_product_specs(get_prods_from=prods_csv_path,
                                                 bike_type=bike_type,

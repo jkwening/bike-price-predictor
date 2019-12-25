@@ -1,13 +1,13 @@
 """Module for scraping websites to collect raw data."""
 
 from scrapers.backcountry import BackCountry
+from scrapers.bike_doctor import BikeDoctor
 from scrapers.bicycle_warehouse import BicycleWarehouse
 from scrapers.canyon import Canyon
 from scrapers.citybikes import CityBikes
 from scrapers.competitive_cyclist import CompetitiveCyclist
 from scrapers.contebikes import ConteBikes
 from scrapers.eriks import EriksBikes
-from scrapers.foxvalley import FoxValley
 from scrapers.giant import Giant
 from scrapers.jenson import Jenson
 from scrapers.litespeed import LiteSpeed
@@ -56,8 +56,8 @@ class Collect:
             return Trek(save_data_path=self._save_data_path)
         elif source == 'canyon':
             return Canyon(save_data_path=self._save_data_path)
-        elif source == 'foxvalley':
-            return FoxValley(save_data_path=self._save_data_path)
+        elif source == 'bike_doctor':
+            return BikeDoctor(save_data_path=self._save_data_path)
         elif source == 'giant':
             return Giant(save_data_path=self._save_data_path)
         elif source == 'bicycle_warehouse':

@@ -1,5 +1,4 @@
 import unittest
-from pprint import pprint
 
 from ingestion.ingestion_mediator import IngestionMediator
 from utils.unit_test_utils import DATA_PATH, MUNGED_DATA_PATH
