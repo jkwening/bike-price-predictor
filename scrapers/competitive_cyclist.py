@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper
-from scrapers.scraper_utils import DATA_PATH
+from scrapers.scraper import Scraper, DATA_PATH
 
 
 class CompetitiveCyclist(Scraper):
@@ -127,7 +126,7 @@ class CompetitiveCyclist(Scraper):
         print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         return prod_specs
 
-    def get_all_available_prods(self, to_csv=True) -> dict:
+    def get_all_available_prods(self, to_csv=True) -> list:
         """Scrape competitive cyclist site for prods."""
         # Reset scraper related variables
         self._products = dict()
@@ -153,6 +152,6 @@ class CompetitiveCyclist(Scraper):
                 next_page, endpoint = self._get_next_page(soup)
 
         if to_csv:
-            return self._write_prod_listings_to_csv()
+            return [self._write_prod_listings_to_csv()]
 
-        return {}
+        return list()

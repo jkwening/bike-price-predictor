@@ -5,8 +5,7 @@ import math
 
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper
-from scrapers.scraper_utils import DATA_PATH
+from scrapers.scraper import Scraper, DATA_PATH
 
 
 class Trek(Scraper):
@@ -38,8 +37,8 @@ class Trek(Scraper):
             dictionary of dictionaries
         """
         categories = dict()
-        exclude_list = ['help_me_choose', 'customize',
-                        'shop_all_bikes']
+        white_list = ['road', 'mountain', 'electric', 'hybrid',
+                      'adventure_touring', 'kids']
         page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
         soup = BeautifulSoup(page, 'lxml')
 
@@ -51,9 +50,8 @@ class Trek(Scraper):
             bike_cat = dict()
             bike_cat['href'] = a['href']
             title = self._normalize_spec_fieldnames(a.string.strip())
-            if title in exclude_list:  # skip certain categories
-                continue
-            categories[title] = bike_cat
+            if title in white_list:  # keep specific major categories
+                categories[title] = bike_cat
             # print(f'[{len(categories)}] New category {title}: ', bike_cat)
 
         return categories

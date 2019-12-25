@@ -5,8 +5,7 @@ import math
 
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper
-from scrapers.scraper_utils import DATA_PATH
+from scrapers.scraper import Scraper, DATA_PATH
 
 
 class Spokes(Scraper):
@@ -153,7 +152,7 @@ class Spokes(Scraper):
                     if price.find('-') > 0:
                         price = price.split('-')[0].strip()
                     msrp = price
-                except IndexError: # No price on page
+                except IndexError:  # No price on page
                     # TODO: Get price from product specs page
                     price = '0'
                     msrp = '0'

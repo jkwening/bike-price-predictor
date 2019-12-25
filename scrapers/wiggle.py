@@ -1,25 +1,10 @@
 """
 Module for scraping wiggle.com for its bike data.
-
-Notes:
-- product listing requests uses get with query string params:
-  - g: item number start position per items per page
-  - _: 1543289729022 (default?) ??1543291456980 **not needed
-  - ps: number of items per page - options: 24, 48, 96
-returns html
-- headers:
-  - X-Requested-With: XMLHttpRequest
-  - Referer: http://www.wiggle.com/cycle/bikes/?ps=96
-    where '?ps' is # of items per page
-- general bike search url: 'http://www.wiggle.com/cycle/bikes/'
-  - returns all bike types
-
 """
 from math import ceil
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper
-from scrapers.scraper_utils import DATA_PATH
+from scrapers.scraper import Scraper, DATA_PATH
 
 
 class Wiggle(Scraper):
@@ -143,7 +128,7 @@ class Wiggle(Scraper):
                     spec_name = self._normalize_spec_fieldnames(spec_name)
                     prod_specs[spec_name] = spec_value.strip()
                     self._specs_fieldnames.add(spec_name)
-                except ValueError as err:
+                except ValueError:
                     continue
 
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
