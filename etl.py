@@ -16,20 +16,14 @@ MEDIATOR = IngestionMediator()
 def main(args):
     # Handle collect workflow request
     if args.ETL == 'collect':
-        collect(sources=args.sources, get_specs=args.get_specs,
-                skip_failed=args.skip_failed)
+        MEDIATOR.collect_sources(sources=args.sources,
+                                 get_specs=args.get_specs,
+                                 skip_failed=args.skip_failed)
 
+    # Collect specs for given source products.
     if args.ETL == 'extract':
         for source in args.sources:
-            extract_specs(source=source)
-
-
-def collect(sources, get_specs, skip_failed):
-    MEDIATOR.collect_sources(sources, get_specs, skip_failed)
-
-
-def extract_specs(source):
-    MEDIATOR.extract_specs(source)
+            MEDIATOR.extract_specs(source=source)
 
 
 if __name__ == '__main__':

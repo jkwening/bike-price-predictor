@@ -38,7 +38,7 @@ class IngestionMediator:
         self._collect.collect_all_products(get_specs, skip_failed)
 
     # TODO: error handling if product file doesn't exist?!?!
-    def extract_specs(self, source: str, bike_type: str = ''):
+    def extract_specs(self, source: str, bike_type: str = 'all'):
         """Collect specs for sources."""
         self._collect.collect_specs_matching(source=source, bike_type=bike_type)
 
