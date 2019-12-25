@@ -19,14 +19,22 @@ def main(args):
         collect(sources=args.sources, get_specs=args.get_specs,
                 skip_failed=args.skip_failed)
 
+    if args.ETL == 'extract':
+        for source in args.sources:
+            extract_specs(source=source)
+
 
 def collect(sources, get_specs, skip_failed):
     MEDIATOR.collect_sources(sources, get_specs, skip_failed)
 
 
+def extract_specs(source):
+    MEDIATOR.extract_specs(source)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ETL workflow module.')
-    parser.add_argument('ETL', choices=['collect', 'clean'],
+    parser.add_argument('ETL', choices=['collect', 'clean', 'extract'],
                         help='ETL workflow step to complete.')
     parser.add_argument('-s', dest='sources', nargs='+', default=SOURCES,
                         help='Site sources to process. Defaults to all sources if none provided.')

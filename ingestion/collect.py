@@ -132,7 +132,8 @@ class Collect:
 
         class_ = self._get_class_instance(source)
         spec_row_data = class_.get_product_specs(get_prods_from=filepath,
-                                                 bike_type=bike_type)
+                                                 bike_type=bike_type,
+                                                 to_csv=True)
         print(
             f'[collect_specs_matching] {source} spec_row_data: {spec_row_data}')
         self._mediator.update_manifest(rows=[spec_row_data])
