@@ -12,6 +12,7 @@ from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 class SpecializedTestCase(unittest.TestCase):
     def setUp(self):
         self._scraper = BicycleWarehouse(save_data_path=DATA_PATH)
+        self._bike_type = 'bmx_bikes'
 
     def test_get_categories(self):
         categories = [
@@ -31,7 +32,7 @@ class SpecializedTestCase(unittest.TestCase):
                             msg=f'{key} is not in {result}!')
 
     def test_get_prods_listings(self):
-        bike_type = 'road_bikes'
+        bike_type = self._bike_type
         bike_cats = self._scraper._get_categories()
         endpoint = bike_cats[bike_type]['href']
         soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
@@ -45,7 +46,7 @@ class SpecializedTestCase(unittest.TestCase):
         self._scraper._write_prod_listings_to_csv()
 
     def test_parse_specs(self):
-        bike_type = 'road_bikes'
+        bike_type = self._bike_type
         prods_csv_path = os.path.join(DATA_PATH, TIMESTAMP,
                                       'bicycle_warehouse_prods_all.csv')
         # Verify parsing product specs
@@ -61,7 +62,7 @@ class SpecializedTestCase(unittest.TestCase):
 
         # Verify spec fieldnames has minimum general fields:
         expected = ['site', 'product_id', 'frame',
-                    'fork', 'cassette', 'saddle', 'seatpost']
+                    'fork', 'crankset', 'saddle', 'seatpost']
         print('\nSpec Fieldnames\n', self._scraper._specs_fieldnames)
         for field in expected:
             self.assertTrue(field in self._scraper._specs_fieldnames,
