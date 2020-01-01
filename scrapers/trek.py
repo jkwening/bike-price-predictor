@@ -5,11 +5,11 @@ import math
 
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper, DATA_PATH
+from scrapers.scraper import Scraper, RAW_DATA_PATH
 
 
 class Trek(Scraper):
-    def __init__(self, save_data_path=DATA_PATH):
+    def __init__(self, save_data_path=RAW_DATA_PATH):
         super().__init__(base_url='https://www.trekbikes.com',
                          source='trek', save_data_path=save_data_path)
         self._PROD_PAGE_ENDPOINT = '/us/en_US/bikes/c/B100/'

@@ -3,11 +3,11 @@ Module for scraping jensonusa.com for its bike data.
 """
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper, DATA_PATH
+from scrapers.scraper import Scraper, RAW_DATA_PATH
 
 
 class Jenson(Scraper):
-    def __init__(self, save_data_path=DATA_PATH, page_size=100):
+    def __init__(self, save_data_path=RAW_DATA_PATH, page_size=100):
         super().__init__(base_url='https://www.jensonusa.com',
                          source='jenson', save_data_path=save_data_path)
         self._page_size = page_size

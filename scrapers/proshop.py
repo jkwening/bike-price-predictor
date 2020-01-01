@@ -5,11 +5,11 @@ import math
 
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper, DATA_PATH
+from scrapers.scraper import Scraper, RAW_DATA_PATH
 
 
 class Proshop(Scraper):
-    def __init__(self, save_data_path=DATA_PATH, page_size=60):
+    def __init__(self, save_data_path=RAW_DATA_PATH, page_size=60):
         super().__init__(base_url='https://www.bicycleproshop.com',
                          source='proshop', save_data_path=save_data_path)
         self._page_size = page_size

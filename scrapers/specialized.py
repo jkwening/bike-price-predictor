@@ -6,11 +6,11 @@ import re
 
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper, DATA_PATH
+from scrapers.scraper import Scraper, RAW_DATA_PATH
 
 
 class Specialized(Scraper):
-    def __init__(self, save_data_path=DATA_PATH):
+    def __init__(self, save_data_path=RAW_DATA_PATH):
         super().__init__(base_url='https://www.specialized.com',
                          source='specialized', save_data_path=save_data_path)
         self._page_size = 18  # 18 per page or all items

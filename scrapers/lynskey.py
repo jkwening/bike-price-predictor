@@ -3,11 +3,11 @@ Module for scraping lynskeyperformance.com for its bike data.
 """
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper, DATA_PATH
+from scrapers.scraper import Scraper, RAW_DATA_PATH
 
 
 class Lynskey(Scraper):
-    def __init__(self, save_data_path=DATA_PATH):
+    def __init__(self, save_data_path=RAW_DATA_PATH):
         super().__init__(base_url='https://lynskeyperformance.com',
                          source='lynskey',
                          save_data_path=save_data_path)

@@ -5,10 +5,11 @@ from csv import DictReader
 from configparser import ConfigParser
 
 ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
-DATA_PATH = os.path.abspath(os.path.join(ROOT_PATH, 'data'))
-MUNGED_DATA_PATH = os.path.abspath(os.path.join(ROOT_PATH, 'munged_data'))
+DATA_PATH = os.path.join(ROOT_PATH, 'data')
+RAW_DATA_PATH = os.path.join(DATA_PATH, 'raw_data')
+MUNGED_DATA_PATH = os.path.join(DATA_PATH, 'munged_data')
 TIMESTAMP = datetime.now().strftime('%m%d%Y')
-CONFIG_FILE = os.path.abspath(os.path.join(ROOT_PATH, 'config.ini'))
+CONFIG_FILE = os.path.join(ROOT_PATH, 'config.ini')
 SOURCES = [
     'backcountry', 'bicycle_warehouse', 'bike_doctor', 'canyon', 'citybikes',
     'competitive', 'contebikes', 'eriks', 'foxvalley', 'giant',
