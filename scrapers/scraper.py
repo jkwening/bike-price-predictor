@@ -7,12 +7,12 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
-from utils.utils import DATA_PATH, TIMESTAMP
+from utils.utils import RAW_DATA_PATH, TIMESTAMP
 from utils.utils import create_directory_if_missing
 
 
 class Scraper(ABC):
-    def __init__(self, base_url, source, save_data_path=DATA_PATH):
+    def __init__(self, base_url, source, save_data_path=RAW_DATA_PATH):
         self._BASE_URL = base_url
         self._SOURCE = source
         self._DATA_PATH = save_data_path
@@ -223,7 +223,10 @@ class Scraper(ABC):
     @staticmethod
     def _normalize_spec_fieldnames(fieldname: str) -> str:
         """Remove invalid chars and normalize as lowercase and no spaces."""
-        result = fieldname.strip()
+        result = fieldname.strip('–')
+        result = result.strip(':')
+        result = result.strip()
+        result = result.replace(':', '')
         result = result.replace(' / ', '_')
         result = result.replace(',', '')
         result = result.replace('-', '_')

@@ -1,13 +1,13 @@
 import os
 from csv import DictWriter, DictReader
 
-from utils.utils import DATA_PATH, MUNGED_DATA_PATH
+from utils.utils import RAW_DATA_PATH, MUNGED_DATA_PATH
 
 
 class Manifest(object):
     """Manifest is used to track state and path of raw data files."""
 
-    def __init__(self, mediator, path=DATA_PATH, filename='manifest.csv'):
+    def __init__(self, mediator, path=RAW_DATA_PATH, filename='manifest.csv'):
         self._mediator = mediator
         self._DATA_PATH = path
         self._MANIFEST_PATH = os.path.join(path, filename)

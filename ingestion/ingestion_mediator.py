@@ -6,7 +6,7 @@ from ingestion.collect import Collect
 from ingestion.ingest import Ingest
 from ingestion.cleaner import Cleaner
 from ingestion.manifest import Manifest, MungedManifest
-from utils.utils import TIMESTAMP, DATA_PATH, MUNGED_DATA_PATH
+from utils.utils import TIMESTAMP, RAW_DATA_PATH, MUNGED_DATA_PATH
 
 
 class IngestionMediator:
@@ -16,7 +16,7 @@ class IngestionMediator:
   classes involved and help clearly outline dependencies in workflow.
   """
 
-    def __init__(self, data_path=DATA_PATH, manifest_filename='manifest.csv',
+    def __init__(self, data_path=RAW_DATA_PATH, manifest_filename='manifest.csv',
                  munged_data_path=MUNGED_DATA_PATH,
                  munged_manifest_filename='munged_manifest.csv'):
         self._munged_data_path = munged_data_path

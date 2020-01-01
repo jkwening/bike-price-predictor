@@ -4,11 +4,11 @@ Module for scraping wiggle.com for its bike data.
 from math import ceil
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper, DATA_PATH
+from scrapers.scraper import Scraper, RAW_DATA_PATH
 
 
 class Wiggle(Scraper):
-    def __init__(self, save_data_path=DATA_PATH, page_size=96):
+    def __init__(self, save_data_path=RAW_DATA_PATH, page_size=96):
         """Class for scraping www.wiggle.com website.
 
         :param save_data_path: The base path for saving data.

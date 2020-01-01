@@ -30,29 +30,31 @@ class Cleaner(object):
         self._GROUPSET_RANKING = {
             'shimano claris': 1,
             'shimano sora': 2,
-            'shimano tiagra': 2,
+            'shimano tiagra': 2.5,
             'shimano 105': 3,
             'shimano ultegra': 4,
-            'shimano ultegra di2': 5,
+            'shimano ultegra di2': 5.5,
             'shimano dura-ace': 5,
-            'shimano dura-ace di2': 6,
+            'shimano dura-ace di2': 6.25,
             'sram apex': 2,
             'sram rival': 3,
             'sram s700': 3,
             'sram force': 4,
+            'sram force etap': 4.5,
             'sram red': 5,
             'sram red etap': 6,
-            'campagnolo veloce': 1,
-            'campagnolo centaur': 3,
-            'campagnolo athena': 2.5,
+            'sram red etap axs': 6.5,
+            'campagnolo veloce': 2,
+            'campagnolo centaur': 2.5,
+            'campagnolo athena': 3,
             'campagnolo potenza': 4,
             'campagnolo chorus': 4,
             'campagnolo athena eps': 3.5,
             'campagnolo record': 5,
-            'campagnolo chorus eps': 5,
+            'campagnolo chorus eps': 4.5,
             'campagnolo super record': 5.25,
             'campagnolo record eps': 5.5,
-            'campagnolo super record eps': 6,
+            'campagnolo super record eps': 7,
             'shimano tourney': 0.5,
             'shimano altus': 1,
             'shimano acera': 1.5,
@@ -71,6 +73,7 @@ class Cleaner(object):
             'sram x5': 2,
             'sram x7': 2.25,
             'sram x9': 2.6,
+            'sram sx eagle': 2.75,
             'sram nx': 3,
             'sram gx dh': 3,
             'sram gx': 3.25,
@@ -83,6 +86,7 @@ class Cleaner(object):
             'sram xx1': 5,
             'sram xO1 eagle': 4.75,
             'sram xx1 eagle': 6,
+            'sram eagle axs': 6.5,
             'sram via': 3.5,
             'shimano 7-speed': 0.5,
             'shimano 8-speed': 1,
@@ -100,11 +104,19 @@ class Cleaner(object):
             'ultegra': 'shimano ultegra',
             'ultegra di2': 'shimano ultegra di2',
             'dura-ace': 'shimano dura-ace',
+            'dura ace 9100': 'shimano dura-ace',
+            'Shimano dura ace 9100': 'shimano dura-ace',
+            'shimano dura ace': 'shimano dura-ace',
             'dura-ace di2': 'shimano dura-ace di2',
+            'shimano dura ace di2': 'shimano dura-ace di2',
+            'shimano dura ace rd-9150': 'shimano dura-ace di2',
             'apex': 'sram apex',
             'rival': 'sram rival',
             's700': 'sram s700',
             'force': 'sram force',
+            'SRAM PC-1170': 'sram force',
+            'SRAM PC1170': 'sram force',
+            'SRAM PC 1170': 'sram force',
             'red': 'sram red',
             'red etap': 'sram red etap',
             'veloce': 'campagnolo veloce',
@@ -140,6 +152,7 @@ class Cleaner(object):
             'gx dh': 'sram gx dh',
             'gx': 'sram gx',
             'gx eagle': 'sram gx eagle',
+            'sram xg1275 eagle': 'sram gx eagle',
             'x1': 'sram x1',
             'xO1 dh': 'sram xO1 dh',
             'xO': 'sram xO',
@@ -150,7 +163,36 @@ class Cleaner(object):
             'xx1 eagle': 'sram xx1 eagle',
             'microshift': 'microshift',
             'shimano 2400': 'shimano claris',
+            'shimano st-2400': 'shimano claris',
+            'shimano st2400': 'shimano claris',
+            'shimano st 2400': 'shimano claris',
             'shimano acero': 'shimano acera',
+            'shimano accera': 'shimano acera',
+            'shimano tounery': 'shimano tourney',
+            'Shimano M310': 'shiman altus',
+            'Shimano SL-M310': 'shiman altus',
+            'Shimano SLM310': 'shiman altus',
+            'Shimano SL M310': 'shiman altus',
+            'Shimano T3000': 'shimano acera',
+            'Shimano FH-T3000': 'shimano acera',
+            'Shimano FHT3000': 'shimano acera',
+            'Shimano FH T3000': 'shimano acera',
+            'Shimano FD-T3000': 'shimano acera',
+            'Shimano FDT3000': 'shimano acera',
+            'Shimano FD T3000': 'shimano acera',
+            'Shimano RD-T3000': 'shimano acera',
+            'Shimano RDT3000': 'shimano acera',
+            'Shimano RD T3000': 'shimano acera',
+            'Shimano TY700': 'shimano tourney',
+            'Shimano FD-TY700': 'shimano tourney',
+            'Shimano FDTY700': 'shimano tourney',
+            'Shimano FD TY700': 'shimano tourney',
+            'Shimano M190': 'shimano tourney',
+            'Shimano C051': 'shimano tourney',
+            'Shimano FDC051': 'shimano tourney',
+            'Shimano FD C051': 'shimano tourney',
+            'Shimano FD-C051': 'shimano tourney',
+            'Shimano TX-51': 'shimano tourney',
             'shimano r7000': 'shimano 105',
             'shimano 9150': 'shimano dura-ace di2',
             'shimano 9100': 'shimano dura-ace',
@@ -162,6 +204,12 @@ class Cleaner(object):
             'shimano 6870': 'shimano ultegra di2',
             'shimano 5800': 'shimano 105',
             'shimano 4700': 'shimano tiagra',
+            'shimano fd-4700': 'tiagra',
+            'shimano fd4700': 'tiagra',
+            'shimano fd 4700': 'tiagra',
+            'shimano rd-4700': 'tiagra',
+            'shimano rd4700': 'tiagra',
+            'shimano rd 4700': 'tiagra',
             'shimano r3000': 'shimano sora',
             'shimano tx800': 'shimano tourney',
             'shimano t4000': 'shimano alivio',
@@ -183,6 +231,7 @@ class Cleaner(object):
             'sram eagle x01': 'sram xO1 eagle',
             'sram eagle xO1': 'sram xO1 eagle',
             'sram eagle xo1': 'sram xO1 eagle',
+            'SRAM SX Eagle': 'sram sx eagle',
             'sram via': 'sram via',
             'shimano tx 8000': 'shimano tourney',
             'shimano tx-8000': 'shimano tourney',
@@ -207,8 +256,31 @@ class Cleaner(object):
             'shimano rd 5800': 'shimano 105',
             'X01 Eagle': 'sram xO1 eagle',
             'SEAM X01 Eagle': 'sram xO1 eagle',
-            'Sram A1': 'sram apex'
+            'Sram A1': 'sram apex',
+            'sram xg 1130': 'sram rival',
+            'Shimano GRX 400': 'shimano tiagra',
+            'Shimano RX400': 'shimano tiagra',
+            'Shimano GRX 600': 'shimano 105',
+            'Shimano RX600': 'shimano 105',
+            'Shimano GRX RX600': 'shimano 105',
+            'Shimano GRX 810': 'shimano ultegra',
+            'Shimano GRX 800': 'shimano ultegra',
+            'Shimano GRX800': 'shimano ultegra',
+            'Shimano RX810': 'shimano ultegra',
+            'Shimano GRX 812': 'shimano ultegra',
+            'Shimano RX812': 'shimano ultegra',
+            'Shimano GRX 815': 'shimano ultegra di2',
+            'Shimano RX815': 'shimano ultegra di2',
+            'Shimano RD-M610': 'shimano deore',
+            'Shimano RD M610': 'shimano deore',
+            'Shimano RDM610': 'shimano deore',
+            'Shimano RD-R350': 'shimano claris',
+            'Shimano Metrea': 'shimano 105',
+            'sram sx': 'sram sx eagle',
+            'sram eagle sx': 'sram sx eagle'
         }
+        # add GROUPSET_RANKING keys to GROUPSETS_MAP
+        self._GROUPSETS_MAP.update({k: k for k in self._GROUPSET_RANKING.keys()})
         self._BIKE_TYPE = {  # order matters for fork, frame, kid, girl, and bmx as qualifiers
             'frame', 'frameset', 'fork', 'kid', 'girl', 'e-bike', 'electric',
             'folding', 'balance', 'push', 'trailer', 'boy', 'bmx', 'city',
@@ -253,7 +325,8 @@ class Cleaner(object):
             if result is None:
                 return np.NaN
             year = int(result.group(0))
-            return year if year < 2021 else np.NaN  # avoid '20.75' in href parsing
+            # TODO: don't think this is needed using regex
+            return year if year < 2022 else np.NaN  # avoid '20.75' in href parsing
 
         return desc.apply(parse_model_year)
 
@@ -390,23 +463,33 @@ class Cleaner(object):
             if not isinstance(elem, str) and math.isnan(elem):
                 return elem
 
+            # order matters - ensure steel comes after cromo derivatives
+            # and aluxx comes before ..composite
             materials_list = [
-                'carbon', 'aluminum', 'aluminium', 'steel', 'alloy',
-                'titanium', 'chromoly', 'crmo', 'cr-mo', 'hi-ten',
-                'alluminum'
+                'aluminum', 'aluminium', 'aluminum', 'cromoly', 'cromo',
+                'chromoly', 'crmo', 'cr-mo', 'hi-ten', 'aluxx', 'al-6061',
+                'steel', 'alloy', 'alluminum', 'carbon', 'titanium', 'chromo',
+                'advanced-grade composite', 'advanced sl-grade composite'
             ]
             materials_dict = {
                 'carbon': 'carbon',
                 'aluminium': 'aluminum',
                 'aluminum': 'aluminum',
                 'alloy': 'alloy',
-                'steel': 'steel',
                 'titanium': 'titanium',
                 'chromoly': 'chromoly',
+                'chromo': 'chromoly',
                 'crmo': 'chromoly',
-                'alluminum': 'aluminum',
                 'cr-mo': 'chromoly',
-                'hi-ten': 'steel'
+                'cromoly': 'chromoly',
+                'cromo': 'chromoly',
+                'alluminum': 'aluminum',
+                'steel': 'steel',
+                'hi-ten': 'steel',
+                'aluxx': 'aluminium',
+                'advanced sl-grade composite': 'carbon',
+                'advanced-grade composite': 'carbon',
+                'al-6061': 'aluminium'
             }
             for m in materials_list:
                 if re.search(re.escape(m), elem, re.IGNORECASE):
@@ -421,22 +504,19 @@ class Cleaner(object):
             # Skip np.NaN
             if not isinstance(d, str) and math.isnan(d):
                 return d
+            else:  # initial value normalization
+                # remove ','
+                d = d.replace(',', '').lower()
+                # fix known systematic typos
+                d = d.replace('shiimano', 'shimano')
+                # remove groupset speed references
+                d = re.sub(r'[0-9]+[\-\w]?sp\w*\s*', repl='', string=d)
 
             try:
                 for groupset in self._GROUPSETS_MAP:
-                    # remove ','
-                    d = d.replace(',', '')
                     # Regex matching
                     if re.search(re.escape(groupset), d, re.IGNORECASE):
                         return self._GROUPSETS_MAP[groupset]
-                    # # Extra custom cleaning
-                    # others = {
-                    #     'X01 Eagle': 'sram xO1 eagle',
-                    #     'SEAM X01 Eagle': 'sram xO1 eagle',
-                    #     'Sram A1': 'sram apex'
-                    # }
-                    # if d in others.keys():
-                    #     return others[d]
             except AttributeError:
                 pass
             return d if return_desc else np.NaN
@@ -464,7 +544,7 @@ class Cleaner(object):
 
         # Second pass, fillnas when possible using specific logic
         for idx in parsed[parsed.isnull()].index:
-            parsed[idx] = brand_replace(parsed[idx], return_desc=False)
+            parsed[idx] = brand_replace(desc[idx], return_desc=False)
 
         return parsed
 
@@ -584,7 +664,104 @@ class Cleaner(object):
 
         # Second pass, fillnas when possible using cassette specific logic
         for idx in groupset[groupset.isnull()].index:
-            groupset[idx] = cassette_replace(groupset[idx], return_desc=False)
+            groupset[idx] = cassette_replace(desc[idx], return_desc=False)
+
+        return groupset
+
+    def _parse_shifter_type(self, desc: pd.Series) -> pd.Series:
+        """Parse shifter groupset data."""
+        # First pass using groupset logic
+        groupset = self._parse_groupset(desc)
+
+        def shifter_replace(d, return_desc=True):
+            # Skip np.NaN
+            if not isinstance(d, str) and math.isnan(d):
+                return d
+
+            shifter_map = {
+                'sunrace': 'sunrace',
+                'Shimano SL-M2000': 'shimano altus',
+                'shimano rs405': 'shimano tiagra',
+                'shimano r505': 'shimano 105',
+                'shimano rs505': 'shimano 105',
+                'Shimano ST-RS505': 'shimano 105',
+                'Shimano R685': 'shimano ultegra',
+                'Shimano st-R685': 'shimano ultegra',
+                'Shimano RS685': 'shimano ultegra',
+                'Shimano ST-R8060': 'shimano ultegra di2',
+                'Shimano ST R8060': 'shimano ultegra di2',
+                'Shimano STR8060': 'shimano ultegra di2',
+                'Shimano R8060': 'shimano ultegra di2',
+                'Shimano Easy Fire': 'shimano acera',
+                'shimano e-z fire': 'shimano acera',
+                'shimano rapidfire': 'shimano acera',
+                'shimano alfine': 'shimano acera',
+                'shimano m315 rapidfire': 'shimano acera',
+                'Shimano EF65': 'shimano acera',
+                'Shimano EF500': 'shimano acera',
+                'Shimano ST-EF500': 'shimano acera',
+                'Shimano ST-EF 500': 'shimano acera',
+                'shimano revo': 'shimano 7-speed',
+                'Shimano SL-BSR': 'shimano dura-ace',
+                'Shimano TT SL-BSR': 'shimano dura-ace',
+                'Shimano SLBSR': 'shimano dura-ace',
+                'Shimano SL BSR': 'shimano dura-ace',
+                'Shimano ST-EF41': 'shimano tourney',
+                'Shimano STEF41': 'shimano tourney',
+                'Shimano ST EF41': 'shimano tourney',
+                'Shimano EF41': 'shimano tourney',
+                'Shimano RS35': 'shimano tourney',
+                'sram s-900': 'sram force',
+                'sram pg-1170': 'sram force',
+                'sram sx': 'sram sx eagle',
+                'sram eagle sx': 'sram sx eagle'
+            }
+
+            speeds_map = {
+                'shimano.*7.{0,1}sp.{0,3}': 'shimano 7-speed',
+                'shimano.*8.{0,1}sp.{0,3}': 'shimano 8-speed',
+                'shimano.*9.{0,1}sp.{0,3}': 'shimano 9-speed',
+                'shimano.*10.{0,1}sp.{0,3}': 'shimano 10-speed',
+                'shimano.*11.{0,1}sp.{0,3}': 'shimano 11-speed',
+                'sram.*7.{0,1}sp.{0,3}': 'sram 7-speed',
+                'sram.*8.{0,1}sp.{0,3}': 'sram 8-speed',
+                'sram.*9.{0,1}sp.{0,3}': 'sram 9-speed',
+                'sram.*10.{0,1}sp.{0,3}': 'sram 10-speed',
+                'sram.*11.{0,1}sp.{0,3}': 'sram 11-speed',
+                'shimano.*5800': 'shimano 105',
+                'shimano dura.{0,1}ace': 'shimano dura-ace',
+                'sram.*1275': 'sram gx eagle',
+                'sram.*pg.{0,1}1230': 'sram gx eagle',
+                'sram.*xg.{0,1}1295': 'sram xO1 eagle',
+                'sram .*1130': 'sram rival',
+                'sram.*1299[ eagle]{0,1}': 'sram xx1 eagle',
+                '\d{1,2}t cassett{0,1}e|cog': 'single speed',
+                'hg.{0,1}200': 'shimano tourney'
+            }
+
+            try:
+                # prelim clean
+                d = d.lower()
+                d = d.replace('cs-', '')
+                d = d.replace('seam', 'sram')  # fix typo
+
+                for shifter in shifter_map.keys():
+                    # Regex literal search
+                    if re.search(re.escape(shifter), d, re.IGNORECASE):
+                        return shifter_map[shifter]
+
+                # regex alternative search
+                for shifter in speeds_map.keys():
+                    if re.search(shifter, d, re.IGNORECASE):
+                        return speeds_map[shifter]
+
+            except AttributeError:
+                pass
+            return d if return_desc else np.NaN
+
+        # Second pass, fillnas when possible using shifter specific logic
+        for idx in groupset[groupset.isnull()].index:
+            groupset[idx] = shifter_replace(desc[idx], return_desc=False)
 
         return groupset
 
@@ -677,7 +854,7 @@ class Cleaner(object):
         munged_df['seatpost_material'] = self._parse_material(merged_df.seatpost)
         munged_df['fork_material'] = self._parse_material(merged_df.fork)
         munged_df['chain_groupset'] = self._parse_groupset(merged_df.chain)
-        munged_df['shifter_groupset'] = self._parse_groupset(merged_df.shifters)
+        munged_df['shifter_groupset'] = self._parse_shifter_type(merged_df.shifters)
         return munged_df
 
     def clean_source(self, source, bike_type='all'):
@@ -718,6 +895,10 @@ class Cleaner(object):
             return self._specialized_cleaner(merged_df, to_csv=False)
         elif source == 'backcountry':
             return self._backcountry_cleaner(merged_df, to_csv=False)
+        elif source == 'bike_doctor':
+            return self._bike_doctor_cleaner(merged_df, to_csv=False)
+        elif source == 'bicycle_warehouse':
+            return self._bicycle_warehouse_cleaner(merged_df, to_csv=False)
         else:
             # Source cleaner not found
             raise ValueError(f'Cleaner for {source} not found!')
@@ -954,6 +1135,8 @@ class Cleaner(object):
         merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
 
         munged_df = self._create_munged_df(merged_df=merged_df)
+        # fill model_year NaNs using href
+        munged_df['model_year'] = self._parse_model_year(munged_df.href)
 
         if to_csv:
             self.save_munged_df(df=munged_df, source='giant')
@@ -1075,4 +1258,60 @@ class Cleaner(object):
 
         return munged_df
 
+    def _bike_doctor_cleaner(self, merged_df: pd.DataFrame,
+                             to_csv=True) -> pd.DataFrame:
+        """Cleaner for bike_doctor raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brakes
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df['handlebar'] = merged_df.handlebars
+        merged_df['cassette'] = merged_df.rear_cogs  # map to std field name
+        merged_df.cassette.fillna(merged_df.cassette_rear_cogs, inplace=True)
+        merged_df.cassette.fillna(merged_df.chainrings, inplace=True)
+        merged_df.crankset.fillna(merged_df.chainrings, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seat_post, inplace=True)
 
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self.save_munged_df(df=munged_df, source='bike_doctor')
+        return munged_df
+
+    def _bicycle_warehouse_cleaner(self, merged_df: pd.DataFrame,
+                                   to_csv=True) -> pd.DataFrame:
+        """Cleaner for bicycle_warehouse raw data."""
+        # Drop 'Unnamed: 1' column which has empty values only
+        merged_df = merged_df.drop(labels='Unnamed: 1', axis=1)
+
+        # Preliminary fill some NaNs from redundant columns
+        merged_df['brake_type'] = merged_df.brakes
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_lever, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brakes_r, inplace=True)
+        merged_df.cassette.fillna(merged_df.cog, inplace=True)
+        merged_df.cassette.fillna(merged_df.cog_set, inplace=True)
+        merged_df.cassette.fillna(merged_df.cogset, inplace=True)
+        merged_df.cassette.fillna(merged_df.cogset_cassette_freewheel,
+                                  inplace=True)
+        merged_df.cassette.fillna(merged_df.cogset_causette_freewheel,
+                                  inplace=True)
+        merged_df.cassette.fillna(merged_df.freewheel_cassette,
+                                  inplace=True)
+        merged_df.crankset.fillna(merged_df.cranks, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.derailleur_front, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.derailleur_rear, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.ffront_derailleur, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.front, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.rear, inplace=True)
+        merged_df.fork.fillna(merged_df.fork_type, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seat_post, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seatposts, inplace=True)
+        merged_df.shifters.fillna(merged_df.shifter, inplace=True)
+        merged_df.shifters.fillna(merged_df.front_shifter, inplace=True)
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self.save_munged_df(df=munged_df, source='bike_doctor')
+        return munged_df

@@ -3,11 +3,11 @@ Module for scraping canyon.com for its bike data.
 """
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper, DATA_PATH
+from scrapers.scraper import Scraper, RAW_DATA_PATH
 
 
 class Canyon(Scraper):
-    def __init__(self, save_data_path=DATA_PATH):
+    def __init__(self, save_data_path=RAW_DATA_PATH):
         super().__init__(base_url='https://www.canyon.com',
                          source='canyon', save_data_path=save_data_path)
         self._BIKE_MODELS_ENDPOINT = '/on/demandware.store/Sites-US-Site/en_US/Include-BikeFamilySlidersLazy?'

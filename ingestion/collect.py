@@ -20,13 +20,13 @@ from scrapers.spokes import Spokes
 from scrapers.trek import Trek
 from scrapers.wiggle import Wiggle
 
-from utils.utils import DATA_PATH, SOURCES, SOURCES_EXCLUDE
+from utils.utils import RAW_DATA_PATH, SOURCES, SOURCES_EXCLUDE
 
 
 class Collect:
     """Handles the collection process of source data files."""
 
-    def __init__(self, mediator, save_data_path=DATA_PATH):
+    def __init__(self, mediator, save_data_path=RAW_DATA_PATH):
         self._mediator = mediator
         self._save_data_path = save_data_path
         self._sources = SOURCES

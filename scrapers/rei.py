@@ -6,11 +6,11 @@ import math
 
 from bs4 import BeautifulSoup
 
-from scrapers.scraper import Scraper, DATA_PATH
+from scrapers.scraper import Scraper, RAW_DATA_PATH
 
 
 class Rei(Scraper):
-    def __init__(self, save_data_path=DATA_PATH, page_size=90):
+    def __init__(self, save_data_path=RAW_DATA_PATH, page_size=90):
         self._page_size = page_size
         super().__init__(base_url='http://www.rei.com',
                          source='rei', save_data_path=save_data_path)
