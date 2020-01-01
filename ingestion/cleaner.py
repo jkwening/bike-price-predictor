@@ -40,6 +40,7 @@ class Cleaner(object):
             'sram rival': 3,
             'sram s700': 3,
             'sram force': 4,
+            'sram force etap': 4.5,
             'sram red': 5,
             'sram red etap': 6,
             'sram red etap axs': 6.5,
@@ -203,6 +204,12 @@ class Cleaner(object):
             'shimano 6870': 'shimano ultegra di2',
             'shimano 5800': 'shimano 105',
             'shimano 4700': 'shimano tiagra',
+            'shimano fd-4700': 'tiagra',
+            'shimano fd4700': 'tiagra',
+            'shimano fd 4700': 'tiagra',
+            'shimano rd-4700': 'tiagra',
+            'shimano rd4700': 'tiagra',
+            'shimano rd 4700': 'tiagra',
             'shimano r3000': 'shimano sora',
             'shimano tx800': 'shimano tourney',
             'shimano t4000': 'shimano alivio',
@@ -1273,10 +1280,35 @@ class Cleaner(object):
     def _bicycle_warehouse_cleaner(self, merged_df: pd.DataFrame,
                                    to_csv=True) -> pd.DataFrame:
         """Cleaner for bicycle_warehouse raw data."""
+        # Drop 'Unnamed: 1' column which has empty values only
+        merged_df = merged_df.drop(labels='Unnamed: 1', axis=1)
+
         # Preliminary fill some NaNs from redundant columns
         merged_df['brake_type'] = merged_df.brakes
         merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_lever, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brakes_r, inplace=True)
         merged_df.cassette.fillna(merged_df.cog, inplace=True)
+        merged_df.cassette.fillna(merged_df.cog_set, inplace=True)
+        merged_df.cassette.fillna(merged_df.cogset, inplace=True)
+        merged_df.cassette.fillna(merged_df.cogset_cassette_freewheel,
+                                  inplace=True)
+        merged_df.cassette.fillna(merged_df.cogset_causette_freewheel,
+                                  inplace=True)
+        merged_df.cassette.fillna(merged_df.freewheel_cassette,
+                                  inplace=True)
+        merged_df.crankset.fillna(merged_df.cranks, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.derailleur_front, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.derailleur_rear, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.ffront_derailleur, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.front, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.rear, inplace=True)
+        merged_df.fork.fillna(merged_df.fork_type, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seat_post, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seatposts, inplace=True)
+        merged_df.shifters.fillna(merged_df.shifter, inplace=True)
+        merged_df.shifters.fillna(merged_df.front_shifter, inplace=True)
 
         munged_df = self._create_munged_df(merged_df=merged_df)
 

@@ -199,6 +199,8 @@ class BicycleWarehouse(Scraper):
                 spec = self._normalize_spec_fieldnames(spec)
                 self._specs_fieldnames.add(spec)
                 value = value.strip()
+            elif len(tds) > 2:  # skip multi kit products
+                continue
             else:
                 # process child tags in batches of two as spec_name:value pairs
                 for i in range(0, len(tds), 2):
