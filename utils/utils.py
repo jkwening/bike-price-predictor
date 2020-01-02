@@ -12,7 +12,7 @@ TIMESTAMP = datetime.now().strftime('%m%d%Y')
 CONFIG_FILE = os.path.join(ROOT_PATH, 'config.ini')
 SOURCES = [
     'backcountry', 'bicycle_warehouse', 'bike_doctor', 'canyon', 'citybikes',
-    'competitive', 'contebikes', 'eriks', 'foxvalley', 'giant',
+    'competitive', 'contebikes', 'eriks', 'giant',
     'jenson', 'litespeed', 'lynskey', 'nashbar', 'proshop',
     'rei', 'specialized', 'spokes', 'trek', 'wiggle'
 ]
