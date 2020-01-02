@@ -8,6 +8,7 @@ ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 DATA_PATH = os.path.join(ROOT_PATH, 'data')
 RAW_DATA_PATH = os.path.join(DATA_PATH, 'raw_data')
 MUNGED_DATA_PATH = os.path.join(DATA_PATH, 'munged_data')
+COMBINED_MUNGED_PATH = os.path.join(MUNGED_DATA_PATH, 'combined')
 TIMESTAMP = datetime.now().strftime('%m%d%Y')
 CONFIG_FILE = os.path.join(ROOT_PATH, 'config.ini')
 SOURCES = [

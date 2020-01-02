@@ -7,6 +7,7 @@ from ingestion.ingest import Ingest
 from ingestion.cleaner import Cleaner
 from ingestion.manifest import Manifest, MungedManifest
 from utils.utils import TIMESTAMP, RAW_DATA_PATH, MUNGED_DATA_PATH
+from utils.utils import COMBINED_MUNGED_PATH
 
 
 class IngestionMediator:
@@ -18,8 +19,10 @@ class IngestionMediator:
 
     def __init__(self, data_path=RAW_DATA_PATH, manifest_filename='manifest.csv',
                  munged_data_path=MUNGED_DATA_PATH,
+                 combined_munged_path=COMBINED_MUNGED_PATH,
                  munged_manifest_filename='munged_manifest.csv'):
         self._munged_data_path = munged_data_path
+        self._combined_munged_path = combined_munged_path
         self._ingest = Ingest(mediator=self)
         self._collect = Collect(mediator=self, save_data_path=data_path)
         self._cleaner = Cleaner(mediator=self, save_data_path=munged_data_path)
@@ -157,7 +160,7 @@ class IngestionMediator:
 
         if to_csv:
             fname = f'combined_munged_{TIMESTAMP}.csv'
-            path = os.path.join(self._munged_data_path, fname)
+            path = os.path.join(self._combined_munged_path, fname)
             agg_df.to_csv(path, index=False, encoding='utf-8')
 
     def transform_raw_data(self, source, bike_type='all'):
