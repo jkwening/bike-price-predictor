@@ -502,8 +502,8 @@ class Cleaner(object):
             ]
             materials_dict = {
                 'carbon': 'carbon',
-                'aluminium': 'aluminum',
-                'aluminum': 'aluminum',
+                'aluminium': 'aluminium',
+                'aluminum': 'aluminium',
                 'alloy': 'alloy',
                 'titanium': 'titanium',
                 'chromoly': 'chromoly',
@@ -512,7 +512,7 @@ class Cleaner(object):
                 'cr-mo': 'chromoly',
                 'cromoly': 'chromoly',
                 'cromo': 'chromoly',
-                'alluminum': 'aluminum',
+                'alluminum': 'aluminium',
                 'steel': 'steel',
                 'hi-ten': 'steel',
                 'aluxx': 'aluminium',
@@ -957,6 +957,11 @@ class Cleaner(object):
     def _jenson_cleaner(self, merged_df: pd.DataFrame,
                         to_csv=True) -> pd.DataFrame:
         """Cleaner for jenson raw data."""
+        # replace bike_type = corona_store_exclusives with intended_use value
+        # Map 'corona_store_exclusives' bike type to 'intended_use'
+        for idx in merged_df[merged_df.bike_type == 'corona_store_exclusives'].index:
+            merged_df.loc[idx, 'bike_type'] = merged_df.intended_use[idx]
+
         # Preliminary fill some NaNs from redundant columns
         merged_df.front_derailleur.fillna(merged_df.derailleurs, inplace=True)
         merged_df.rear_derailleur.fillna(merged_df.derailleurs, inplace=True)
@@ -1012,10 +1017,6 @@ class Cleaner(object):
         merged_df['cassette'] = merged_df.rear_cogs  # map to std field name
         merged_df.bike_type.fillna(merged_df.best_use, inplace=True)
         merged_df['seatpost'] = merged_df.seat_post
-
-        # Map 'corona_store_exclusives' bike type to 'intended_use'
-        for idx in merged_df[merged_df.bike_type == 'corona_store_exclusives'].index:
-            merged_df.bike_type[idx] = merged_df.intended_use[idx]
 
         munged_df = self._create_munged_df(merged_df=merged_df)
 
