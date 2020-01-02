@@ -8,11 +8,12 @@ ROOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 DATA_PATH = os.path.join(ROOT_PATH, 'data')
 RAW_DATA_PATH = os.path.join(DATA_PATH, 'raw_data')
 MUNGED_DATA_PATH = os.path.join(DATA_PATH, 'munged_data')
+COMBINED_MUNGED_PATH = os.path.join(MUNGED_DATA_PATH, 'combined')
 TIMESTAMP = datetime.now().strftime('%m%d%Y')
 CONFIG_FILE = os.path.join(ROOT_PATH, 'config.ini')
 SOURCES = [
     'backcountry', 'bicycle_warehouse', 'bike_doctor', 'canyon', 'citybikes',
-    'competitive', 'contebikes', 'eriks', 'foxvalley', 'giant',
+    'competitive', 'contebikes', 'eriks', 'giant',
     'jenson', 'litespeed', 'lynskey', 'nashbar', 'proshop',
     'rei', 'specialized', 'spokes', 'trek', 'wiggle'
 ]

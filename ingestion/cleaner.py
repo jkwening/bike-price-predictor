@@ -169,11 +169,30 @@ class Cleaner(object):
             'shimano acero': 'shimano acera',
             'shimano accera': 'shimano acera',
             'shimano tounery': 'shimano tourney',
-            'Shimano M310': 'shiman altus',
-            'Shimano SL-M310': 'shiman altus',
-            'Shimano SLM310': 'shiman altus',
-            'Shimano SL M310': 'shiman altus',
+            'Shimano RD-TY300': 'shimano tourney',
+            'Shimano RDTY300': 'shimano tourney',
+            'Shimano RD TY300': 'shimano tourney',
+            'Shimano M310': 'shimano altus',
+            'Shimano SL-M310': 'shimano altus',
+            'Shimano SLM310': 'shimano altus',
+            'Shimano SL M310': 'shimano altus',
+            'Shimano RDM310': 'shimano altus',
+            'Shimano RD M310': 'shimano altus',
+            'Shimano RD-M310': 'shimano altus',
+            'Shimano FDM310': 'shimano altus',
+            'Shimano FD M310': 'shimano altus',
+            'Shimano FD-M310': 'shimano altus',
+            'Shimano FD-M370': 'shimano altus',
+            'Shimano FDM370': 'shimano altus',
+            'Shimano FD M370': 'shimano altus',
+            'Shimano RD-M370': 'shimano altus',
+            'Shimano RDM370': 'shimano altus',
+            'Shimano RD M370': 'shimano altus',
+            'Shimano M370': 'shimano altus',
             'Shimano T3000': 'shimano acera',
+            'Shimano RD-M360': 'shimano acera',
+            'Shimano RDM360': 'shimano acera',
+            'Shimano RD M360': 'shimano acera',
             'Shimano FH-T3000': 'shimano acera',
             'Shimano FHT3000': 'shimano acera',
             'Shimano FH T3000': 'shimano acera',
@@ -260,17 +279,24 @@ class Cleaner(object):
             'sram xg 1130': 'sram rival',
             'Shimano GRX 400': 'shimano tiagra',
             'Shimano RX400': 'shimano tiagra',
+            'Shimano GRX RX400': 'shimano tiagra',
             'Shimano GRX 600': 'shimano 105',
             'Shimano RX600': 'shimano 105',
             'Shimano GRX RX600': 'shimano 105',
             'Shimano GRX 810': 'shimano ultegra',
             'Shimano GRX 800': 'shimano ultegra',
             'Shimano GRX800': 'shimano ultegra',
+            'Shimano RX800': 'shimano ultegra',
+            'Shimano GRX RX800': 'shimano ultegra',
             'Shimano RX810': 'shimano ultegra',
+            'Shimano GRX RX810': 'shimano ultegra',
             'Shimano GRX 812': 'shimano ultegra',
             'Shimano RX812': 'shimano ultegra',
+            'Shimano GRX RX812': 'shimano ultegra',
             'Shimano GRX 815': 'shimano ultegra di2',
             'Shimano RX815': 'shimano ultegra di2',
+            'Shimano GRX RX815': 'shimano ultegra di2',
+            'Shimano GRX815': 'shimano ultegra di2',
             'Shimano RD-M610': 'shimano deore',
             'Shimano RD M610': 'shimano deore',
             'Shimano RDM610': 'shimano deore',
@@ -320,6 +346,7 @@ class Cleaner(object):
     @staticmethod
     def _parse_model_year(desc: pd.Series) -> pd.Series:
         """Use description to populate missing model_year values."""
+
         def parse_model_year(d):
             result = re.search(pattern=r'20[0-9]{2}', string=d)
             if result is None:
@@ -334,6 +361,7 @@ class Cleaner(object):
         """
         Clean up bike_type labels and prepare specified categories for removal.
         """
+
         def bike_type_replace(elem):
             # Custom cleaning
             if 'giant defy advanced' in elem:
@@ -405,7 +433,7 @@ class Cleaner(object):
                 'Trail': 'mountain', 'Enduro, Mini-DH': 'mountain',
                 'XC, Trail': 'mountain', 'Cyclocross, Gravel': 'cyclocross',
                 'Race, Sport, Cyclocross, Gravel, Triathlon, Touring, Adventure, Recreational, Urban Commuter':
-                'urban', 'Road, Path, Commuting': 'commuter',
+                    'urban', 'Road, Path, Commuting': 'commuter',
                 'Road': 'road', 'Road, Racing': 'road',
                 'Gravel, Cyclocross': 'cyclocross',
                 'Pavement, Paths, Light Trails': 'commuter',
@@ -458,6 +486,7 @@ class Cleaner(object):
     @staticmethod
     def _parse_material(material: pd.Series) -> pd.Series:
         """Parse and normailize materials from data."""
+
         def material_replace(elem):
             # Skip np.NaN
             if not isinstance(elem, str) and math.isnan(elem):
@@ -500,6 +529,7 @@ class Cleaner(object):
 
     def _parse_groupset(self, desc: pd.Series) -> pd.Series:
         """Return matched groupset types."""
+
         def groupset_replace(d, return_desc=True):
             # Skip np.NaN
             if not isinstance(d, str) and math.isnan(d):
@@ -768,6 +798,7 @@ class Cleaner(object):
     @staticmethod
     def _parse_brake_type(field: pd.Series) -> pd.Series:
         """Categorize brake type by field value."""
+
         def brake_replace(brake):
             # Skip np.NaN
             if not isinstance(brake, str) and math.isnan(brake):
@@ -875,6 +906,8 @@ class Cleaner(object):
             return self._rei_cleaner(merged_df, to_csv=False)
         elif source == 'citybikes':
             return self._citybikes_cleaner(merged_df, to_csv=False)
+        elif source == 'competitive':
+            return self._competitive_cleaner(merged_df, to_csv=False)
         elif source == 'proshop':
             return self._proshop_cleaner(merged_df, to_csv=False)
         elif source == 'contebikes':
@@ -899,6 +932,8 @@ class Cleaner(object):
             return self._bike_doctor_cleaner(merged_df, to_csv=False)
         elif source == 'bicycle_warehouse':
             return self._bicycle_warehouse_cleaner(merged_df, to_csv=False)
+        elif source == 'wiggle':
+            return self._wiggle_cleaner(merged_df, to_csv=False)
         else:
             # Source cleaner not found
             raise ValueError(f'Cleaner for {source} not found!')
@@ -922,21 +957,12 @@ class Cleaner(object):
     def _jenson_cleaner(self, merged_df: pd.DataFrame,
                         to_csv=True) -> pd.DataFrame:
         """Cleaner for jenson raw data."""
-        # Drop 'Unnamed: 0' column which is duplicate for 'brand'
-        merged_df = merged_df.drop(labels='Unnamed: 0', axis=1)
-
         # Preliminary fill some NaNs from redundant columns
-        merged_df.handlebar.fillna(merged_df.handlebars, inplace=True)
         merged_df.front_derailleur.fillna(merged_df.derailleurs, inplace=True)
         merged_df.rear_derailleur.fillna(merged_df.derailleurs, inplace=True)
-        merged_df.weight.fillna(merged_df.approximate_weight, inplace=True)
         merged_df.shifters.fillna(merged_df.shifter, inplace=True)
         merged_df['brake_type'] = merged_df.brakes  # map to std field name
-        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
-
-        # Map 'corona_store_exclusives' bike type to 'intended_use'
-        for idx in merged_df[merged_df.bike_type == 'corona_store_exclusives'].index:
-            merged_df.bike_type[idx] = merged_df.intended_use[idx]
+        merged_df.brake_type.fillna(merged_df.brake, inplace=True)
 
         munged_df = self._create_munged_df(merged_df=merged_df)
 
@@ -946,17 +972,14 @@ class Cleaner(object):
         return munged_df
 
     def _nashbar_cleaner(self, merged_df: pd.DataFrame,
-                             to_csv=True) -> pd.DataFrame:
+                         to_csv=True) -> pd.DataFrame:
         """Cleaner for nashbar raw data."""
-        # Drop 'Unnamed: 0' column which is duplicate for 'brand'
-        merged_df = merged_df.drop(labels='Unnamed: 0', axis=1)
-
         # Preliminary fill some NaNs from redundant columns
-        merged_df.weight.fillna(merged_df.frame_weight, inplace=True)
         merged_df['brake_type'] = merged_df.brakes  # map to std field name
-        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
         merged_df.brake_type.fillna(merged_df.brakeset, inplace=True)
-        merged_df.cassette.fillna(merged_df.cog, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df.crankset.fillna(merged_df.chainring, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seat_post, inplace=True)
 
         munged_df = self._create_munged_df(merged_df=merged_df)
 
@@ -966,7 +989,7 @@ class Cleaner(object):
         return munged_df
 
     def _trek_cleaner(self, merged_df: pd.DataFrame,
-                             to_csv=True) -> pd.DataFrame:
+                      to_csv=True) -> pd.DataFrame:
         """Cleaner for trek raw data."""
         # Preliminary fill some NaNs from redundant columns
         merged_df['brake_type'] = merged_df.brakeset  # map to std field name
@@ -980,7 +1003,7 @@ class Cleaner(object):
         return munged_df
 
     def _rei_cleaner(self, merged_df: pd.DataFrame,
-                        to_csv=True) -> pd.DataFrame:
+                     to_csv=True) -> pd.DataFrame:
         """Cleaner for rei raw data."""
         # Preliminary fill some NaNs from redundant columns
         merged_df.weight.fillna(merged_df.bike_weight, inplace=True)
@@ -1002,7 +1025,7 @@ class Cleaner(object):
         return munged_df
 
     def _citybikes_cleaner(self, merged_df: pd.DataFrame,
-                        to_csv=True) -> pd.DataFrame:
+                           to_csv=True) -> pd.DataFrame:
         """Cleaner for citybikes raw data."""
         # Preliminary fill some NaNs from redundant columns
         merged_df['brake_type'] = merged_df.brakes
@@ -1025,7 +1048,7 @@ class Cleaner(object):
         return munged_df
 
     def _proshop_cleaner(self, merged_df: pd.DataFrame,
-                        to_csv=True) -> pd.DataFrame:
+                         to_csv=True) -> pd.DataFrame:
         """Cleaner for proshop raw data."""
         # Preliminary fill some NaNs from redundant columns
         merged_df['brake_type'] = merged_df.brakes
@@ -1048,7 +1071,7 @@ class Cleaner(object):
         return munged_df
 
     def _contebikes_cleaner(self, merged_df: pd.DataFrame,
-                        to_csv=True) -> pd.DataFrame:
+                            to_csv=True) -> pd.DataFrame:
         """Cleaner for contebikes raw data."""
         # Preliminary fill some NaNs from redundant columns
         merged_df['brake_type'] = merged_df.brakes
@@ -1071,19 +1094,11 @@ class Cleaner(object):
         return munged_df
 
     def _eriks_cleaner(self, merged_df: pd.DataFrame,
-                        to_csv=True) -> pd.DataFrame:
+                       to_csv=True) -> pd.DataFrame:
         """Cleaner for eriks raw data."""
         # Preliminary fill some NaNs from redundant columns
         merged_df['brake_type'] = merged_df.brakes
         merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
-        merged_df.brake_type.fillna(merged_df.front_and_rear_brakes, inplace=True)
-        merged_df.brake_type.fillna(merged_df.front_brake, inplace=True)
-        merged_df.brake_type.fillna(merged_df.rear_brake, inplace=True)
-        merged_df.brake_type.fillna(merged_df.brake_rotor, inplace=True)
-        merged_df.brake_type.fillna(merged_df.brake_rotors, inplace=True)
-        merged_df.brake_type.fillna(merged_df.disc_rotor, inplace=True)
-        merged_df.brake_type.fillna(merged_df.rotor, inplace=True)
-        merged_df.brake_type.fillna(merged_df.rotors, inplace=True)
         merged_df.handlebar.fillna(merged_df.handlebars, inplace=True)
         merged_df.cassette.fillna(merged_df.cog, inplace=True)
         merged_df.cassette.fillna(merged_df.freewheel_cassette, inplace=True)
@@ -1097,7 +1112,7 @@ class Cleaner(object):
         merged_df.front_derailleur.fillna(merged_df.drivetrain, inplace=True)
         merged_df.rear_derailleur.fillna(merged_df.drivetrain, inplace=True)
         merged_df.shifters.fillna(merged_df.shifter, inplace=True)
-        merged_df.shifters.fillna(merged_df.derailleur_shifter, inplace=True)
+        merged_df.shifters.fillna(merged_df.shift_levers, inplace=True)
         merged_df.shifters.fillna(merged_df.derailleur_shifters, inplace=True)
         merged_df['seatpost'] = merged_df.seat_post
         merged_df.frame.fillna(merged_df.material, inplace=True)
@@ -1113,12 +1128,12 @@ class Cleaner(object):
                         to_csv=True) -> pd.DataFrame:
         """Cleaner for canyon raw data."""
         # Preliminary fill some NaNs from redundant columns
-        merged_df['brake_type'] = merged_df.brakes
-        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
-        merged_df.brake_type.fillna(merged_df.brake_shift_levers, inplace=True)
-        merged_df['crankset'] = merged_df.cranks
-        merged_df.crankset.fillna(merged_df.chainrings, inplace=True)
-        merged_df['seatpost'] = merged_df.seat_post
+        merged_df['brake_type'] = merged_df.brake
+        merged_df.brake_type.fillna(merged_df.brake_lever_master, inplace=True)
+        merged_df.brake_type.fillna(merged_df.shift_brake_lever, inplace=True)
+        merged_df['crankset'] = merged_df.crank
+        merged_df['shifters'] = merged_df.shift_lever
+        merged_df.shifters.fillna(merged_df.shift_brake_lever, inplace=True)
 
         munged_df = self._create_munged_df(merged_df=merged_df)
 
@@ -1128,7 +1143,7 @@ class Cleaner(object):
         return munged_df
 
     def _giant_cleaner(self, merged_df: pd.DataFrame,
-                        to_csv=True) -> pd.DataFrame:
+                       to_csv=True) -> pd.DataFrame:
         """Cleaner for giant raw data."""
         # Preliminary fill some NaNs from redundant columns
         merged_df['brake_type'] = merged_df.brakes
@@ -1160,15 +1175,13 @@ class Cleaner(object):
         return munged_df
 
     def _lynskey_cleaner(self, merged_df: pd.DataFrame,
-                           to_csv=True) -> pd.DataFrame:
+                         to_csv=True) -> pd.DataFrame:
         """Cleaner for lynskey raw data."""
         # Preliminary fill some NaNs from redundant columns
-        merged_df['brake_type'] = merged_df.lever_brakeset
+        merged_df['brake_type'] = merged_df.brake_calipers
         merged_df.brake_type.fillna(merged_df.lever_brakeset, inplace=True)
         merged_df.brake_type.fillna(merged_df.lever_brake, inplace=True)
-        merged_df.brake_type.fillna(merged_df.brake_calipers, inplace=True)
         merged_df.brake_type.fillna(merged_df.disc_brake_calipers, inplace=True)
-        merged_df.crankset.fillna(merged_df.chainring, inplace=True)
         merged_df['frame'] = merged_df.frame_material
         merged_df['shifters'] = merged_df.shifter
 
@@ -1180,7 +1193,7 @@ class Cleaner(object):
         return munged_df
 
     def _spokes_cleaner(self, merged_df: pd.DataFrame,
-                           to_csv=True) -> pd.DataFrame:
+                        to_csv=True) -> pd.DataFrame:
         """Cleaner for spokes raw data."""
         # Preliminary fill some NaNs from redundant columns
         merged_df['brake_type'] = merged_df.brakes
@@ -1207,11 +1220,8 @@ class Cleaner(object):
                              to_csv=True) -> pd.DataFrame:
         """Cleaner for specialized raw data."""
         # Preliminary fill some NaNs from redundant columns
-        merged_df['brake_type'] = merged_df.brake_levers  # map to std field name
-        merged_df.brake_type.fillna(merged_df.front_brake, inplace=True)
+        merged_df['brake_type'] = merged_df.front_brake  # map to std field name
         merged_df.brake_type.fillna(merged_df.rear_brake, inplace=True)
-        merged_df.brake_type.fillna(merged_df.front_wheel, inplace=True)
-        merged_df.brake_type.fillna(merged_df.rear_wheel, inplace=True)
         merged_df.crankset.fillna(merged_df.chainrings, inplace=True)
         merged_df['shifters'] = merged_df.shift_levers  # map to std field name
         merged_df['handlebar'] = merged_df.handlebars
@@ -1239,17 +1249,13 @@ class Cleaner(object):
     def _competitive_cleaner(self, merged_df: pd.DataFrame,
                              to_csv=True) -> pd.DataFrame:
         """Cleaner for competitive raw data."""
-        # Drop 'Unnamed: 0' column which is duplicate for 'brand'
-        merged_df = merged_df.drop(labels='Unnamed: 0', axis=1)
-
         # Preliminary fill some NaNs from redundant columns
-        merged_df.handlebar.fillna(merged_df.handlebars, inplace=True)
-        merged_df.front_derailleur.fillna(merged_df.derailleurs, inplace=True)
-        merged_df.rear_derailleur.fillna(merged_df.derailleurs, inplace=True)
-        merged_df.weight.fillna(merged_df.approximate_weight, inplace=True)
-        merged_df.shifters.fillna(merged_df.shifter, inplace=True)
-        merged_df['brake_type'] = merged_df.brakes  # map to std field name
-        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        merged_df['frame'] = merged_df.frame_material  # map to std field
+        tmp_fork = merged_df.fork.copy()  # remap fork_material as fork column
+        merged_df.fork = merged_df.fork_material
+        merged_df.fork.fillna(tmp_fork, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brakeset, inplace=True)
+        merged_df.shifters.fillna(merged_df.brakeset, inplace=True)
 
         munged_df = self._create_munged_df(merged_df=merged_df)
 
@@ -1280,9 +1286,6 @@ class Cleaner(object):
     def _bicycle_warehouse_cleaner(self, merged_df: pd.DataFrame,
                                    to_csv=True) -> pd.DataFrame:
         """Cleaner for bicycle_warehouse raw data."""
-        # Drop 'Unnamed: 1' column which has empty values only
-        merged_df = merged_df.drop(labels='Unnamed: 1', axis=1)
-
         # Preliminary fill some NaNs from redundant columns
         merged_df['brake_type'] = merged_df.brakes
         merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
@@ -1313,5 +1316,71 @@ class Cleaner(object):
         munged_df = self._create_munged_df(merged_df=merged_df)
 
         if to_csv:
-            self.save_munged_df(df=munged_df, source='bike_doctor')
+            self.save_munged_df(df=munged_df, source='bicycle_warehouse')
+        return munged_df
+
+    def _wiggle_cleaner(self, merged_df: pd.DataFrame,
+                        to_csv=True) -> pd.DataFrame:
+        """Cleaner for wiggle raw data."""
+        # Preliminary fill some NaNs from redundant columns
+        # handle multiple brake_type data columns
+        merged_df.brake_type.fillna(merged_df.brake_calipers, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brakes, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_system, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake, inplace=True)
+        merged_df.brake_type.fillna(merged_df.front_rear_brakes, inplace=True)
+        merged_df.brake_type.fillna(merged_df.rear_brake, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_shift_levers, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brakes_shift_levers, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        # handle multiple crankset data columns
+        merged_df.crankset.fillna(merged_df.chainset, inplace=True)
+        merged_df.crankset.fillna(merged_df.crank_set, inplace=True)
+        merged_df.crankset.fillna(merged_df.crank, inplace=True)
+        merged_df.crankset.fillna(merged_df.cranks, inplace=True)
+        merged_df.crankset.fillna(merged_df.groupset, inplace=True)
+        merged_df.cassette.fillna(merged_df.groupset, inplace=True)
+        # handle multiple derailleurs data columns
+        merged_df.front_derailleur.fillna(merged_df.groupset, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.drivetrain, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.derailleurs, inplace=True)
+        merged_df.front_derailleur.fillna(merged_df.derailleur, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.groupset, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.drivetrain, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.derailleurs, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.derailleur, inplace=True)
+        merged_df.rear_derailleur.fillna(merged_df.derailleur_rear, inplace=True)
+        # handle multiple fork data
+        tmp_fork = merged_df.fork.copy()  # remap fork_material as fork column
+        merged_df.fork = merged_df.fork_material
+        merged_df.fork.fillna(tmp_fork, inplace=True)
+        merged_df.fork.fillna(merged_df.forks, inplace=True)
+        merged_df.fork.fillna(merged_df.frame_fork, inplace=True)
+        merged_df.fork.fillna(merged_df.frame_and_fork, inplace=True)
+        merged_df.fork.fillna(merged_df.material, inplace=True)
+        merged_df.fork.fillna(merged_df.frameset_material, inplace=True)
+        # handle multiple frame data
+        merged_df.frame.fillna(merged_df.frame_and_fork, inplace=True)
+        merged_df.frame.fillna(merged_df.frame_fork, inplace=True)
+        merged_df.frame.fillna(merged_df.material, inplace=True)
+        merged_df.frame.fillna(merged_df.frame_material, inplace=True)
+        merged_df.frame.fillna(merged_df.frameset_material, inplace=True)
+        # handle multiple shifters data
+        merged_df.shifters.fillna(merged_df.groupset, inplace=True)
+        merged_df.shifters.fillna(merged_df.brake_shift_levers, inplace=True)
+        merged_df.shifters.fillna(merged_df.shift_brake_levers, inplace=True)
+        merged_df.shifters.fillna(merged_df.brakes_shift_levers, inplace=True)
+        merged_df.shifters.fillna(merged_df.shifters_brake_levers, inplace=True)
+        merged_df.shifters.fillna(merged_df.gear_shifters, inplace=True)
+        merged_df.shifters.fillna(merged_df.gear_shifter, inplace=True)
+        # handle multiple seatpost data
+        merged_df.seatpost.fillna(merged_df.seat_post, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seat_seatpost, inplace=True)
+        # handle multiple handlebar data
+        merged_df.handlebar.fillna(merged_df.handlebars, inplace=True)
+
+        munged_df = self._create_munged_df(merged_df=merged_df)
+
+        if to_csv:
+            self.save_munged_df(df=munged_df, source='wiggle')
         return munged_df

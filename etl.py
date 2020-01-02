@@ -10,13 +10,13 @@ MEDIATOR = IngestionMediator()
 
 
 def main(args):
-    # Handle collect workflow request
+    # Collect bike product raw data and optionally specifications data
     if args.ETL == 'collect':
         MEDIATOR.collect_sources(sources=args.sources,
                                  get_specs=args.get_specs,
                                  skip_failed=args.skip_failed)
 
-    # Collect specs for given source products.
+    # Extract specs for given source products.
     if args.ETL == 'extract':
         for source in args.sources:
             MEDIATOR.extract_specs(source=source)
