@@ -19,7 +19,7 @@ class Spokes(Scraper):
         if page is None or page_size is None:
             req_url = f'{self._BASE_URL}{endpoint}'
         else:
-            start_row = ((page - 1) * page_size) + 1
+            start_row = (page * page_size)
             req_url = f'{self._BASE_URL}{endpoint}?&startrow=' \
                       f'{start_row}&maxItems={page_size}'
         return self._fetch_html(req_url)
@@ -95,7 +95,7 @@ class Spokes(Scraper):
             # Scrape all pages for bike category
             for page in range(pages):
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
-                    endpoint, page=page + 1, page_size=self._page_size
+                    endpoint, page=page, page_size=self._page_size
                 ), 'lxml')
                 self._get_prods_on_current_listings_page(soup, bike_type)
 
