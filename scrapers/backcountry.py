@@ -60,6 +60,19 @@ class BackCountry(Scraper):
 
         return categories
 
+    def _get_subtypes(self, soup) -> dict:
+        """Get subtypes for each category via recommended use url."""
+        div = soup.find(id='facet-RecommendedUse')
+        div_list = div.find(id='attr_recommendeduse-filter-list')
+        a_tags = div_list.find_all('a')
+
+        sub_types = dict()
+        for a_tag in a_tags:
+            title = self._normalize_spec_fieldnames(a_tag['title'])
+            href = a_tag['href']
+            sub_types[title] = href
+        return sub_types
+
     def get_all_available_prods(self, to_csv=True) -> list:
         """Scrape wiggle site for prods."""
         # Reset scraper related variables
@@ -69,39 +82,47 @@ class BackCountry(Scraper):
                           'lxml')
         )
 
-        # Scrape pages for each available category
+        # Scrape pages for each available category and respective subtype
         bike_categories = self._get_categories()
         for bike_type in bike_categories:
-            print(f'Parsing first page for {bike_type}...')
             endpoint = bike_categories[bike_type]['href']
             soup = BeautifulSoup(self._fetch_prod_listing_view(
                 endpoint), 'lxml')
-            self._get_prods_on_current_listings_page(soup, bike_type)
-            next_page, endpoint = self._get_next_page(soup)
-
-            counter = 1
-            while next_page:
-                counter += 1
-                print('\tparsing page:', counter)
+            sub_types = self._get_subtypes(soup)
+            for sub_type in sub_types:
+                endpoint = sub_types[sub_type]
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
                     endpoint), 'lxml')
-                self._get_prods_on_current_listings_page(soup, bike_type)
+                print(f'Parsing first page for {bike_type}: {sub_type}...')
+                self._get_prods_on_current_listings_page(soup, bike_type,
+                                                         sub_type)
                 next_page, endpoint = self._get_next_page(soup)
+
+                counter = 1
+                while next_page:
+                    counter += 1
+                    print('\tparsing page:', counter)
+                    soup = BeautifulSoup(self._fetch_prod_listing_view(
+                        endpoint), 'lxml')
+                    self._get_prods_on_current_listings_page(soup, bike_type,
+                                                             sub_type)
+                    next_page, endpoint = self._get_next_page(soup)
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
 
         return list()
 
-    def _get_prods_on_current_listings_page(self, soup, bike_type):
+    def _get_prods_on_current_listings_page(self, soup, bike_type, sub_type):
         """Parse products on page."""
         grid = soup.find('div', class_='plp-product-grid')
-        products = soup.find_all('div', class_='product')
+        products = grid.find_all('div', class_='product')
 
         for prod in products:
             product = dict()
             product['site'] = self._SOURCE
             product['bike_type'] = bike_type
+            product['sub_type'] = sub_type
 
             # Get prod id
             prod_id = prod['data-product-id']
