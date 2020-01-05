@@ -167,19 +167,33 @@ class BicycleWarehouse(Scraper):
 
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
-        # Default: spec div tab with two or more columns
+
+        self._specs_fieldnames.add('details')
+
+        # Default: spec div tab with two or more tabs
         tabs = soup.find('div', id='tabs')
 
         # check for specifications tab or embedded with description
         tab = tabs.find('div', id='tabs-3')
+
+        # prep for adding details in specs, start assume details in own tab
+        details_tab_style = 'alone'
+        details_tab = tabs.find('div', id='tabs-2')
         if tab is None:
             tab = tabs.find('div', id='tabs-2')
+            print('TEST SPECS PAGE: specs embedded in details!!!!')
+            # parse details with specs embedded in first tab
+            details_tab_style = 'embedded'
 
         # def check for un-tabbed embedded specs
         if tab is None:
             div = soup.find('div', class_='easytabs-text')
-            ul = div.find('ul')
+            # note details tab setup
+            details_tab_style = 'easytabs'
+            details_tab = div
+
             # check for ul or table
+            ul = div.find('ul')
             if ul is None:
                 rows = div.find_all('tr')
                 prod_specs = self._specs_parse_table(rows_soup=rows)
@@ -204,6 +218,22 @@ class BicycleWarehouse(Scraper):
                     prod_specs = dict()
                 else:
                     prod_specs = self._specs_parse_table(rows_soup=rows)
+
+        # add details to specs
+        if details_tab_style == 'embedded':
+            top_p_tags = details_tab.find_all('p', recursive=False)
+            details = ''
+            for p in top_p_tags:
+                details += '\n' + p.text.strip()
+            details.strip()
+        elif details_tab_style == 'easytabs':
+            try:
+                details = details_tab.find('p').text.strip()
+            except AttributeError:  # no details/description
+                details = ''
+        else:
+            details = details_tab.text.strip()
+        prod_specs['details'] = details
 
         print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
 
