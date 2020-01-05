@@ -80,15 +80,15 @@ class BicycleWarehouse(Scraper):
                 continue
 
             # get all sub_types
-            sub_types = dict()
+            subtypes = dict()
             ul_sub_menu = li.find('ul', class_='navmenu-submenu')
             links = ul_sub_menu.find_all('a', class_='navmenu-link')
             for link in links:
                 sub_type = self._normalize_spec_fieldnames(link.text.strip())
                 if 'view_all' in sub_type:  # skip 'view all' urls
                     continue
-                sub_types[sub_type] = link['href']
-            categories[cat] = sub_types
+                subtypes[sub_type] = link['href']
+            categories[cat] = subtypes
 
         return categories
 
@@ -125,7 +125,7 @@ class BicycleWarehouse(Scraper):
 
         return list()
 
-    def _get_prods_on_current_listings_page(self, soup, bike_type, sub_type):
+    def _get_prods_on_current_listings_page(self, soup, bike_type, subtype):
         """Parse products on page."""
         products = soup.find_all(class_='productgrid--item')
 
@@ -133,7 +133,7 @@ class BicycleWarehouse(Scraper):
             product = dict()
             product['site'] = self._SOURCE
             product['bike_type'] = bike_type
-            product['sub_type'] = sub_type
+            product['subtype'] = subtype
 
             item = prod.find('div', class_='productitem--info')
             # Get href, description, and brand

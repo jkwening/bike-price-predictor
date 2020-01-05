@@ -88,14 +88,14 @@ class BackCountry(Scraper):
             endpoint = bike_categories[bike_type]['href']
             soup = BeautifulSoup(self._fetch_prod_listing_view(
                 endpoint), 'lxml')
-            sub_types = self._get_subtypes(soup)
-            for sub_type in sub_types:
-                endpoint = sub_types[sub_type]
+            subtypes = self._get_subtypes(soup)
+            for subtype in subtypes:
+                endpoint = subtypes[subtype]
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
                     endpoint), 'lxml')
-                print(f'Parsing first page for {bike_type}: {sub_type}...')
+                print(f'Parsing first page for {bike_type}: {subtype}...')
                 self._get_prods_on_current_listings_page(soup, bike_type,
-                                                         sub_type)
+                                                         subtype)
                 next_page, endpoint = self._get_next_page(soup)
 
                 counter = 1
@@ -105,7 +105,7 @@ class BackCountry(Scraper):
                     soup = BeautifulSoup(self._fetch_prod_listing_view(
                         endpoint), 'lxml')
                     self._get_prods_on_current_listings_page(soup, bike_type,
-                                                             sub_type)
+                                                             subtype)
                     next_page, endpoint = self._get_next_page(soup)
 
         if to_csv:
@@ -113,7 +113,7 @@ class BackCountry(Scraper):
 
         return list()
 
-    def _get_prods_on_current_listings_page(self, soup, bike_type, sub_type):
+    def _get_prods_on_current_listings_page(self, soup, bike_type, subtype):
         """Parse products on page."""
         grid = soup.find('div', class_='plp-product-grid')
         products = grid.find_all('div', class_='product')
@@ -122,7 +122,7 @@ class BackCountry(Scraper):
             product = dict()
             product['site'] = self._SOURCE
             product['bike_type'] = bike_type
-            product['sub_type'] = sub_type
+            product['subtype'] = subtype
 
             # Get prod id
             prod_id = prod['data-product-id']
