@@ -190,7 +190,6 @@ class BikeDoctor(Scraper):
         div_details = soup.find(id='ProductDetailsContent')
         details = div_details.find('p', attrs={'itemprop': 'description'})
         prod_specs['details'] = details.text.strip()
-        self._specs_fieldnames.add('details')
 
         # parse specifications
         try:

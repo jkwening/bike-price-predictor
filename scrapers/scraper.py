@@ -19,7 +19,7 @@ class Scraper(ABC):
         self._TIMESTAMP = TIMESTAMP
         self._products = {}  # href, desc key,value pairs
         self._num_bikes = 0
-        self._specs_fieldnames = {'site', 'product_id'}
+        self._specs_fieldnames = {'site', 'product_id', 'details'}
         self._bike_type = 'all'
 
     @staticmethod

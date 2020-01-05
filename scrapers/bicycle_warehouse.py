@@ -167,9 +167,6 @@ class BicycleWarehouse(Scraper):
 
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
-
-        self._specs_fieldnames.add('details')
-
         # Default: spec div tab with two or more tabs
         tabs = soup.find('div', id='tabs')
 
@@ -181,7 +178,6 @@ class BicycleWarehouse(Scraper):
         details_tab = tabs.find('div', id='tabs-2')
         if tab is None:
             tab = tabs.find('div', id='tabs-2')
-            print('TEST SPECS PAGE: specs embedded in details!!!!')
             # parse details with specs embedded in first tab
             details_tab_style = 'embedded'
 

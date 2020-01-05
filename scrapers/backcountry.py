@@ -157,10 +157,14 @@ class BackCountry(Scraper):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
 
-        # Default: spec div tab with two or more columns
-        div_info = soup.find('div', id='accordion-parent')
-        rows = div_info.find_all('div', class_='tr')
-
+        # Specifications and details data is hidden with accordion DOM
+        section = soup.find('div', id='accordion-parent')
+        # parse specifications
+        div_tech_specs = section.find(
+            'div',
+            class_='table product-details-accordion__techspecs-container'
+        )
+        rows = div_tech_specs.find_all('div', class_='tr')
         for row in rows:
             spec = self._normalize_spec_fieldnames(row.find(
                 'div', class_='product-details-accordion__techspec-name').string)
@@ -169,6 +173,16 @@ class BackCountry(Scraper):
                              ).string.strip()
             self._specs_fieldnames.add(spec)
             prod_specs[spec] = value
+
+        # parse product details/description
+        div_details = section.find(id='js-buybox-details-section')
+        details = ''
+        for string in div_details.stripped_strings:
+            details += string + '\n'
+        div_details_list = section.find(id='js-bulletpoints-section')
+        for string in div_details_list.stripped_strings:
+            details += string + '\n'
+        prod_specs['details'] = details.strip()
 
         print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         return prod_specs
