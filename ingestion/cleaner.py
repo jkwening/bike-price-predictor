@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 
 # Project modules
-from utils.utils import MUNGED_DATA_PATH, TIMESTAMP
+from utils.utils import MUNGED_DATA_PATH, TIMESTAMP, GROUPSET_RANKING
 from utils.utils import create_directory_if_missing
 
 
@@ -27,75 +27,7 @@ class Cleaner(object):
             'seatpost_material', 'chain_groupset',
             'shifter_groupset'
         ]
-        self._GROUPSET_RANKING = {
-            'shimano claris': 1,
-            'shimano sora': 2,
-            'shimano tiagra': 2.5,
-            'shimano 105': 3,
-            'shimano ultegra': 4,
-            'shimano ultegra di2': 5.5,
-            'shimano dura-ace': 5,
-            'shimano dura-ace di2': 6.25,
-            'sram apex': 2,
-            'sram rival': 3,
-            'sram s700': 3,
-            'sram force': 4,
-            'sram force etap': 4.5,
-            'sram red': 5,
-            'sram red etap': 6,
-            'sram red etap axs': 6.5,
-            'campagnolo veloce': 2,
-            'campagnolo centaur': 2.5,
-            'campagnolo athena': 3,
-            'campagnolo potenza': 4,
-            'campagnolo chorus': 4,
-            'campagnolo athena eps': 3.5,
-            'campagnolo record': 5,
-            'campagnolo chorus eps': 4.5,
-            'campagnolo super record': 5.25,
-            'campagnolo record eps': 5.5,
-            'campagnolo super record eps': 7,
-            'shimano tourney': 0.5,
-            'shimano altus': 1,
-            'shimano acera': 1.5,
-            'shimano alivio': 2,
-            'shimano deore': 2.75,
-            'shimano slx': 3,
-            'shimano zee': 3,
-            'shimano deore xt': 4,
-            'shimano xt': 4,  # ?
-            'shimano saint': 4.5,
-            'shimano xt di2': 4,
-            'shimano xtr': 5,
-            'shimano xtr di2': 6,
-            'sram x3': 0.5,
-            'sram x4': 1.5,
-            'sram x5': 2,
-            'sram x7': 2.25,
-            'sram x9': 2.6,
-            'sram sx eagle': 2.75,
-            'sram nx': 3,
-            'sram gx dh': 3,
-            'sram gx': 3.25,
-            'sram gx eagle': 3.5,
-            'sram x1': 3.75,
-            'sram xO1 dh': 4.25,
-            'sram xO': 4.0,
-            'sram xO1': 4.25,
-            'sram xx': 4.5,
-            'sram xx1': 5,
-            'sram xO1 eagle': 4.75,
-            'sram xx1 eagle': 6,
-            'sram eagle axs': 6.5,
-            'sram via': 3.5,
-            'shimano 7-speed': 0.5,
-            'shimano 8-speed': 1,
-            'shimano 9-speed': 2,
-            'shimano 10-speed': 2.5,
-            'sram 8-speed': 0.5,
-            'sram 9-speed': 1,
-            'sram 10-speed': 2,
-        }
+        self._GROUPSET_RANKING = GROUPSET_RANKING
         self._GROUPSETS_MAP = {
             'claris': 'shimano claris',
             'sora': 'shimano sora',
@@ -502,8 +434,8 @@ class Cleaner(object):
             ]
             materials_dict = {
                 'carbon': 'carbon',
-                'aluminium': 'aluminum',
-                'aluminum': 'aluminum',
+                'aluminium': 'aluminium',
+                'aluminum': 'aluminium',
                 'alloy': 'alloy',
                 'titanium': 'titanium',
                 'chromoly': 'chromoly',
@@ -512,7 +444,7 @@ class Cleaner(object):
                 'cr-mo': 'chromoly',
                 'cromoly': 'chromoly',
                 'cromo': 'chromoly',
-                'alluminum': 'aluminum',
+                'alluminum': 'aluminium',
                 'steel': 'steel',
                 'hi-ten': 'steel',
                 'aluxx': 'aluminium',
@@ -957,6 +889,11 @@ class Cleaner(object):
     def _jenson_cleaner(self, merged_df: pd.DataFrame,
                         to_csv=True) -> pd.DataFrame:
         """Cleaner for jenson raw data."""
+        # replace bike_type = corona_store_exclusives with intended_use value
+        # Map 'corona_store_exclusives' bike type to 'intended_use'
+        for idx in merged_df[merged_df.bike_type == 'corona_store_exclusives'].index:
+            merged_df.loc[idx, 'bike_type'] = merged_df.intended_use[idx]
+
         # Preliminary fill some NaNs from redundant columns
         merged_df.front_derailleur.fillna(merged_df.derailleurs, inplace=True)
         merged_df.rear_derailleur.fillna(merged_df.derailleurs, inplace=True)
@@ -1012,10 +949,6 @@ class Cleaner(object):
         merged_df['cassette'] = merged_df.rear_cogs  # map to std field name
         merged_df.bike_type.fillna(merged_df.best_use, inplace=True)
         merged_df['seatpost'] = merged_df.seat_post
-
-        # Map 'corona_store_exclusives' bike type to 'intended_use'
-        for idx in merged_df[merged_df.bike_type == 'corona_store_exclusives'].index:
-            merged_df.bike_type[idx] = merged_df.intended_use[idx]
 
         munged_df = self._create_munged_df(merged_df=merged_df)
 
