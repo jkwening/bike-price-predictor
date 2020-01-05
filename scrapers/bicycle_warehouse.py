@@ -182,7 +182,7 @@ class BicycleWarehouse(Scraper):
             # check for ul or table
             if ul is None:
                 rows = div.find_all('tr')
-                prod_specs = self._specs_parse_table(soup=rows)
+                prod_specs = self._specs_parse_table(rows_soup=rows)
             else:
                 print('[div.easy_tabs.ul]')
                 prod_specs = self._specs_parse_colon_text(ul_soup=ul)
@@ -193,7 +193,17 @@ class BicycleWarehouse(Scraper):
                 prod_specs = self._specs_parse_text_format(soup=tab)
             else:
                 rows = table.find_all('tr')
-                prod_specs = self._specs_parse_table(soup=rows)
+                # check whether multi kit table and skip storing as empty
+                # bc each kit has different price and no easy way to get each price.
+                try:
+                    first_str = rows[0].find(['td', 'th']).text.strip().lower()
+                except AttributeError:
+                    first_str = rows[1].find(['td', 'th']).text.strip().lower()
+                if first_str == 'kit':
+                    print('\tSKIPPING: Multi Kit table...')
+                    prod_specs = dict()
+                else:
+                    prod_specs = self._specs_parse_table(rows_soup=rows)
 
         print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
 
@@ -216,11 +226,11 @@ class BicycleWarehouse(Scraper):
 
         return prod_specs
 
-    def _specs_parse_table(self, soup) -> dict:
+    def _specs_parse_table(self, rows_soup) -> dict:
         """Specs parser helper function for dealing with tables."""
         prod_specs = dict()
         # parse each row as spec_name:value pairs
-        for tr in soup:
+        for tr in rows_soup:
             tds = tr.find_all(['td', 'th'])
             if not tds:  # empty table row
                 continue
@@ -236,8 +246,6 @@ class BicycleWarehouse(Scraper):
                 spec = self._normalize_spec_fieldnames(spec)
                 self._specs_fieldnames.add(spec)
                 value = value.strip()
-            elif len(tds) > 2:  # skip multi kit products
-                continue
             else:
                 # process child tags in batches of two as spec_name:value pairs
                 for i in range(0, len(tds), 2):
