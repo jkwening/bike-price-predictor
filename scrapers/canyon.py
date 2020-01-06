@@ -18,7 +18,7 @@ class Canyon(Scraper):
         req_url = f'{self._BASE_URL}{endpoint}'
         return self._fetch_html(req_url)
 
-    def _get_bike_type_models_hrefs(self, bike_type):
+    def _get_bike_type_models_hrefs(self, bike_type) -> list:
         """Get list of model hrefs for bike type."""
         endpoint = self._BIKE_MODELS_ENDPOINT + 'mode=neutral&cgid=' + bike_type
         soup = BeautifulSoup(self._fetch_prod_listing_view(endpoint), 'lxml')
@@ -42,7 +42,32 @@ class Canyon(Scraper):
             categories[bike_type] = {'hrefs': hrefs}
         return categories
 
-    def _get_prods_on_current_listings_page(self, soup, bike_type):
+    def _get_subtypes(self) -> dict:
+        """Generate main cat, subtype, model, and hrefs mapping.
+
+        Returns:
+            dict: {main_cat: {subtypes: {model_names: href}}}
+        """
+        categories = dict()
+        # iterate  main categories and list of model hrefs to get subtypes
+        for bike_type, model_hrefs in self._get_categories().items():
+            subtypes = dict()
+            categories[bike_type] = subtypes
+            for href in model_hrefs['hrefs']:
+                tmp = href.strip('/').replace('en-us/', '')
+                main_cat, subtype, model_name = tmp.split('/')
+                # normalize subtype and model_name keys
+                subtype = self._normalize_spec_fieldnames(subtype)
+                model_name = self._normalize_spec_fieldnames(model_name)
+                # get subtype dict values or add as new and return empty dict
+                subtype_val_dict = subtypes.get(subtype, dict())
+                # add model_name: href pair as subtype value & update subtypes
+                subtype_val_dict[model_name] = href
+                subtypes[subtype] = subtype_val_dict
+
+        return categories
+
+    def _get_prods_on_current_listings_page(self, soup, bike_type, subtype):
         """Parse products on page."""
         prod_grid = soup.find(id='section-product-grid')
         products = prod_grid.find_all('li', class_='productGrid__listItem')
@@ -52,6 +77,7 @@ class Canyon(Scraper):
             product['site'] = self._SOURCE
             product['bike_type'] = bike_type
             product['brand'] = self._SOURCE  # site is single brand
+            product['subtype'] = subtype
 
             # prod id
             div_scope = prod.find('div', class_='productTile')
@@ -91,16 +117,19 @@ class Canyon(Scraper):
         self._num_bikes = 0
 
         # Scrape pages for each available category
-        categories = self._get_categories()
-        for bike_type in categories.keys():
-            for href in categories[bike_type]['hrefs']:
-                print(f'Getting {href} for {bike_type} category...')
-                soup = BeautifulSoup(self._fetch_prod_listing_view(
-                    endpoint=href), 'lxml')
-                try:
-                    self._get_prods_on_current_listings_page(soup, bike_type)
-                except AttributeError:
-                    print('\tError parsing', href)
+        categories = self._get_subtypes()
+        for bike_type, subtypes in categories.items():
+            for subtype, models in subtypes.items():
+                for model, href in models.items():
+                    print(f'Parsing prods for {bike_type}:{subtype}:{model}...')
+                    soup = BeautifulSoup(self._fetch_prod_listing_view(
+                        endpoint=href), 'lxml')
+                    try:
+                        self._get_prods_on_current_listings_page(
+                            soup, bike_type, subtype
+                        )
+                    except AttributeError:
+                        print('\tERROR parsing', href)
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
@@ -110,6 +139,21 @@ class Canyon(Scraper):
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
+        # parse product details/description sections
+        div_detail_header = soup.find('div', class_='productDetailHeader')
+        div_description = div_detail_header.find('div',
+                                                 class_='productDescription')
+        details = ''
+        for string in div_description.stripped_strings:
+            details += string + '\n'
+        div_detail_bottom = soup.find('div', class_='productDetail__bottom')
+        div_detail_awards = div_detail_bottom.find('div',
+                                                   class_='awards__spec')
+        for string in div_detail_awards.stripped_strings:
+            details += string + '\n'
+        prod_specs['details'] = details
+
+        # parse tech specifications
         try:
             comp_id = soup.find(id='all-components-section-panel')
             spec_li = comp_id.find_all('li', class_='allComponentsSpecItem')
@@ -128,6 +172,6 @@ class Canyon(Scraper):
 
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         except AttributeError as err:
-            print(f'\tError: {err}')
+            print(f'\t\tERROR: {err}')
 
         return prod_specs
