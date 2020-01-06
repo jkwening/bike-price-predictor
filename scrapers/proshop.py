@@ -41,7 +41,7 @@ class Proshop(Scraper):
         """Parse categories menu section on page."""
         categories = dict()
         exclude = ['childrens', 'bmx', 'road_frames', 'mountain_frames',
-                   'cyclocross_frames', 'frames', 'other']
+                   'cyclocross_frames', 'frames']
         facet_cat = soup.find('div', id='Facets-categories')
         if facet_cat is None:
             return False, categories

@@ -14,7 +14,8 @@ class ProshopTestCase(unittest.TestCase):
         self._scraper = Proshop(save_data_path=DATA_PATH)
         self._bike_type = 'road'
         self._categories = ['road', 'mountain', 'commuter_urban', 'comfort',
-                            'fitness', 'hybrid', 'cruiser', 'cyclocross']
+                            'fitness', 'hybrid', 'cruiser', 'cyclocross',
+                            'other']
         self._page_size = 30
 
     def test_get_categories(self):
