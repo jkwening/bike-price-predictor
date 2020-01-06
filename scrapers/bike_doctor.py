@@ -26,7 +26,7 @@ class BikeDoctor(Scraper):
         raise NotImplemented
 
     @staticmethod
-    def _get_next_page(soup):
+    def _get_next_page(soup) -> tuple:
         """Returns (success, endpoint) for next page url."""
 
         div = soup.find('div', class_='sePaginationWrapper')
@@ -90,7 +90,7 @@ class BikeDoctor(Scraper):
         return cat_subtypes
 
     def get_all_available_prods(self, to_csv=True) -> list:
-        """Scrape wiggle site for prods."""
+        """Scrape bike_doctor site for prods."""
         # Reset scraper related variables
         self._products = dict()
         self._num_bikes = 0
