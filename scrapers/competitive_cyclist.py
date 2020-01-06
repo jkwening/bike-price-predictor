@@ -10,13 +10,13 @@ class CompetitiveCyclist(Scraper):
                          source='competitive', save_data_path=save_data_path)
 
     def _fetch_prod_listing_view(self, endpoint):
-        req_url = f'{self._BASE_URL}/{endpoint}'
+        req_url = f'{self._BASE_URL}{endpoint}'
         return self._fetch_html(req_url)
 
-    def _get_categories(self):
+    def _get_categories(self) -> dict:
         """Get bike type categories and hrefs."""
         categories = dict()
-        exclude = ['sale']
+        exclude = ['sale', 'kids']
 
         # fetch and identify categories a tags
         soup = BeautifulSoup(
@@ -38,8 +38,35 @@ class CompetitiveCyclist(Scraper):
             categories[bike_type] = href
         return categories
 
+    def _get_subtypes(self) -> dict:
+        categories = self._get_categories()
+        subtypes = dict()
+        for bike_type, href in categories.items():
+            tmp_dict = dict()
+            soup = BeautifulSoup(
+                self._fetch_prod_listing_view(endpoint=href),
+                'lxml'
+            )
+            div_recommended_use = soup.find(
+                id='attr_recommendeduse-filter-list'
+            )
+            try:
+                a_tags = div_recommended_use.find_all('a')
+            except AttributeError:
+                tmp_dict[bike_type] = href
+                subtypes[bike_type] = tmp_dict
+                continue
+
+            for a_tag in a_tags:
+                subtype = a_tag['title']
+                subtype = self._normalize_spec_fieldnames(subtype)
+                href = a_tag['href']
+                tmp_dict[subtype] = href
+            subtypes[bike_type] = tmp_dict
+        return subtypes
+
     @staticmethod
-    def _get_next_page(soup):
+    def _get_next_page(soup) -> tuple:
         """Return (bool, href) regarding if next page button exists."""
         li = soup.find('li', class_='pag-next')
 
@@ -53,7 +80,7 @@ class CompetitiveCyclist(Scraper):
         """Get number of pages instead since number of products not easily presented."""
         pass
 
-    def _get_prods_on_current_listings_page(self, soup, bike_type):
+    def _get_prods_on_current_listings_page(self, soup, bike_type, subtype):
         div_id_products = soup.find('div', class_='results')
         div_products_list = div_id_products.find_all('div', class_='product')
 
@@ -61,6 +88,7 @@ class CompetitiveCyclist(Scraper):
             product = dict()
             product['bike_type'] = bike_type
             product['site'] = self._SOURCE
+            product['subtype'] = subtype
 
             # get id
             prod_id = prod_info['data-product-id']
@@ -104,6 +132,12 @@ class CompetitiveCyclist(Scraper):
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
+        # parse details/description
+        div_details = soup.find(id='product-description')
+        details = div_details.text.strip()
+        prod_specs['details'] = details
+
+        # parse tech specifications
         try:
             div_tech_specs_section = soup.find('div',
                                                class_='tech-specs__section')
@@ -133,23 +167,24 @@ class CompetitiveCyclist(Scraper):
         self._num_bikes = 0
 
         # Scrape pages for each available category
-        bike_categories = self._get_categories()
-        for bike_type in bike_categories:
-            print(f'Parsing first page for {bike_type}...')
-            endpoint = bike_categories[bike_type]
-            soup = BeautifulSoup(self._fetch_prod_listing_view(
-                endpoint), 'lxml')
-            self._get_prods_on_current_listings_page(soup, bike_type)
-            next_page, endpoint = self._get_next_page(soup)
-
-            counter = 1
-            while next_page:
-                counter += 1
-                print('\tparsing page:', counter)
+        categories = self._get_subtypes()
+        for bike_type, subtypes in categories.items():
+            for subtype, href in subtypes.items():
+                print(f'Parsing first page for {bike_type}:{subtype}...')
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
-                    endpoint), 'lxml')
+                    endpoint=href), 'lxml')
                 self._get_prods_on_current_listings_page(soup, bike_type)
                 next_page, endpoint = self._get_next_page(soup)
+
+                counter = 1
+                while next_page:
+                    counter += 1
+                    print('\tparsing page:', counter)
+                    soup = BeautifulSoup(self._fetch_prod_listing_view(
+                        endpoint), 'lxml')
+                    self._get_prods_on_current_listings_page(soup, bike_type,
+                                                             subtype)
+                    next_page, endpoint = self._get_next_page(soup)
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
