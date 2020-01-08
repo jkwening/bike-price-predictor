@@ -1,7 +1,7 @@
 """
 Module for scraping jensonusa.com for its bike data.
 """
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 
 from scrapers.scraper import Scraper, RAW_DATA_PATH
 
@@ -13,10 +13,14 @@ class Jenson(Scraper):
         self._page_size = page_size
         self._PROD_PAGE_ENDPOINT = '/Complete-Bikes'
 
-    def _fetch_prod_listing_view(self, endpoint, page_size=None, page=None):
-        req_url = f'{self._BASE_URL}{endpoint}'
+    def _fetch_prod_listing_view(self, endpoint, page_size=None, page=None,
+                                 include_base=True):
+        if include_base:
+            req_url = f'{self._BASE_URL}{endpoint}'
+        else:
+            req_url = endpoint
         if page_size:
-            req_url += f'?pn={page}&ps={page_size}'
+            req_url += f'&pn={page}&ps={page_size}'
         return self._fetch_html(req_url)
 
     def _get_max_num_prods(self, soup):
@@ -31,7 +35,9 @@ class Jenson(Scraper):
         """
         categories = dict()
         # categories that should be skipped
-        exlude = ['jenson_usa_exclusive_builds', 'bikes_on_sale']
+        exlude = ['jenson_usa_exclusive_builds', 'bikes_on_sale',
+                  'corona_store_exclusives', 'bmx_bikes', 'kids_bikes',
+                  'electric_bikes']
         page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
         soup = BeautifulSoup(page, 'lxml')
 
@@ -40,15 +46,40 @@ class Jenson(Scraper):
 
         # Get all categories
         for a_tag in cats:
-            bike_cat = dict()
             title = self._normalize_spec_fieldnames(a_tag.text)
             if title in exlude:
                 continue
-            bike_cat['href'] = a_tag['href'].replace(self._BASE_URL, '')
-            categories[title] = bike_cat
+            href = a_tag['href'].replace(self._BASE_URL, '')
+            categories[title] = href
             # print(f'[{len(categories)}] New category {title}: ', bike_cat)
 
         return categories
+
+    def _get_subtypes(self) -> dict:
+        categories = self._get_categories()
+        bike_subtypes = dict()
+        for bike_type, href in categories.items():
+            page = self._fetch_prod_listing_view(endpoint=href)
+            soup = BeautifulSoup(page, 'lxml')
+
+            nav_tree = soup.find(id='navTree')
+            divs = nav_tree.div.find_all('div')
+            subtypes = dict()
+            for div in divs:
+                a_tag = div.find('a', class_='filter-leaf')
+                if a_tag is None:
+                    continue
+                leaf_name = a_tag.text.strip()
+                leaf_name = self._normalize_spec_fieldnames(leaf_name)
+                if leaf_name == 'intended_use':
+                    lvl1 = div.find('div', class_='filter-level1')
+                    tags = lvl1.find_all('a', class_='filter-option-link')
+                    for tag in tags:
+                        subtype = self._normalize_spec_fieldnames(tag['title'])
+                        href = tag['href']
+                        subtypes[subtype] = href
+            bike_subtypes[bike_type] = subtypes
+        return bike_subtypes
 
     def get_all_available_prods(self, to_csv=True) -> list:
         """Scrape wiggle site for prods."""
@@ -57,35 +88,40 @@ class Jenson(Scraper):
         self._num_bikes = 0
 
         # Populate categories if missing
-        categories = self._get_categories()
+        categories = self._get_subtypes()
 
         # Scrape pages for each available category
-        for bike_type in categories.keys():
-            endpoint = categories[bike_type]['href']
-            soup = BeautifulSoup(self._fetch_prod_listing_view(
-                endpoint, page=0, page_size=self._page_size), 'lxml')
-            print(f'Parsing {bike_type}...')
-            self._get_prods_on_current_listings_page(soup, bike_type)
-            try:
-                pages = soup.find('span', class_='page-label').text
-                pages = int(pages.strip().split()[-1])
-            except AttributeError:
-                # No next page
-                pages = 0
-
-            # Scrape all pages for bike category
-            for page in range(1, pages):
+        for bike_type, subtypes in categories.items():
+            for subtype, href in subtypes.items():
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
-                    endpoint, page=page, page_size=self._page_size), 'lxml')
-                print(f'\t\tParsing next page...')
-                self._get_prods_on_current_listings_page(soup, bike_type)
+                    endpoint=href, include_base=False
+                ), 'lxml')
+                print(f'Parsing {bike_type}:{subtype}...')
+                self._get_prods_on_current_listings_page(soup, bike_type,
+                                                         subtype)
+                try:
+                    pages = soup.find('span', class_='page-label').text
+                    pages = int(pages.strip().split()[-1])
+                except AttributeError:
+                    # No next page
+                    pages = 0
+
+                # Scrape all pages for bike category
+                for page in range(1, pages):
+                    soup = BeautifulSoup(self._fetch_prod_listing_view(
+                        endpoint=href, page=page, page_size=self._page_size,
+                        include_base=False
+                    ), 'lxml')
+                    print(f'\t\tParsing next page...')
+                    self._get_prods_on_current_listings_page(soup, bike_type,
+                                                             subtype)
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
 
         return list()
 
-    def _get_prods_on_current_listings_page(self, soup, bike_type):
+    def _get_prods_on_current_listings_page(self, soup, bike_type, subtype):
         """Parse products on page."""
         try:
             section = soup.find('section', id='productList')
@@ -99,6 +135,7 @@ class Jenson(Scraper):
             product = dict()
             product['site'] = self._SOURCE
             product['bike_type'] = bike_type
+            product['subtype'] = subtype
 
             # Parse prod id
             prod_id = prod['id']
@@ -128,8 +165,25 @@ class Jenson(Scraper):
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
+        id_prod_specs = soup.find('div', id='prod-tab-frame-D')
+
+        # parse children tags until table is reached
+        # details and specs are embedded within same tab
+        details = ''
+        for child in id_prod_specs.children:
+            if child.name == 'table':
+                break
+
+            if isinstance(child, NavigableString):
+                continue
+
+            # stripped strings for tag
+            for string in child.stripped_strings:
+                details += string + '\n'
+        prod_specs['details'] = details
+
+        # parse tech specs
         try:
-            id_prod_specs = soup.find('div', id='prod-tab-frame-D')
             table_specs = id_prod_specs.find_all('table', class_='spec')
             table_spec = table_specs[0]
 

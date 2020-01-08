@@ -237,11 +237,11 @@ class Scraper(ABC):
         result = result.replace('}', '')
         result = result.replace("'", '')
         result = result.replace('*', '')
+        result = result.replace('&', '')
         result = result.replace(' / ', '_')
         result = result.replace('-', '_')
         result = result.replace('/', '_')
         result = result.replace('.', '_')
-        result = result.replace('&', '_')
         result = result.lower().replace(' ', '_')  # normalize: lowercase and no spaces
         result = result.replace('__', '_')
         result = result.replace('___', '_')
