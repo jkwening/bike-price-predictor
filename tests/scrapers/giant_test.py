@@ -9,7 +9,7 @@ from scrapers.giant import Giant
 from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 
 
-class SpecializedTestCase(unittest.TestCase):
+class GiantTestCase(unittest.TestCase):
     def setUp(self):
         self._scraper = Giant(save_data_path=DATA_PATH)
         self._bike_type = 'road_bikes'
