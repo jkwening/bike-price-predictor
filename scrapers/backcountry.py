@@ -153,7 +153,7 @@ class BackCountry(Scraper):
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
 
-    def _parse_prod_specs(self, soup):
+    def _parse_prod_specs(self, soup) -> dict:
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
 
