@@ -197,7 +197,9 @@ class Scraper(ABC):
                 else:
                     result = self._parse_prod_specs(bike_spec_soup)
 
-                # Process multiple product specs accordingly
+                # some sites have multiple product specs options available
+                # they're returned as a list instead of dict, so process
+                # these product specs accordingly
                 if isinstance(result, list):
                     for item in result:
                         specs[bike] = item

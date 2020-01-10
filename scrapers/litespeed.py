@@ -136,9 +136,6 @@ class LiteSpeed(Scraper):
 
     def _parse_prod_specs(self, soup) -> list:
         """Returns list of dictionary representation of the product's specification."""
-        # TODO: figure out why this is a list instead of dict
-        # Looks like i'm parsing multiple models but not updating price accordingly
-        # need to figure out how to toggle components accordingly while parsing table
         prod_specs = list()
 
         # parse details/description
@@ -155,7 +152,8 @@ class LiteSpeed(Scraper):
         upgrades = self._fetch_prod_options(prod_id)
 
         # parse tech specs
-        self._specs_fieldnames.add('bike_sub_type')
+        self._specs_fieldnames.add('bike_subtype')
+        self._specs_fieldnames.add('upgrade_options')
         try:
             li_sect = soup.find('li', id='tab2')
             sub_name = ''
@@ -184,10 +182,9 @@ class LiteSpeed(Scraper):
                     count += 1
 
                 if count % 2 == 0 and count > 0:
-                    sub_specs['bike_sub_type'] = sub_name  # sub-type as field name
+                    sub_specs['bike_subtype'] = sub_name  # sub-type as field name
                     sub_specs['details'] = details  # add details as field name
                     sub_specs['upgrade_options'] = upgrades['options']  # add upgrades options
-                    self._specs_fieldnames.add('upgrade_options')
                     prod_specs.append(sub_specs)
                     count = 0  # reset count
 
