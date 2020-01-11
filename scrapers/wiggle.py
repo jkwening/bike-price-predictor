@@ -28,7 +28,7 @@ class Wiggle(Scraper):
     def _get_categories(self) -> dict:
         """Fetch bike type categories and hrefs."""
         categories = dict()
-        exclude = ['view_all']
+        exclude = ['bmx_bikes', 'kids_bikes', 'view_all']
 
         # fetch and parse main cycles page
         soup = BeautifulSoup(
@@ -45,7 +45,6 @@ class Wiggle(Scraper):
             bike_type = a.span.string.strip()
             bike_type, count = bike_type.split('(')
             bike_type = self._normalize_spec_fieldnames(bike_type)
-            bike_type = bike_type.replace('_bikes', '').strip()
             count = count.replace(')', '').strip()
             if bike_type in exclude:
                 continue
@@ -54,6 +53,43 @@ class Wiggle(Scraper):
                 'count': int(count)
             }
 
+        return categories
+
+    def _get_subtypes(self) -> dict:
+        categories = dict()
+        bike_cats = self._get_categories()
+        for bike_type, values in bike_cats.items():
+            href = values['href']
+            subtypes = dict()
+            soup = BeautifulSoup(
+                self._fetch_html(url=href),
+                'lxml'
+            )
+            content_bikes = soup.find(id='content-category')
+            a_tags = content_bikes.find_all(
+                'a', class_='bem-left-hand-navigation__item-link'
+            )
+            # handle no subtypes
+            if not a_tags:
+                categories[bike_type] = {
+                    bike_type: {
+                        'href': href,
+                        'count': values['count']
+                    }
+                }
+                continue
+
+            # parse all hrefs
+            for a in a_tags:
+                subtype = a.span.string.strip()
+                subtype, count = subtype.split('(')
+                subtype = self._normalize_spec_fieldnames(subtype)
+                count = count.replace(')', '').strip()
+                subtypes[subtype] = {
+                    'href': a['href'],
+                    'count': int(count)
+                }
+            categories[bike_type] = subtypes
         return categories
 
     def _get_max_num_prods(self, soup):
@@ -65,15 +101,18 @@ class Wiggle(Scraper):
 
         return 0  # implies no products on page
 
-    def _get_prods_on_current_listings_page(self, soup, bike_type):
+    def _get_prods_on_current_listings_page(self, soup, bike_type, subtype):
         div_id_products = soup.find('div', attrs={'id': 'search-results'})
-        div_products_list = div_id_products.find_all('div',
-                                                     class_='js-result-list-item')
+        div_products_list = div_id_products.find_all(
+            'div', class_='js-result-list-item'
+        )
 
         for prod_info in div_products_list:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
 
             # get id
             prod_id = prod_info['data-id']
@@ -114,6 +153,20 @@ class Wiggle(Scraper):
 
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
+        # parse details/description
+        # details are in two section: one near price
+        # another near tech specs
+        div_price_detail = soup.find('div', class_='bem-pdp__pricing')
+        div_price_detail = div_price_detail.find(
+            'div', attrs={'itemprop': 'description'}
+        )
+        details = div_price_detail.text.strip()
+        div_details = soup.find(
+            'div', class_='bem-pdp__product-description--written'
+        )
+        details += '\n' + div_details.text.strip()
+
+        # parse tech specifications
         prod_specs = dict()
         try:
             div_product_desc_table = soup.find('div',
@@ -130,7 +183,7 @@ class Wiggle(Scraper):
                     self._specs_fieldnames.add(spec_name)
                 except ValueError:
                     continue
-
+            prod_specs['details'] = details
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         except AttributeError as err:
             print(f'\tError: {err}')
@@ -144,23 +197,26 @@ class Wiggle(Scraper):
         self._num_bikes = 0
 
         # get categories and fetch all products for each category
-        categories = self._get_categories()
-        for bike_type in categories.keys():
-            page_url = categories[bike_type]['href']
-            num_prods = categories[bike_type]['count']
+        categories = self._get_subtypes()
+        for bike_type, subtypes in categories.items():
+            for subtype, values in subtypes.items():
+                page_url = values['href']
+                num_prods = values['count']
 
-            # get all products for bike type fetch max num of prods per page
-            self._page_size = 96
-            num_pages = ceil(num_prods / self._page_size)
-            for i in range(num_pages):
-                print(f'\nParsing page {i + 1} for {bike_type}...')
-                prod_num = i * 96 + 1  # set query str for next page
-                soup = BeautifulSoup(
-                    self._fetch_prod_listing_view(page_url, prod_num=prod_num,
-                                                  page_size=self._page_size),
-                    'lxml'
-                )
-                self._get_prods_on_current_listings_page(soup, bike_type)
+                # get all products for bike type fetch max num of prods per page
+                self._page_size = 96
+                num_pages = ceil(num_prods / self._page_size)
+                for i in range(num_pages):
+                    print(f'\nParsing page {i + 1} for {bike_type}:{subtype}...')
+                    prod_num = i * 96 + 1  # set query str for next page
+                    soup = BeautifulSoup(
+                        self._fetch_prod_listing_view(page_url, prod_num=prod_num,
+                                                      page_size=self._page_size),
+                        'lxml'
+                    )
+                    self._get_prods_on_current_listings_page(
+                        soup, bike_type, subtype
+                    )
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
