@@ -30,31 +30,60 @@ class Trek(Scraper):
         num = int(num.split()[0])
         return num
 
+    @staticmethod
+    def _next_page(soup) -> tuple:
+        nav_page = soup.find('nav', class_='pagination')
+        next_a = nav_page.find(id='search-page-next')
+        if next_a is None:
+            return False, ''
+        return True, next_a['href']
+
+    def _parse_categories(self, soup, exclude) -> dict:
+        categories = dict()
+        field_set = soup.find('fieldset', attrs={'name': 'Category'})
+        div_cat = field_set.find('div', class_='facet-group__wrap')
+        a_cats = div_cat.find_all('a')
+
+        for a in a_cats:
+            title = self._normalize_spec_fieldnames(a.text.strip())
+            if title in exclude:
+                continue
+            categories[title] = a['href']
+            # print(f'[{len(categories)}] New category {title}: ', bike_cat)
+        return categories
+
     def _get_categories(self) -> dict:
         """Bike category endpoint encodings.
 
         Returns:
             dictionary of dictionaries
         """
-        categories = dict()
-        white_list = ['road', 'mountain', 'electric', 'hybrid',
-                      'adventure_touring', 'kids']
+        exclude = ['mens_bikes', 'electric_bikes',
+                   'womens_bikes', 'kids_bikes',
+                   'show_all', 'show_less']
         page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
         soup = BeautifulSoup(page, 'lxml')
+        return self._parse_categories(soup, exclude)
 
-        nav_cat = soup.find('div', attrs={'id': 'ShopByCategoryNavNode'})
-        ul_cat = nav_cat.find('ul', class_='primary-navigation__links')
-        a_cats = ul_cat.find_all('a')
+    def _get_subtypes(self) -> dict:
+        subtypes = dict()
+        exclude = ['aluminum_mountain_bikes', 'carbon_mountain_bikes',
+                   'entry_level_beginner_mountain_bikes',
+                   'womens_mountain_bikes', 'kids_mountain_bikes',
+                   'carbon_road_bikes', 'disc_brake_road_bikes',
+                   'lightweight_road_bikes', 'aluminum_road_bikes',
+                   'aero_road_bikes', 'womens_road_bikes',
+                   'womens_hybrid_bikes', 'kids_hybrid_bikes',
+                   'womens_commuter_bikes', 'show_all', 'show_less']
+        categories = self._get_categories()
+        for bike_type, href in categories.items():
+            soup = BeautifulSoup(
+                self._fetch_prod_listing_view(endpoint=href),
+                'lxml'
+            )
+            subtypes[bike_type] = self._parse_categories(soup, exclude)
 
-        for a in a_cats:
-            bike_cat = dict()
-            bike_cat['href'] = a['href']
-            title = self._normalize_spec_fieldnames(a.string.strip())
-            if title in white_list:  # keep specific major categories
-                categories[title] = bike_cat
-            # print(f'[{len(categories)}] New category {title}: ', bike_cat)
-
-        return categories
+        return subtypes
 
     def get_all_available_prods(self, to_csv=True) -> list:
         """Scrape wiggle site for prods."""
@@ -62,49 +91,48 @@ class Trek(Scraper):
         self._products = dict()
         self._num_bikes = 0
 
-        # Exclude list
-        exclude_list = ['womens']
-
         # Scrape pages for each available category
-        bike_categories = self._get_categories()
-        for bike_type in bike_categories.keys():
-            if bike_type in exclude_list:
-                continue
-            print(f'Getting {bike_type}...')
-            endpoint = bike_categories[bike_type]['href']
-            soup = BeautifulSoup(self._fetch_prod_listing_view(
-                endpoint, page_size=self._PAGE_SIZE), 'lxml')
-            self._get_prods_on_current_listings_page(soup, bike_type)
-            num_bikes = self._get_max_num_prods(soup)
+        categories = self._get_subtypes()
+        for bike_type, subtypes in categories.items():
+            for subtype, href in subtypes.items():
+                print(f'Getting {bike_type}:{subtype}...')
+                soup = BeautifulSoup(self._fetch_prod_listing_view(
+                    endpoint=href, page_size=self._PAGE_SIZE), 'lxml')
+                self._get_prods_on_current_listings_page(
+                    soup, bike_type, subtype
+                )
+                next_page, href = self._next_page(soup)
 
-            if num_bikes > self._PAGE_SIZE:
-                # site embeds non products on page so
-                total_pages = math.ceil(num_bikes / self._PAGE_SIZE)
-
-                for i in range(1, total_pages):
-                    try:
-                        soup = BeautifulSoup(self._fetch_prod_listing_view(
-                            endpoint, page_size=self._PAGE_SIZE, page=i), 'lxml')
-                        self._get_prods_on_current_listings_page(soup, bike_type)
-                    except FileNotFoundError:
-                        print(f'Page: {i} does not exist.)')
-                        break  # page doesn't exist so exit
+                while next_page:
+                    soup = BeautifulSoup(
+                        self._fetch_prod_listing_view(
+                            endpoint=href,
+                            page_size=self._PAGE_SIZE
+                        ),
+                        'lxml'
+                    )
+                    self._get_prods_on_current_listings_page(
+                        soup, bike_type, subtype
+                    )
+                    next_page, href = self._next_page(soup)
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
 
         return list()
 
-    def _get_prods_on_current_listings_page(self, soup, bike_type):
+    def _get_prods_on_current_listings_page(self, soup, bike_type, subtype):
         """Parse products on page."""
         ul_prod = soup.find('ul', class_='product-list')
         products = ul_prod.find_all('article', class_='product-tile')
 
         for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['brand'] = 'trek'  # site is single brand
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'brand': 'trek',
+                'subtype': subtype
+            }
 
             try:
                 prod_id = prod.find('a')['data-sku']
@@ -137,8 +165,25 @@ class Trek(Scraper):
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
 
-    def _parse_prod_specs(self, soup):
+    def _parse_prod_specs(self, soup) -> dict:
         """Return dictionary representation of the product's specification."""
+        # parse details/description
+        div_details = soup.find(id='overview')
+        details = ''
+        overview = div_details.find(id='datadriven-bikeProduct-productOverview')
+        if overview is not None:
+            details += overview.text
+        features = div_details.find(id='productFeaturesSection')
+        if features is not None:
+            details += '\n' + features.text
+        features = div_details.find(class_='productPrimaryFeaturesComponent')
+        if features is not None:
+            details += '\n' + features.text
+        tertiary_features = div_details.find(id='trekProductSpecificationsComponent')
+        if tertiary_features is not None:
+            details += '\n' + tertiary_features.text
+
+        # parse tech specifications
         try:
             # use appropriate parser per specs html DOM structure
             section = soup.find('section', id='trekProductSpecificationsComponent')
@@ -147,13 +192,15 @@ class Trek(Scraper):
                 prod_specs = self._specs_table_parser(section)
             else:
                 prod_specs = self._specs_ul_parser(section)
+            # add details
+            prod_specs['details'] = details
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
             return prod_specs
         except AttributeError as err:
-            print(f'\tError: {err}')
-            return dict()
+            print(f'\tERROR: {err}')
+            return {'details': details}
 
-    def _specs_ul_parser(self, section):
+    def _specs_ul_parser(self, section) -> dict:
         """Product specs parser for ul based structure."""
         prod_specs = dict()
         ul_specs = section.find('ul')
@@ -167,7 +214,7 @@ class Trek(Scraper):
             self._specs_fieldnames.add(spec)
         return prod_specs
 
-    def _specs_table_parser(self, section):
+    def _specs_table_parser(self, section) -> dict:
         """Product specs parser for table based structure."""
         prod_specs = dict()
         tr_tags = section.find_all('tr')
