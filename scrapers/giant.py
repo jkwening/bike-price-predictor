@@ -95,10 +95,11 @@ class Giant(Scraper):
             bike_summary = container.find_all('div', class_='bike-summary')
 
             for bike in bike_summary:
-                product = dict()
-                product['site'] = self._SOURCE
-                product['bike_type'] = bike_type
-                product['subtype'] = subtype
+                product = {
+                    'site': self._SOURCE,
+                    'bike_type': bike_type,
+                    'subtype': subtype
+                }
 
                 a_tag = bike.a
                 product['href'] = a_tag['href']

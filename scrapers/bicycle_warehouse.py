@@ -130,10 +130,11 @@ class BicycleWarehouse(Scraper):
         products = soup.find_all(class_='productgrid--item')
 
         for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['subtype'] = subtype
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
 
             item = prod.find('div', class_='productitem--info')
             # Get href, description, and brand

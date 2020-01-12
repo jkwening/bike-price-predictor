@@ -101,13 +101,12 @@ class LiteSpeed(Scraper):
         """Parse products on page."""
         info = soup.find_all('a', class_='product-info__caption')
 
-        product = dict()
         for prod in info:
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['brand'] = self._SOURCE
-            product['href'] = prod['href']
-            product['subtype'] = subtype
+            product = {
+                'site': self._SOURCE, 'bike_type': bike_type,
+                'subtype': subtype, 'brand': self._SOURCE,
+                'href': prod['href']
+            }
 
             # Get product details section and title
             div_details = prod.find('div', class_='product-details')

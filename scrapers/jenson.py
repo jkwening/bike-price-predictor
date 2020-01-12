@@ -132,10 +132,11 @@ class Jenson(Scraper):
             return None
 
         for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['subtype'] = subtype
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
 
             # Parse prod id
             prod_id = prod['id']

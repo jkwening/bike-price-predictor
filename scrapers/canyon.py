@@ -73,11 +73,12 @@ class Canyon(Scraper):
         products = prod_grid.find_all('li', class_='productGrid__listItem')
 
         for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['brand'] = self._SOURCE  # site is single brand
-            product['subtype'] = subtype
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype,
+                'brand': self._SOURCE
+            }
 
             # prod id
             div_scope = prod.find('div', class_='productTile')

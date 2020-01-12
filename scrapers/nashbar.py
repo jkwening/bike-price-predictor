@@ -71,10 +71,11 @@ class NashBar(Scraper):
         items = products_view.find_all('div', class_='item')
 
         for item in items:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['subtype'] = subtype
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
 
             # Get prod_id, prod_desc, and brand
             prod_id = item['data-id']

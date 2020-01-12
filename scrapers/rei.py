@@ -124,8 +124,11 @@ class Rei(Scraper):
         results = data['results']
 
         for prod in results:
-            product = {'site': 'rei', 'bike_type': bike_type,
-                       'subtype': subtype}
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
             brand = prod['brand']
             title = prod['cleanTitle']
             product['brand'] = brand

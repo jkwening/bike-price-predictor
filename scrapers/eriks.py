@@ -129,10 +129,11 @@ class EriksBikes(Scraper):
         search_products = soup.find('div', class_='SearchProductList')
         products = search_products.find_all('div', attrs={'id': 'Td2'})
         for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['subtype'] = subtype
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
 
             dept_prod_text = prod.find('div', class_='DeptProdText')
 

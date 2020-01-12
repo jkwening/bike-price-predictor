@@ -119,10 +119,11 @@ class BackCountry(Scraper):
         products = grid.find_all('div', class_='product')
 
         for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['subtype'] = subtype
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
 
             # Get prod id
             prod_id = prod['data-product-id']

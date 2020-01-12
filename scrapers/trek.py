@@ -130,7 +130,7 @@ class Trek(Scraper):
             product = {
                 'site': self._SOURCE,
                 'bike_type': bike_type,
-                'brand': 'trek',
+                'brand': self._SOURCE,
                 'subtype': subtype
             }
 

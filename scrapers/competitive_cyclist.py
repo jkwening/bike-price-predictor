@@ -85,10 +85,11 @@ class CompetitiveCyclist(Scraper):
         div_products_list = div_id_products.find_all('div', class_='product')
 
         for prod_info in div_products_list:
-            product = dict()
-            product['bike_type'] = bike_type
-            product['site'] = self._SOURCE
-            product['subtype'] = subtype
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
 
             # get id
             prod_id = prod_info['data-product-id']

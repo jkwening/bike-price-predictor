@@ -69,11 +69,12 @@ class Specialized(Scraper):
             if skip:
                 continue
 
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['brand'] = 'specialized'  # site is single brand
-            product['subtype'] = result.get('experience', bike_type)[0]
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': result.get('experience', bike_type)[0],
+                'brand': self._SOURCE
+            }
             # Get bike_type and prod_id
             prod_id = result['code']
             product['product_id'] = prod_id

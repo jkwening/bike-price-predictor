@@ -127,10 +127,11 @@ class BikeDoctor(Scraper):
         search_products = soup.find('div', attrs={'id': 'SearchProducts'})
         products = search_products.find_all('div', class_='seProduct')
         for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['subtype'] = subtype
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
             product_title = prod.find('div', class_='seProductTitle')
 
             # Get page href, product_id, and description

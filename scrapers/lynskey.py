@@ -119,13 +119,14 @@ class Lynskey(Scraper):
 
     def _get_prods_on_current_listings_page(self, soup, bike_type, subtype):
         """Parse products on page."""
-        product = dict()
         products = soup.find_all('article', class_='product-grid-item')
         for prod in products:
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['brand'] = self._SOURCE
-            product['subtype'] = subtype
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype,
+                'brand': self._SOURCE
+            }
 
             # Get product details section and title
             div_details = prod.find('div', class_='product-grid-item-details')
