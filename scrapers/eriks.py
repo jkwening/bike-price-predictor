@@ -126,7 +126,11 @@ class EriksBikes(Scraper):
                                             subtype,
                                             get_num_bikes=False):
         """Parse products on page."""
+        # pavement_singles_speed directs to product specs page
+        # skip when encountering this issue
         search_products = soup.find('div', class_='SearchProductList')
+        if search_products is None:
+            return 0
         products = search_products.find_all('div', attrs={'id': 'Td2'})
         for prod in products:
             product = {

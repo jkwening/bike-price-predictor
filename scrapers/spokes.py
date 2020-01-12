@@ -30,7 +30,8 @@ class Spokes(Scraper):
         """Returns (success, endpoint) for next page url."""
 
         div = soup.find('div', class_='sePaginationWrapper')
-        a_tag = div.find('a', class_='sePaginationLink')
+        a_tag = div.find('a', class_='sePaginationLink',
+                         attrs={'title': 'Next page'})
 
         if a_tag is None:
             return False, ''

@@ -11,7 +11,7 @@ from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 class ReiTestCase(unittest.TestCase):
     def setUp(self):
         self._scraper = Rei(save_data_path=DATA_PATH)
-        self._bike_type = 'specialty'
+        self._bike_type = 'hybrid'
         self._categories = ['mountain', 'road', 'specialty',
                             'hybrid', 'electric']
 

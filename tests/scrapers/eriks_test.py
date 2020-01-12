@@ -12,7 +12,7 @@ from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 class EriksBikesTestCase(unittest.TestCase):
     def setUp(self):
         self._scraper = EriksBikes(save_data_path=DATA_PATH)
-        self._bike_type = 'road_bikes'
+        self._bike_type = 'path_pavement_bikes'
         self._categories = [
             'road_bikes',
             'mountain_bikes',
@@ -35,7 +35,7 @@ class EriksBikesTestCase(unittest.TestCase):
                             msg=f'{key} is not in {expected_bike_types}!')
 
     def test_get_prods_listings(self):
-        bike_type = self._bike_type.split('_')[0]
+        bike_type = self._bike_type.replace('_bikes','')
         categories = self._scraper._get_subtypes()
         for subtype, href in categories[bike_type].items():
             soup = BeautifulSoup(self._scraper._fetch_html(

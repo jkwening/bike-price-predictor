@@ -174,7 +174,9 @@ class CompetitiveCyclist(Scraper):
                 print(f'Parsing first page for {bike_type}:{subtype}...')
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
                     endpoint=href), 'lxml')
-                self._get_prods_on_current_listings_page(soup, bike_type)
+                self._get_prods_on_current_listings_page(
+                    soup, bike_type, subtype
+                )
                 next_page, endpoint = self._get_next_page(soup)
 
                 counter = 1
