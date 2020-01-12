@@ -1,8 +1,9 @@
 """
 Module for scraping specialized.com for its bike data.
 """
-import json
 import re
+import json
+from pprint import pprint
 
 from bs4 import BeautifulSoup
 
@@ -14,6 +15,7 @@ class Specialized(Scraper):
         super().__init__(base_url='https://www.specialized.com',
                          source='specialized', save_data_path=save_data_path)
         self._page_size = 18  # 18 per page or all items
+        self._EN_US_ENDPOINT = '/us/en'
         self._PROD_PAGE_ENDPOINT = '/us/en/shop/bikes/c/bikes'
         self._BIKE_CATEGORIES = {
             'mountain': '/us/en/shop/bikes/mountain-bikes/c/mountain',
@@ -21,25 +23,88 @@ class Specialized(Scraper):
             'fitness': '/us/en/shop/bikes/fitness--urban/c/active'
         }
 
-    def _fetch_prod_listing_view(self, endpoint, page=1,
-                                 show_all=False):
+    def _fetch_prod_listing_view(self, endpoint, show_all=True) -> dict:
+        """Returns json dict object of products."""
+        req_url = f'{self._BASE_URL}{endpoint}/plp'
         if show_all:  # Get all bikes page
-            req_url = f'{self._BASE_URL}{endpoint}?show=All'
-        else:  # Get paginated page at specified page #
-            req_url = f'{self._BASE_URL}{endpoint}?page={page}'
-        return self._fetch_html(req_url)
+            req_url += '?show=All'
+        text = self._fetch_html(req_url)
+        return json.loads(text)
 
     # TODO: seems unnecessary, remove and embed directly into get_all_available_prods()
     def _get_max_num_prods(self, soup):
         """Raise error: Not implemented in this module."""
         raise NotImplemented
 
-    def _get_categories(self):
+    def _get_categories(self) -> dict:
         return self._BIKE_CATEGORIES
+
+    def get_all_available_prods(self, to_csv=True) -> list:
+        """Scrape wiggle site for prods."""
+        # Reset scraper related variables
+        self._products = dict()
+        self._num_bikes = 0
+
+        # Scrape pages for each available category
+        for bike_type, href in self._BIKE_CATEGORIES.items():
+            print(f'Getting {bike_type}...')
+            data = self._fetch_prod_listing_view(endpoint=href)
+            self._get_prods_on_current_listings_page(data, bike_type)
+
+        if to_csv:
+            return [self._write_prod_listings_to_csv()]
+
+        return list()
+
+    def _get_prods_on_current_listings_page(self, data: dict, bike_type: str):
+        """Parse products on page."""
+
+        for result in data['results']:
+            # skip framesets
+            skip = False
+            for facet_dict in result['facets']:
+                if 'frameset' in facet_dict['name'].lower():
+                    skip = True
+                    break
+            if skip:
+                continue
+
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': result.get('experience', bike_type)[0],
+                'brand': self._SOURCE
+            }
+            # Get bike_type and prod_id
+            prod_id = result['code']
+            product['product_id'] = prod_id
+
+            # Get page href and description
+            product['href'] = result['url']
+            product['description'] = result['name']
+
+            # Get price
+            product['msrp'] = float(
+                result['formattedPrice'].strip('$').replace(',', ''))
+            price = result['formattedDiscountPrice']
+            if price is None:
+                price = product['msrp']
+            else:
+                price = price.strip('$').replace(',', '')
+            product['price'] = float(price)
+
+            self._products[prod_id] = product
+            print(f'[{len(self._products)}] New bike: ', product)
 
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
+        # parse details/description
+        tab1 = soup.find(id='tab1')
+        details = tab1.text.strip()
+        prod_specs['details'] = details
+
+        # parse tech specifications
         try:
             div_table = soup.find('div', class_='product__specs-table')
             table_tr = div_table.find_all('tr', class_='product__specs-table-entry')
@@ -56,64 +121,3 @@ class Specialized(Scraper):
             print(f'\tError: {err}')
 
         return prod_specs
-
-    def get_all_available_prods(self, to_csv=True) -> list:
-        """Scrape wiggle site for prods."""
-        # Reset scraper related variables
-        self._products = dict()
-        self._num_bikes = 0
-
-        # Scrape pages for each available category
-        for bike_type, href in self._BIKE_CATEGORIES.items():
-            print(f'Getting {bike_type}...')
-            soup = BeautifulSoup(self._fetch_prod_listing_view(
-                href, show_all=True), 'lxml')
-            self._get_prods_on_current_listings_page(soup, bike_type)
-
-        if to_csv:
-            return [self._write_prod_listings_to_csv()]
-
-        return list()
-
-    def _get_prods_on_current_listings_page(self, soup, bike_type):
-        """Parse products on page."""
-        div_prod_list = soup.find('div', class_='product-list')
-        products = div_prod_list.find_all('div', class_='product-list__item')
-        for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
-            product['brand'] = 'specialized'  # site is single brand
-
-            wrapper = prod.find('div', class_='product-list__item-wrapper')
-
-            # Get bike_type and prod_id
-            data = wrapper['data-product-ic']
-            prod_id = re.search(r'\"id\":\"\d+\"', data).group().split(":")[1]
-            prod_id = prod_id.strip('"')
-            product['product_id'] = prod_id
-
-            # Get page href and description
-            product['href'] = wrapper.a['href']
-            product['description'] = wrapper.a['title']
-
-            # Get price
-            price, msrp = None, None  # initialize to None type
-            try:
-                div_price = wrapper.find('div', class_='product-list__item-price')
-                price = div_price.find('span', class_='js-plp-price').string
-                product['price'] = float(
-                    price.strip().strip('$').replace(',', ''))
-                msrp = div_price.find('span', class_='js-plp-price-old').string
-                product['msrp'] = float(
-                    msrp.strip().strip('$').replace(',', ''))
-            except NameError:
-                if price is None:
-                    print(f'{prod_id}: No price available, setting to $0.00')
-                    product['price'] = 0.0
-
-                if msrp is None:
-                    product['msrp'] = product['price']
-
-            self._products[prod_id] = product
-            print(f'[{len(self._products)}] New bike: ', product)

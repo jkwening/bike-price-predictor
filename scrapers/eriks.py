@@ -35,6 +35,7 @@ class EriksBikes(Scraper):
             dictionary of dictionaries
         """
         categories = dict()
+        exclude = ['youth_bikes', 'bmx_bikes', 'electric_bikes']
         page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT,
                                              guide=True)
         soup = BeautifulSoup(page, 'lxml')
@@ -47,6 +48,8 @@ class EriksBikes(Scraper):
             bike_cat = dict()
             h2 = c.h2.contents[0].replace('& ', '')
             title = self._normalize_spec_fieldnames(h2)
+            if title in exclude:
+                continue
 
             # Get href link
             bucket_links = c.find('div', class_='GBucketLinks')
@@ -57,6 +60,37 @@ class EriksBikes(Scraper):
 
         return categories
 
+    def _get_subtypes(self) -> dict:
+        categories = dict()
+        exclude = ['bmx', 'electric', 'kids', 'specialty',
+                   'closeout_used']
+        page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT,
+                                             guide=True)
+        soup = BeautifulSoup(page, 'lxml')
+        menu = soup.find(id='mymenu')
+        bikes_li = menu.find('li', class_='level-0-1')
+        lvl1_lis = bikes_li.find_all('li', class_='level-1')
+
+        for lvl1 in lvl1_lis:
+            bike_type = lvl1.a.string.strip()
+            bike_type = self._normalize_spec_fieldnames(bike_type)
+            if bike_type in exclude:
+                continue
+
+            # parse subtypes
+            subtypes = dict()
+            lvl2_lis = lvl1.find_all('li', class_='level-2')
+            for lvl2 in lvl2_lis:
+                subtype = lvl2.a.string.strip()
+                subtype = self._normalize_spec_fieldnames(subtype)
+                if 'buying_guide' in subtype:  # ignore 'buying guide' links
+                    continue
+                href = lvl2.a['href']
+                subtypes[subtype] = href
+            categories[bike_type] = subtypes
+
+        return categories
+
     def get_all_available_prods(self, to_csv=True) -> list:
         """Scrape wiggle site for prods."""
         # Reset scraper related variables
@@ -64,24 +98,24 @@ class EriksBikes(Scraper):
         self._num_bikes = 0
 
         # Scrape pages for each available category
-        categories = self._get_categories()
-        for bike_type in categories.keys():
-            print(f'Getting {bike_type}...')
-            endpoint = categories[bike_type]['href']
+        categories = self._get_subtypes()
+        for bike_type, subtypes in categories.items():
+            for subtype, href in subtypes.items():
+                print(f'Getting {bike_type}:{subtype}...')
+                # Scrape first page, get num bikes, and determine num pages
+                soup = BeautifulSoup(self._fetch_html(url=href), 'lxml')
+                num_bikes = self._get_prods_on_current_listings_page(
+                    soup, bike_type, subtype, get_num_bikes=True
+                )
+                pages = math.ceil(num_bikes / self._page_size)
 
-            # Scrape first page, get num bikes, and determine num pages
-            soup = BeautifulSoup(self._fetch_prod_listing_view(
-                endpoint, page=1), 'lxml')
-            num_bikes = self._get_prods_on_current_listings_page(
-                soup, bike_type, get_num_bikes=True
-            )
-            pages = math.ceil(num_bikes / self._page_size)
-
-            # Scrape remaining pages for bike category
-            for page in range(1, pages):
-                soup = BeautifulSoup(self._fetch_prod_listing_view(
-                    endpoint, page=page + 1), 'lxml')
-                self._get_prods_on_current_listings_page(soup, bike_type)
+                # Scrape remaining pages for bike category
+                for page in range(2, pages):
+                    qs = {'\tparsing page': page}
+                    soup = BeautifulSoup(self._fetch_html(
+                        url=href, params=qs), 'lxml')
+                    self._get_prods_on_current_listings_page(soup, bike_type,
+                                                             subtype)
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
@@ -89,14 +123,17 @@ class EriksBikes(Scraper):
         return list()
 
     def _get_prods_on_current_listings_page(self, soup, bike_type,
+                                            subtype,
                                             get_num_bikes=False):
         """Parse products on page."""
         search_products = soup.find('div', class_='SearchProductList')
         products = search_products.find_all('div', attrs={'id': 'Td2'})
         for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
 
             dept_prod_text = prod.find('div', class_='DeptProdText')
 
@@ -142,6 +179,16 @@ class EriksBikes(Scraper):
     def _parse_prod_specs(self, soup):
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
+
+        # parse details/description
+        div_description = soup.find('div', class_='product-description')
+        feat = div_description.find('div', class_='feat')
+        details = ''
+        for string in feat.stripped_strings:
+            details = string + '\n'
+        prod_specs['details'] = details
+
+        # parse tech specifications
         try:
             # div_feat = soup.find('div', class_='feat')
             gspecs_div = soup.find('div', class_='specs')

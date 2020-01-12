@@ -14,15 +14,32 @@ class SpecializedTestCase(unittest.TestCase):
         self._scraper = Specialized(save_data_path=DATA_PATH)
         self._bike_type = 'mountain'
 
-    def test_get_prods_listings(self):
-        bike_cats = self._scraper._BIKE_CATEGORIES
-        endpoint = bike_cats[self._bike_type]
-        soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
-            endpoint, show_all=True), 'lxml')
+    def test_fetch_prod_listing_view(self):
+        # expect result to be dict object with 'results' key
+        # where result is list of dict objects with product details
+        result = self._scraper._fetch_prod_listing_view(
+            endpoint=self._scraper._BIKE_CATEGORIES[self._bike_type],
+            show_all=False
+        )
+        self.assertTrue(isinstance(result, dict),
+                        msg=f'{type(result)} is not a dict object.')
+        self.assertTrue('results' in result.keys(),
+                        msg=f'"results" not in {result.keys()}')
+        self.assertTrue(isinstance(result['results'], list),
+                        msg=f'{type(result["results"])} is not a list object.')
+        self.assertTrue(isinstance(result['results'][0], dict),
+                        msg=f'{type(result["results"][0])} is not a dict object.')
+        print('Sample result:', result["results"][0])
 
+    def test_get_prods_listings(self):
+        href = self._scraper._BIKE_CATEGORIES[self._bike_type]
+        data = self._scraper._fetch_prod_listing_view(
+            endpoint=href, show_all=False
+        )
         # Verify product listings fetch
-        self._scraper._get_prods_on_current_listings_page(soup,
-                                                          self._bike_type)
+        self._scraper._get_prods_on_current_listings_page(
+            data, self._bike_type
+        )
         num_prods = len(self._scraper._products)
         self.assertTrue(num_prods > 5,
                         msg=f'There are {num_prods} product first page.')

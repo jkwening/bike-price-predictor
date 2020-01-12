@@ -60,6 +60,19 @@ class BackCountry(Scraper):
 
         return categories
 
+    def _get_subtypes(self, soup) -> dict:
+        """Get subtypes for each category via recommended use url."""
+        div = soup.find(id='facet-RecommendedUse')
+        div_list = div.find(id='attr_recommendeduse-filter-list')
+        a_tags = div_list.find_all('a')
+
+        sub_types = dict()
+        for a_tag in a_tags:
+            title = self._normalize_spec_fieldnames(a_tag['title'])
+            href = a_tag['href']
+            sub_types[title] = href
+        return sub_types
+
     def get_all_available_prods(self, to_csv=True) -> list:
         """Scrape wiggle site for prods."""
         # Reset scraper related variables
@@ -69,39 +82,48 @@ class BackCountry(Scraper):
                           'lxml')
         )
 
-        # Scrape pages for each available category
+        # Scrape pages for each available category and respective subtype
         bike_categories = self._get_categories()
         for bike_type in bike_categories:
-            print(f'Parsing first page for {bike_type}...')
             endpoint = bike_categories[bike_type]['href']
             soup = BeautifulSoup(self._fetch_prod_listing_view(
                 endpoint), 'lxml')
-            self._get_prods_on_current_listings_page(soup, bike_type)
-            next_page, endpoint = self._get_next_page(soup)
-
-            counter = 1
-            while next_page:
-                counter += 1
-                print('\tparsing page:', counter)
+            subtypes = self._get_subtypes(soup)
+            for subtype in subtypes:
+                endpoint = subtypes[subtype]
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
                     endpoint), 'lxml')
-                self._get_prods_on_current_listings_page(soup, bike_type)
+                print(f'Parsing first page for {bike_type}: {subtype}...')
+                self._get_prods_on_current_listings_page(soup, bike_type,
+                                                         subtype)
                 next_page, endpoint = self._get_next_page(soup)
+
+                counter = 1
+                while next_page:
+                    counter += 1
+                    print('\tparsing page:', counter)
+                    soup = BeautifulSoup(self._fetch_prod_listing_view(
+                        endpoint), 'lxml')
+                    self._get_prods_on_current_listings_page(soup, bike_type,
+                                                             subtype)
+                    next_page, endpoint = self._get_next_page(soup)
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
 
         return list()
 
-    def _get_prods_on_current_listings_page(self, soup, bike_type):
+    def _get_prods_on_current_listings_page(self, soup, bike_type, subtype):
         """Parse products on page."""
         grid = soup.find('div', class_='plp-product-grid')
-        products = soup.find_all('div', class_='product')
+        products = grid.find_all('div', class_='product')
 
         for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
 
             # Get prod id
             prod_id = prod['data-product-id']
@@ -132,14 +154,18 @@ class BackCountry(Scraper):
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
 
-    def _parse_prod_specs(self, soup):
+    def _parse_prod_specs(self, soup) -> dict:
         """Return dictionary representation of the product's specification."""
         prod_specs = dict()
 
-        # Default: spec div tab with two or more columns
-        div_info = soup.find('div', id='accordion-parent')
-        rows = div_info.find_all('div', class_='tr')
-
+        # Specifications and details data is hidden with accordion DOM
+        section = soup.find('div', id='accordion-parent')
+        # parse specifications
+        div_tech_specs = section.find(
+            'div',
+            class_='table product-details-accordion__techspecs-container'
+        )
+        rows = div_tech_specs.find_all('div', class_='tr')
         for row in rows:
             spec = self._normalize_spec_fieldnames(row.find(
                 'div', class_='product-details-accordion__techspec-name').string)
@@ -148,6 +174,16 @@ class BackCountry(Scraper):
                              ).string.strip()
             self._specs_fieldnames.add(spec)
             prod_specs[spec] = value
+
+        # parse product details/description
+        div_details = section.find(id='js-buybox-details-section')
+        details = ''
+        for string in div_details.stripped_strings:
+            details += string + '\n'
+        div_details_list = section.find(id='js-bulletpoints-section')
+        for string in div_details_list.stripped_strings:
+            details += string + '\n'
+        prod_specs['details'] = details.strip()
 
         print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         return prod_specs

@@ -38,7 +38,7 @@ class BicycleWarehouse(Scraper):
             dictionary of dictionaries
         """
         categories = dict()
-        exclude = ['kids_bikes']
+        exclude = ['kids_bikes', 'bmx_bikes']
 
         page = self._fetch_prod_listing_view('')
         soup = BeautifulSoup(page, 'lxml')
@@ -59,6 +59,39 @@ class BicycleWarehouse(Scraper):
 
         return categories
 
+    def _get_subtypes(self) -> dict:
+        """Get subtypes for each category via recommended use url."""
+        categories = dict()
+        exclude = ['kids_bikes', 'bmx_bikes', 'electric_bikes']
+
+        page = self._fetch_prod_listing_view('')
+        soup = BeautifulSoup(page, 'lxml')
+
+        nav_cat = soup.find('nav', class_='site-navigation')
+        li_bikes = nav_cat.find('li', class_='navmenu-id-bikes')
+        ul_bikes = li_bikes.find('ul', class_='navmenu-depth-2')
+        li_cats = ul_bikes.find_all('li', class_='navmenu-item-parent')
+
+        for li in li_cats:
+            # get main bike type category
+            cat = li.find('a', class_='navmenu-link-parent').text.strip()
+            cat = self._normalize_spec_fieldnames(cat)
+            if cat in exclude:  # skip categories in exclude list
+                continue
+
+            # get all sub_types
+            subtypes = dict()
+            ul_sub_menu = li.find('ul', class_='navmenu-submenu')
+            links = ul_sub_menu.find_all('a', class_='navmenu-link')
+            for link in links:
+                sub_type = self._normalize_spec_fieldnames(link.text.strip())
+                if 'view_all' in sub_type:  # skip 'view all' urls
+                    continue
+                subtypes[sub_type] = link['href']
+            categories[cat] = subtypes
+
+        return categories
+
     def get_all_available_prods(self, to_csv=True) -> list:
         """Scrape bicycle_warehouse site for prods."""
         # Reset scraper related variables
@@ -66,37 +99,42 @@ class BicycleWarehouse(Scraper):
         self._num_bikes = 0
 
         # Scrape pages for each available category
-        bike_categories = self._get_categories()
+        bike_categories = self._get_subtypes()
         for bike_type in bike_categories:
-            print(f'Parsing first page for {bike_type}...')
-            endpoint = bike_categories[bike_type]['href']
-            soup = BeautifulSoup(self._fetch_prod_listing_view(
-                endpoint), 'lxml')
-            self._get_prods_on_current_listings_page(soup, bike_type)
-            next_page, endpoint = self._get_next_page(soup)
-
-            counter = 1
-            while next_page:
-                counter += 1
-                print('\tparsing page:', counter)
+            sub_types = bike_categories[bike_type]
+            for sub_type, href in sub_types.items():
+                print(f'Parsing first page for {bike_type}: {sub_type}...')
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
-                    endpoint), 'lxml')
-                self._get_prods_on_current_listings_page(soup, bike_type)
+                    endpoint=href), 'lxml')
+                self._get_prods_on_current_listings_page(soup, bike_type,
+                                                         sub_type)
                 next_page, endpoint = self._get_next_page(soup)
+
+                counter = 1
+                while next_page:
+                    counter += 1
+                    print('\tparsing page:', counter)
+                    soup = BeautifulSoup(self._fetch_prod_listing_view(
+                        endpoint), 'lxml')
+                    self._get_prods_on_current_listings_page(soup, bike_type,
+                                                             sub_type)
+                    next_page, endpoint = self._get_next_page(soup)
 
         if to_csv:
             return [self._write_prod_listings_to_csv()]
 
         return list()
 
-    def _get_prods_on_current_listings_page(self, soup, bike_type):
+    def _get_prods_on_current_listings_page(self, soup, bike_type, subtype):
         """Parse products on page."""
         products = soup.find_all(class_='productgrid--item')
 
         for prod in products:
-            product = dict()
-            product['site'] = self._SOURCE
-            product['bike_type'] = bike_type
+            product = {
+                'site': self._SOURCE,
+                'bike_type': bike_type,
+                'subtype': subtype
+            }
 
             item = prod.find('div', class_='productitem--info')
             # Get href, description, and brand
@@ -128,24 +166,34 @@ class BicycleWarehouse(Scraper):
             self._products[prod_id] = product
             print(f'[{len(self._products)}] New bike: ', product)
 
-    def _parse_prod_specs(self, soup):
+    def _parse_prod_specs(self, soup) -> dict:
         """Return dictionary representation of the product's specification."""
-        # Default: spec div tab with two or more columns
+        # Default: spec div tab with two or more tabs
         tabs = soup.find('div', id='tabs')
 
         # check for specifications tab or embedded with description
         tab = tabs.find('div', id='tabs-3')
+
+        # prep for adding details in specs, start assume details in own tab
+        details_tab_style = 'alone'
+        details_tab = tabs.find('div', id='tabs-2')
         if tab is None:
             tab = tabs.find('div', id='tabs-2')
+            # parse details with specs embedded in first tab
+            details_tab_style = 'embedded'
 
         # def check for un-tabbed embedded specs
         if tab is None:
             div = soup.find('div', class_='easytabs-text')
-            ul = div.find('ul')
+            # note details tab setup
+            details_tab_style = 'easytabs'
+            details_tab = div
+
             # check for ul or table
+            ul = div.find('ul')
             if ul is None:
                 rows = div.find_all('tr')
-                prod_specs = self._specs_parse_table(soup=rows)
+                prod_specs = self._specs_parse_table(rows_soup=rows)
             else:
                 print('[div.easy_tabs.ul]')
                 prod_specs = self._specs_parse_colon_text(ul_soup=ul)
@@ -156,7 +204,33 @@ class BicycleWarehouse(Scraper):
                 prod_specs = self._specs_parse_text_format(soup=tab)
             else:
                 rows = table.find_all('tr')
-                prod_specs = self._specs_parse_table(soup=rows)
+                # check whether multi kit table and skip storing as empty
+                # bc each kit has different price and no easy way to get each price.
+                try:
+                    first_str = rows[0].find(['td', 'th']).text.strip().lower()
+                except AttributeError:
+                    first_str = rows[1].find(['td', 'th']).text.strip().lower()
+                if first_str == 'kit':
+                    print('\tSKIPPING: Multi Kit table...')
+                    prod_specs = dict()
+                else:
+                    prod_specs = self._specs_parse_table(rows_soup=rows)
+
+        # add details to specs
+        if details_tab_style == 'embedded':
+            top_p_tags = details_tab.find_all('p', recursive=False)
+            details = ''
+            for p in top_p_tags:
+                details += '\n' + p.text.strip()
+            details.strip()
+        elif details_tab_style == 'easytabs':
+            try:
+                details = details_tab.find('p').text.strip()
+            except AttributeError:  # no details/description
+                details = ''
+        else:
+            details = details_tab.text.strip()
+        prod_specs['details'] = details
 
         print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
 
@@ -179,11 +253,11 @@ class BicycleWarehouse(Scraper):
 
         return prod_specs
 
-    def _specs_parse_table(self, soup) -> dict:
+    def _specs_parse_table(self, rows_soup) -> dict:
         """Specs parser helper function for dealing with tables."""
         prod_specs = dict()
         # parse each row as spec_name:value pairs
-        for tr in soup:
+        for tr in rows_soup:
             tds = tr.find_all(['td', 'th'])
             if not tds:  # empty table row
                 continue
@@ -199,8 +273,6 @@ class BicycleWarehouse(Scraper):
                 spec = self._normalize_spec_fieldnames(spec)
                 self._specs_fieldnames.add(spec)
                 value = value.strip()
-            elif len(tds) > 2:  # skip multi kit products
-                continue
             else:
                 # process child tags in batches of two as spec_name:value pairs
                 for i in range(0, len(tds), 2):

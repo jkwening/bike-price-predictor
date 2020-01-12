@@ -12,51 +12,74 @@ from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 class CityBikesTestCase(unittest.TestCase):
     def setUp(self):
         self._scraper = CityBikes(save_data_path=DATA_PATH)
+        self._bike_type = 'road'
+        self._categories = ['road', 'mountain', 'commuter_urban', 'comfort',
+                            'fitness', 'hybrid', 'other', 'cyclocross']
+        self._page_size = 30
 
     def test_get_categories(self):
-        categories = ['road', 'mountain', 'commuter_urban', 'comfort',
-                      'fitness', 'hybrid', 'childrens',
-                      'other', 'cyclocross']
-
         result = self._scraper._get_categories()
         print('\nCategories:', result)
         for key in result.keys():
-            self.assertTrue(key in categories,
-                            msg=f'{key} not in {categories}')
+            self.assertTrue(key in self._categories,
+                            msg=f'{key} not in {self._categories}')
+
+    def test_get_subtypes(self):
+        bike_type = 'road'
+        mtb_subtypes = [
+            'sport_performance', 'endurance_gravel', 'touring', 'track'
+        ]
+        fitness_subtypes = ['fitness']
+
+        result = self._scraper._get_subtypes()
+        print('\nSub_types:', result)
+        self.assertEqual(len(self._categories), len(result),
+                         msg=f'Expected {len(self._categories)};\
+                          result {len(result)}')
+        for key in self._categories:
+            self.assertTrue(key in result,
+                            msg=f'{key} is not in {result}!')
+        for key in result[bike_type]:
+            self.assertTrue(key in mtb_subtypes,
+                            msg=f'{key} is not in {mtb_subtypes}!')
+        for key in result['fitness']:
+            self.assertTrue(key in fitness_subtypes,
+                            msg=f'{key} is not in {fitness_subtypes}!')
 
     def test_get_prods_listing(self):
-        bike_type = 'road'
-        bike_cats = self._scraper._get_categories()
-        qs = '&rb_ct=' + str(bike_cats[bike_type]['filter_val'])
-        soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
-            qs=qs), 'lxml')
+        categories = self._scraper._get_subtypes()
+        subtypes = categories[self._bike_type]
+        for subtype in subtypes:
+            qs = 'rb_ct=' + str(subtypes[subtype]['filter_val'])
+            soup = BeautifulSoup(
+                self._scraper._fetch_prod_listing_view(
+                    qs=qs, page_size=self._page_size
+                ),
+                'lxml'
+            )
+            print(f'Parsing first page for {self._bike_type}: {subtype}...')
+            self._scraper._get_prods_on_current_listings_page(soup, self._bike_type,
+                                                              subtype)
 
         # Verify product listings fetch
-        self._scraper._get_prods_on_current_listings_page(soup, bike_type)
         num_prods = len(self._scraper._products)
-        expected_num_prods = int(bike_cats[bike_type]['count'])
-        if expected_num_prods > self._scraper._page_size:
-            self.assertEqual(num_prods, self._scraper._page_size,
-                             msg=f'{num_prods} product, expected: {self._scraper._page_size}.')
-        else:
-            self.assertEqual(expected_num_prods, num_prods,
-                             msg=f'{num_prods} product, expected: {expected_num_prods}.')
+        self.assertTrue(num_prods > 10,
+                        msg=f'{num_prods} product, expected at least 10.')
         self._scraper._write_prod_listings_to_csv()
 
     def test_parse_specs(self):
-        bike_type = 'road'
         prods_csv_path = os.path.join(DATA_PATH, TIMESTAMP,
                                       'citybikes_prods_all.csv')
         # Verify parsing product specs
         specs = self._scraper.get_product_specs(get_prods_from=prods_csv_path,
-                                                bike_type=bike_type,
+                                                bike_type=self._bike_type,
                                                 to_csv=False)
         num_prods = len(self._scraper._products)
         num_specs = len(specs)
         self.assertEqual(num_prods, num_specs,
                          msg=f'Products size: {num_prods}, Specs size: {num_specs}')
         self._scraper._write_prod_specs_to_csv(specs=specs,
-                                               bike_type=bike_type)
+                                               bike_type=self._bike_type)
 
         # Verify spec fieldnames has minimum general fields:
         expected = ['site', 'product_id', 'frame',

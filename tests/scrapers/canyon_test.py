@@ -15,23 +15,40 @@ class CanyonTestCase(unittest.TestCase):
         self._bike_type = 'mountain'
 
     def test_get_bike_type_models_hrefs(self):
-        bike_type = 'fitness'
-        model_hrefs = self._scraper._get_bike_type_models_hrefs(bike_type)
+        model_hrefs = self._scraper._get_bike_type_models_hrefs(self._bike_type)
         num_models = len(model_hrefs)
         self.assertTrue(num_models > 0,
                         msg=f'{num_models} number of model hrefs.')
-        print('\nMTB model hrefs\n', model_hrefs)
+        print(f'\n{self._bike_type} model hrefs\n', model_hrefs)
+
+    def test_get_subtypes(self):
+        result = self._scraper._get_subtypes()
+        print('Subtypes:\n', result)
+        categories = self._scraper._get_categories()
+
+        # verify main cat and model hrefs in correctly in result
+        for bike_type, subtypes in result.items():
+            for subtype, models in subtypes.items():
+                for model, href in models.items():
+                    hrefs = categories[bike_type]['hrefs']
+                    self.assertTrue(href in hrefs,
+                                    msg=f'{href} not in {bike_type}:{hrefs}')
 
     def test_get_prods_listings(self):
-        model_hrefs = self._scraper._get_bike_type_models_hrefs(self._bike_type)
-        for href in model_hrefs:
-            soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
-                endpoint=href), 'lxml')
-            self._scraper._get_prods_on_current_listings_page(soup, self._bike_type)
+        categories = self._scraper._get_subtypes()
+        for subtype, models in categories[self._bike_type].items():
+            for href in models.values():
+                soup = BeautifulSoup(
+                    self._scraper._fetch_prod_listing_view(endpoint=href),
+                    'lxml'
+                )
+                self._scraper._get_prods_on_current_listings_page(
+                    soup, self._bike_type, subtype
+                )
 
         # Verify product listings fetch
         num_prods = len(self._scraper._products)
-        self.assertTrue(num_prods > 1,
+        self.assertTrue(num_prods > 2,
                         msg=f'There are {num_prods} product first page.')
         self._scraper._write_prod_listings_to_csv()
 

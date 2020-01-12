@@ -19,7 +19,7 @@ class Scraper(ABC):
         self._TIMESTAMP = TIMESTAMP
         self._products = {}  # href, desc key,value pairs
         self._num_bikes = 0
-        self._specs_fieldnames = {'site', 'product_id'}
+        self._specs_fieldnames = {'site', 'product_id', 'details'}
         self._bike_type = 'all'
 
     @staticmethod
@@ -197,7 +197,9 @@ class Scraper(ABC):
                 else:
                     result = self._parse_prod_specs(bike_spec_soup)
 
-                # Process multiple product specs accordingly
+                # some sites have multiple product specs options available
+                # they're returned as a list instead of dict, so process
+                # these product specs accordingly
                 if isinstance(result, list):
                     for item in result:
                         specs[bike] = item
@@ -227,20 +229,22 @@ class Scraper(ABC):
         result = result.strip(':')
         result = result.strip()
         result = result.replace(':', '')
-        result = result.replace(' / ', '_')
+        result = result.replace('+', '')
         result = result.replace(',', '')
-        result = result.replace('-', '_')
         result = result.replace('(', '')
         result = result.replace(')', '')
         result = result.replace('[', '')
         result = result.replace(']', '')
         result = result.replace('{', '')
         result = result.replace('}', '')
+        result = result.replace("'", '')
+        result = result.replace('*', '')
+        result = result.replace('&', '')
+        result = result.replace(' / ', '_')
+        result = result.replace('-', '_')
         result = result.replace('/', '_')
         result = result.replace('.', '_')
-        result = result.replace('&', '_')
-        result = result.replace("'", '')
         result = result.lower().replace(' ', '_')  # normalize: lowercase and no spaces
+        result = result.replace('__', '_')
         result = result.replace('___', '_')
-        result = result.replace('*', '')
         return result
