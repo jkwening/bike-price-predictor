@@ -21,6 +21,7 @@ class BikeDoctorTestCase(unittest.TestCase):
     def test_get_categories(self):
         result = self._scraper._get_categories()
         print('\nCategories:', result)
+        self.assertEqual(len(self._categories), len(result))
         for key in result.keys():
             self.assertTrue(key in self._categories,
                             msg=f'{key} not in {self._categories}')
@@ -35,13 +36,13 @@ class BikeDoctorTestCase(unittest.TestCase):
         fitness_subtypes = ['fitness']
 
         result = self._scraper._get_subtypes()
-        print('\nSub_types:', result)
+        print('\nSubtypes:', result)
         self.assertEqual(len(self._categories), len(result),
                          msg=f'Expected {len(self._categories)};\
                           result {len(result)}')
-        for key in self._categories:
-            self.assertTrue(key in result,
-                            msg=f'{key} is not in {result}!')
+        for key in result:
+            self.assertTrue(key in self._categories,
+                            msg=f'{key} is not in {self._categories}!')
         for key in result[bike_type]:
             self.assertTrue(key in mtb_subtypes,
                             msg=f'{key} is not in {mtb_subtypes}!')
@@ -69,6 +70,9 @@ class BikeDoctorTestCase(unittest.TestCase):
         self.assertTrue(num_prods > 10,
                         msg=f'{num_prods} product, expected at least 10.')
         self._scraper._write_prod_listings_to_csv()
+
+    def test_get_all_available_prods(self):
+        self._scraper.get_all_available_prods(to_csv=False)
 
     def test_parse_specs(self):
         prods_csv_path = os.path.join(DATA_PATH, TIMESTAMP,

@@ -33,45 +33,46 @@ class BackCountry(Scraper):
 
         return True, li.a['href']
 
+    def _parse_categories(self, soup, exclude) -> dict:
+        categories = dict()
+        div_facet = soup.find('div', id='facet-Categories')
+        div_items = div_facet.find('div', id='category-filter-list')
+        input_cats = div_items.find_all('input')
+
+        for tag in input_cats:
+            title = self._normalize_spec_fieldnames(tag['title'])
+            if title in exclude:  # skip categories in exclude list
+                continue
+            categories[title] = tag['data-filter-url']
+        return categories
+
     def _get_categories(self) -> dict:
         """Bike category endpoint encodings.
 
         Returns:
             dictionary of dictionaries
         """
-        categories = dict()
         exclude = ['kids_bikes']
 
         page = self._fetch_prod_listing_view(self._PROD_PAGE_ENDPOINT)
         soup = BeautifulSoup(page, 'lxml')
-
-        div_facet = soup.find('div', id='facet-Categories')
-        div_items = div_facet.find('div', class_='facet-list__items')
-        a_cats = div_items.find_all('a')
-
-        for a_tag in a_cats:
-            bike_cat = dict()
-            title = self._normalize_spec_fieldnames(a_tag['title'])
-            if title in exclude:  # skip categories in exclude list
-                continue
-            bike_cat['href'] = a_tag['href']
-            categories[title] = bike_cat
-            # print(f'[{len(categories)}] New category {title}: ', bike_cat)
+        categories = self._parse_categories(soup, exclude)
 
         return categories
 
-    def _get_subtypes(self, soup) -> dict:
+    def _get_subtypes(self) -> dict:
         """Get subtypes for each category via recommended use url."""
-        div = soup.find(id='facet-RecommendedUse')
-        div_list = div.find(id='attr_recommendeduse-filter-list')
-        a_tags = div_list.find_all('a')
-
-        sub_types = dict()
-        for a_tag in a_tags:
-            title = self._normalize_spec_fieldnames(a_tag['title'])
-            href = a_tag['href']
-            sub_types[title] = href
-        return sub_types
+        subtypes = dict()
+        exclude = ['road_frames', 'gravel_cyclocross_frames',
+                   'triathlon_tt_frames']
+        bike_cats = self._get_categories()
+        for bike_type, href in bike_cats.items():
+            soup = BeautifulSoup(
+                self._fetch_prod_listing_view(endpoint=href),
+                'lxml'
+            )
+            subtypes[bike_type] = self._parse_categories(soup, exclude)
+        return subtypes
 
     def get_all_available_prods(self, to_csv=True) -> list:
         """Scrape wiggle site for prods."""
@@ -83,16 +84,11 @@ class BackCountry(Scraper):
         )
 
         # Scrape pages for each available category and respective subtype
-        bike_categories = self._get_categories()
-        for bike_type in bike_categories:
-            endpoint = bike_categories[bike_type]['href']
-            soup = BeautifulSoup(self._fetch_prod_listing_view(
-                endpoint), 'lxml')
-            subtypes = self._get_subtypes(soup)
-            for subtype in subtypes:
-                endpoint = subtypes[subtype]
+        bike_categories = self._get_subtypes()
+        for bike_type, subtypes in bike_categories.items():
+            for subtype, href in subtypes.items():
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
-                    endpoint), 'lxml')
+                    endpoint=href), 'lxml')
                 print(f'Parsing first page for {bike_type}: {subtype}...')
                 self._get_prods_on_current_listings_page(soup, bike_type,
                                                          subtype)

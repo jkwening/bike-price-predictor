@@ -69,7 +69,7 @@ class Rei(Scraper):
             if result:
                 subtypes[bike_type] = result
             else:
-                subtypes[bike_type] = categories[bike_type]
+                subtypes[bike_type] = {bike_type: categories[bike_type]}
         return subtypes
 
     # TODO: seems unnecessary, remove and embed directly into get_all_available_prods()

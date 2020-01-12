@@ -73,7 +73,8 @@ class Specialized(Scraper):
                 'site': self._SOURCE,
                 'bike_type': bike_type,
                 'subtype': result.get('experience', bike_type)[0],
-                'brand': self._SOURCE
+                'brand': self._SOURCE,
+                'model_year': result['modelYear']
             }
             # Get bike_type and prod_id
             prod_id = result['code']

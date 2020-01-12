@@ -38,7 +38,7 @@ class BicycleWarehouse(Scraper):
             dictionary of dictionaries
         """
         categories = dict()
-        exclude = ['kids_bikes', 'bmx_bikes']
+        exclude = ['kids_bikes', 'bmx_bikes', 'electric_bikes']
 
         page = self._fetch_prod_listing_view('')
         soup = BeautifulSoup(page, 'lxml')
@@ -84,10 +84,10 @@ class BicycleWarehouse(Scraper):
             ul_sub_menu = li.find('ul', class_='navmenu-submenu')
             links = ul_sub_menu.find_all('a', class_='navmenu-link')
             for link in links:
-                sub_type = self._normalize_spec_fieldnames(link.text.strip())
-                if 'view_all' in sub_type:  # skip 'view all' urls
+                subtype = self._normalize_spec_fieldnames(link.text.strip())
+                if 'view_all' in subtype or subtype == 'stand_up_bikes':  # skip 'view all' urls
                     continue
-                subtypes[sub_type] = link['href']
+                subtypes[subtype] = link['href']
             categories[cat] = subtypes
 
         return categories
@@ -100,14 +100,13 @@ class BicycleWarehouse(Scraper):
 
         # Scrape pages for each available category
         bike_categories = self._get_subtypes()
-        for bike_type in bike_categories:
-            sub_types = bike_categories[bike_type]
-            for sub_type, href in sub_types.items():
-                print(f'Parsing first page for {bike_type}: {sub_type}...')
+        for bike_type, subtypes in bike_categories.items():
+            for subtype, href in subtypes.items():
+                print(f'Parsing first page for {bike_type}: {subtype}...')
                 soup = BeautifulSoup(self._fetch_prod_listing_view(
                     endpoint=href), 'lxml')
                 self._get_prods_on_current_listings_page(soup, bike_type,
-                                                         sub_type)
+                                                         subtype)
                 next_page, endpoint = self._get_next_page(soup)
 
                 counter = 1
@@ -117,7 +116,7 @@ class BicycleWarehouse(Scraper):
                     soup = BeautifulSoup(self._fetch_prod_listing_view(
                         endpoint), 'lxml')
                     self._get_prods_on_current_listings_page(soup, bike_type,
-                                                             sub_type)
+                                                             subtype)
                     next_page, endpoint = self._get_next_page(soup)
 
         if to_csv:

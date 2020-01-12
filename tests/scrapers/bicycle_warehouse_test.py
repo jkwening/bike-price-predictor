@@ -9,33 +9,27 @@ from scrapers.bicycle_warehouse import BicycleWarehouse
 from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 
 
-class SpecializedTestCase(unittest.TestCase):
+class BicycleWarehouseTestCase(unittest.TestCase):
     def setUp(self):
         self._scraper = BicycleWarehouse(save_data_path=DATA_PATH)
         self._bike_type = 'road_bikes'
+        self._categories = [
+            'road_bikes',
+            'mountain_bikes',
+            'path_pavement'
+        ]
 
     def test_get_categories(self):
-        categories = [
-            'road_bikes',
-            'mountain_bikes',
-            'electric_bikes',
-            'path_pavement'
-        ]
-
         result = self._scraper._get_categories()
         print('\nCategories:', result)
-        self.assertEqual(len(categories), len(result),
-                         msg=f'Expected {len(categories)}; result {len(result)}')
-        for key in categories:
-            self.assertTrue(key in result,
-                            msg=f'{key} is not in {result}!')
+        self.assertEqual(len(self._categories), len(result),
+                         msg=f'Expected {len(self._categories)}; result {len(result)}')
+        for key in result:
+            self.assertTrue(key in self._categories,
+                            msg=f'{key} is not in {self._categories}!')
 
     def test_get_subtypes(self):
-        categories = [
-            'road_bikes',
-            'mountain_bikes',
-            'path_pavement'
-        ]
+        bike_type = 'mountain_bikes'
         mtb_sub_types = [
             'hardtails', 'full_suspension', 'cross_country', 'enduro',
             'electric_mtb', 'fat_bikes', 'trail'
@@ -43,12 +37,12 @@ class SpecializedTestCase(unittest.TestCase):
 
         result = self._scraper._get_subtypes()
         print('\nSub_types:', result)
-        self.assertEqual(len(categories), len(result),
-                         msg=f'Expected {len(categories)}; result {len(result)}')
-        for key in categories:
-            self.assertTrue(key in result,
-                            msg=f'{key} is not in {result}!')
-        for key in result['mountain_bikes']:
+        self.assertEqual(len(self._categories), len(result),
+                         msg=f'Expected {len(self._categories)}; result {len(result)}')
+        for key in result:
+            self.assertTrue(key in self._categories,
+                            msg=f'{key} is not in {self._categories}!')
+        for key in result[bike_type]:
             self.assertTrue(key in mtb_sub_types,
                             msg=f'{key} is not in {mtb_sub_types}!')
 
@@ -58,10 +52,10 @@ class SpecializedTestCase(unittest.TestCase):
             soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
                 endpoint=href), 'lxml')
 
-            # Verify product listings fetch
-            self._scraper._get_prods_on_current_listings_page(soup,
-                                                              self._bike_type,
-                                                              sub_type)
+            self._scraper._get_prods_on_current_listings_page(
+                soup, self._bike_type, sub_type
+            )
+        # Verify product listings fetch
         num_prods = len(self._scraper._products)
         self.assertTrue(num_prods > 5,
                         msg=f'There are {num_prods} product first page.')

@@ -9,13 +9,11 @@ from scrapers.backcountry import BackCountry
 from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 
 
-class SpecializedTestCase(unittest.TestCase):
+class BackcountryTestCase(unittest.TestCase):
     def setUp(self):
         self._scraper = BackCountry(save_data_path=DATA_PATH)
         self._bike_type = 'road_bikes'
-
-    def test_get_categories(self):
-        categories = [
+        self._categories = [
             'road_bikes',
             'mountain_bikes',
             'ebikes',
@@ -23,45 +21,46 @@ class SpecializedTestCase(unittest.TestCase):
             'triathlon_tt_bikes'
         ]
 
+    def test_get_categories(self):
         result = self._scraper._get_categories()
         print('\nCategories:', result)
-        self.assertEqual(len(categories), len(result),
-                         msg=f'Expected {len(categories)}; result {len(result)}')
-        for key in categories:
-            self.assertTrue(key in result,
-                            msg=f'{key} is not in result!')
+        self.assertEqual(len(self._categories), len(result),
+                         msg=f'Expected {len(self._categories)}; result {len(result)}')
+        for key in result:
+            self.assertTrue(key in self._categories,
+                            msg=f'{key} is not in {self._categories}!')
 
     def test_get_subtypes(self):
         bike_type = 'mountain_bikes'
-        subtypes = ['trail', 'enduro', 'cross_country', 'downhill',
-                    'mud_sand_snow']
-        bike_cats = self._scraper._get_categories()
-        endpoint = bike_cats[bike_type]['href']
-        soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
-            endpoint), 'lxml')
-        result = self._scraper._get_subtypes(soup)
+        expected = ['trail_full_suspension_bikes', 'enduro_full_suspension_bikes',
+                    'hardtail_bikes', 'xc_full_suspension_bikes', 'downhill_bikes']
+        result = self._scraper._get_subtypes()
         print('\nSubtypes:', result)
-        self.assertEqual(len(subtypes), len(result),
-                         msg=f'Expected {len(subtypes)}; result {len(result)}')
+        self.assertEqual(len(self._categories), len(result))
+        for bike in result.keys():
+            self.assertTrue(bike in self._categories,
+                            msg=f'{bike} not in {self._categories}')
+        subtypes = result[bike_type].keys()
+        self.assertEqual(len(expected), len(subtypes),
+                         msg=f'Expected {len(expected)}; result {len(subtypes)}')
         for key in subtypes:
-            self.assertTrue(key in result,
-                            msg=f'{key} is not in result!')
+            self.assertTrue(key in expected,
+                            msg=f'{key} is not in {expected}!')
 
     def test_get_prods_listings(self):
-        bike_cats = self._scraper._get_categories()
-        endpoint = bike_cats[self._bike_type]['href']
-        soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
-            endpoint), 'lxml')
-        sub_types = self._scraper._get_subtypes(soup)
-        for sub_type in sub_types:
-            endpoint = sub_types[sub_type]
-            soup = BeautifulSoup(self._scraper._fetch_prod_listing_view(
-                endpoint), 'lxml')
+        bike_cats = self._scraper._get_subtypes()
+        for subtype, href in bike_cats[self._bike_type].items():
+            soup = BeautifulSoup(
+                self._scraper._fetch_prod_listing_view(
+                    endpoint=href
+                ),
+                'lxml'
+            )
 
             # Verify product listings fetch
-            self._scraper._get_prods_on_current_listings_page(soup,
-                                                              self._bike_type,
-                                                              sub_type)
+            self._scraper._get_prods_on_current_listings_page(
+                soup, self._bike_type, subtype
+            )
         num_prods = len(self._scraper._products)
         self.assertTrue(num_prods > 2,
                         msg=f'There are {num_prods} product first page.')
