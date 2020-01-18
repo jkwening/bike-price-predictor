@@ -16,6 +16,10 @@ class Lynskey(Scraper):
             'gravel': '/road/gravel',
             'mountain': '/mountain-bikes/'
         }
+        # add site specific standard specification field names
+        self._specs_fieldnames.add('frame_material')
+        self._specs_fieldnames.add('upgrade_options')
+        self._specs_fieldnames.add('bike_subtype')
 
     def _fetch_prod_listing_view(self, endpoint, base_url=True):
         if base_url:
@@ -135,6 +139,10 @@ class Lynskey(Scraper):
             title = a_tag['title']
             product['description'] = title.strip()
 
+            # skip frameset products
+            if 'frameset' in title.lower() or 'frame' in title.lower():
+                continue
+
             # Parse prod id
             span_id = prod.find('span', class_='quick-shop-trigger')
             prod_id = span_id['data-quick-shop-trigger']
@@ -158,9 +166,6 @@ class Lynskey(Scraper):
 
     def _parse_prod_specs(self, soup) -> list:
         """Returns list of dictionary representation of the product's specification."""
-        self._specs_fieldnames.add('frame_material')
-        self._specs_fieldnames.add('upgrade_options')
-        self._specs_fieldnames.add('bike_subtype')
         # parse upgrade options
         upgrade_options = dict()
         right_side = soup.find('div', class_='single-product-right')
@@ -198,8 +203,11 @@ class Lynskey(Scraper):
         # parse details/description
         left_side = soup.find('div', class_='single-product-left')
         div_details = left_side.find(id='product-details')
+        div_prod_desc = div_details.find('div', class_='product-description')
         details = ''
-        for child in div_details.children:
+        for child in div_prod_desc.children:
+            if child.name == 'table':
+                break
             if child.name == 'div' and child['class'] == 'tabs':
                 break
             if isinstance(child, NavigableString):
@@ -209,28 +217,49 @@ class Lynskey(Scraper):
         # parse tech specifications for each component option
         prod_specs = list()
         try:
+            # typically, bike products are configurable by drivetrain options
+            # there are specs for each drivetrain option
+            # parse each one and store accordingly
             div_tabs = div_details.find('div', class_='tabs')
-            div_specs = div_tabs.find_all('div', class_='tab')
-            prods = {'frame_material': 'titanium'}
-            for tab in div_specs:
-                label = tab.find('label', class_='tab-label')
-                label = self._normalize_spec_fieldnames(label.text.strip())
-
-                rows = tab.find_all('tr')
-                for row in rows:
-                    tds = row.find_all('td')
-                    spec = tds[0].text.strip()
-                    spec = self._normalize_spec_fieldnames(spec)
-                    self._specs_fieldnames.add(spec)
-                    value = tds[1].text.strip()
-                    prods[spec] = value
+            if div_tabs is None:
+                # specs table is last table
+                specs_table = div_details.find_all('table')[-1]
+                tbody = specs_table.find('tbody')
+                prods = self._parse_table_rows(table_soup=tbody)
                 prods['details'] = details
                 prods['upgrade_options'] = upgrade_options
+
+                # 'label' is in thead
+                thead = specs_table.find('thead')
+                label = thead.find_all('th')[-1]
+                label = self._normalize_spec_fieldnames(label.text.strip())
                 prods['bike_subtype'] = label
                 prod_specs.append(prods)
+            else:
+                div_specs = div_tabs.find_all('div', class_='tab')
+                for tab in div_specs:
+                    label = tab.find('label', class_='tab-label')
+                    label = self._normalize_spec_fieldnames(label.text.strip())
 
+                    prods = self._parse_table_rows(table_soup=tab)
+                    prods['details'] = details
+                    prods['upgrade_options'] = upgrade_options
+                    prods['bike_subtype'] = label
+                    prod_specs.append(prods)
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         except AttributeError as err:
             print(f'\tError: {err}')
 
         return prod_specs
+
+    def _parse_table_rows(self, table_soup) -> dict:
+        prods = {'frame_material': 'titanium'}
+        rows = table_soup.find_all('tr')
+        for row in rows:
+            tds = row.find_all('td')
+            spec = tds[0].text.strip()
+            spec = self._normalize_spec_fieldnames(spec)
+            self._specs_fieldnames.add(spec)
+            value = tds[1].text.strip()
+            prods[spec] = value
+        return prods

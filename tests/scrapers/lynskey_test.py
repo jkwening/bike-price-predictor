@@ -12,7 +12,7 @@ from utils.unit_test_utils import DATA_PATH, TIMESTAMP
 class SpecializedTestCase(unittest.TestCase):
     def setUp(self):
         self._scraper = Lynskey(save_data_path=DATA_PATH)
-        self._bike_type = 'gravel'
+        self._bike_type = 'road'
 
     def test_get_subtypes(self):
         expected = {
