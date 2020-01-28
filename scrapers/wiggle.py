@@ -44,7 +44,7 @@ class Wiggle(Scraper):
             href = a['href']
             bike_type = a.span.string.strip()
             bike_type, count = bike_type.split('(')
-            bike_type = self._normalize_spec_fieldnames(bike_type)
+            bike_type = self.normalize_spec_fieldnames(bike_type)
             count = count.replace(')', '').strip()
             if bike_type in exclude:
                 continue
@@ -83,7 +83,7 @@ class Wiggle(Scraper):
             for a in a_tags:
                 subtype = a.span.string.strip()
                 subtype, count = subtype.split('(')
-                subtype = self._normalize_spec_fieldnames(subtype)
+                subtype = self.normalize_spec_fieldnames(subtype)
                 count = count.replace(')', '').strip()
                 subtypes[subtype] = {
                     'href': a['href'],
@@ -178,7 +178,7 @@ class Wiggle(Scraper):
             for feature in li_feature_items:
                 try:
                     spec_name, spec_value = feature.string.split(': ')
-                    spec_name = self._normalize_spec_fieldnames(spec_name)
+                    spec_name = self.normalize_spec_fieldnames(spec_name)
                     prod_specs[spec_name] = spec_value.strip()
                     self._specs_fieldnames.add(spec_name)
                 except ValueError:

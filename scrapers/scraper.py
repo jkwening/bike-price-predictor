@@ -223,7 +223,7 @@ class Scraper(ABC):
         return specs
 
     @staticmethod
-    def _normalize_spec_fieldnames(fieldname: str) -> str:
+    def normalize_spec_fieldnames(fieldname: str) -> str:
         """Remove invalid chars and normalize as lowercase and no spaces."""
         result = fieldname.strip('–')
         result = result.strip(':')

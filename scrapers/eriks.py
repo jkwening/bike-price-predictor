@@ -47,7 +47,7 @@ class EriksBikes(Scraper):
         for c in cats:
             bike_cat = dict()
             h2 = c.h2.contents[0].replace('& ', '')
-            title = self._normalize_spec_fieldnames(h2)
+            title = self.normalize_spec_fieldnames(h2)
             if title in exclude:
                 continue
 
@@ -73,7 +73,7 @@ class EriksBikes(Scraper):
 
         for lvl1 in lvl1_lis:
             bike_type = lvl1.a.string.strip()
-            bike_type = self._normalize_spec_fieldnames(bike_type)
+            bike_type = self.normalize_spec_fieldnames(bike_type)
             if bike_type in exclude:
                 continue
 
@@ -82,7 +82,7 @@ class EriksBikes(Scraper):
             lvl2_lis = lvl1.find_all('li', class_='level-2')
             for lvl2 in lvl2_lis:
                 subtype = lvl2.a.string.strip()
-                subtype = self._normalize_spec_fieldnames(subtype)
+                subtype = self.normalize_spec_fieldnames(subtype)
                 if 'buying_guide' in subtype:  # ignore 'buying guide' links
                     continue
                 href = lvl2.a['href']
@@ -207,7 +207,7 @@ class EriksBikes(Scraper):
                 value = ''
                 for str in spec.td.stripped_strings:
                     value += str
-                spec_name = self._normalize_spec_fieldnames(name)
+                spec_name = self.normalize_spec_fieldnames(name)
                 prod_specs[spec_name] = value
                 self._specs_fieldnames.add(spec_name)
 

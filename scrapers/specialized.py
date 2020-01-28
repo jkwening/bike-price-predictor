@@ -112,7 +112,7 @@ class Specialized(Scraper):
 
             for tr in table_tr:
                 spec = tr.find('td', class_='product__specs-table-key').string.strip()
-                spec = self._normalize_spec_fieldnames(spec)
+                spec = self.normalize_spec_fieldnames(spec)
                 value = tr.find('td', class_='product__specs-table-value').string.strip()
                 prod_specs[spec] = value
                 self._specs_fieldnames.add(spec)

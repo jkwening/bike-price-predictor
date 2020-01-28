@@ -10,6 +10,7 @@ import numpy as np
 # Project modules
 from utils.utils import MUNGED_DATA_PATH, TIMESTAMP, GROUPSET_RANKING
 from utils.utils import create_directory_if_missing
+from scrapers.scraper import Scraper
 
 
 class Cleaner(object):
@@ -247,10 +248,32 @@ class Cleaner(object):
             'cyclocross', 'hybrid', 'gravel', 'pavement', 'gravel', 'cargo',
             'hardtail', 'singlespeed'
         }
+        self._BIKE_TYPE_TO_SUBTYPE = {
+            'road': [
+                'racing', 'ultralight', 'endurance', 'time_trail',
+                'triathlon', 'track'
+            ],
+            'adventure': [
+                'gravel', 'cyclocross', 'touring', 'bikepacking'
+            ],
+            'city_urban': [
+                'hybrid', 'fitness', 'cruiser', 'comfort', 'commuter', 'fixie',
+                'singlespeed'
+            ],
+            'specialty': [
+                'cargo', 'folding', 'tandem', 'recumbent', 'tricycles',
+                'unicycles', 'electric'
+            ],
+            'mountain': [
+                'trail', 'cross_country', 'fat', 'enduro', 'downhill',
+                'dirt_jump'
+            ]
+        }
 
     def get_field_names(self):
         return self._FIELD_NAMES
 
+    # TODO: Remove redundant with self._bike_type_subtype_cleanup()
     def _fill_missing_bike_types(self, df: pd.DataFrame) -> pd.DataFrame:
         """Use description to populate missing bike_types values."""
 
@@ -289,6 +312,7 @@ class Cleaner(object):
 
         return desc.apply(parse_model_year)
 
+    # TODO: Remove redundant with self._bike_type_subtype_cleanup()
     def _normalize_bike_type_values(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Clean up bike_type labels and prepare specified categories for removal.
@@ -390,6 +414,318 @@ class Cleaner(object):
         df.bike_type.value_counts()
 
         return df
+
+    @staticmethod
+    def _standardize_bike_types(df: pd.DataFrame) -> pd.DataFrame:
+        # mountain bike category
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'mountain' if 'mountain' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'mountain' if 'dirt_jump' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'mountain' if 'fat' in x else x
+        )
+        # road bike category
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'road' if 'road' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'road' if 'time_trial' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'road' if 'triathlon' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'road' if 'track' in x else x
+        )
+        # adventure bike category
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'adventure' if 'adventure' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'adventure' if 'cyclocross' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'adventure' if 'gravel' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'adventure' if 'touring' in x else x
+        )
+        # city/urban bike category
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'city_urban' if 'urban' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'city_urban' if 'hybrid' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'city_urban' if 'comfort' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'city_urban' if 'cruiser' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'city_urban' if 'fitness' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'city_urban' if 'fixed' in x else x
+        )
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'city_urban' if 'path_pavement' in x else x
+        )
+        # specialty bike category
+        df.loc[:, 'bike_type'] = df.bike_type.apply(
+            lambda x: 'specialty' if 'other' in x else x
+        )
+
+        return df
+
+    @staticmethod
+    def _standardize_subtypes(df: pd.DataFrame) -> pd.DataFrame:
+        """Normalize subtype values."""
+        if 'subtype' not in df.columns:
+            raise KeyError(f'subtype column not in df columns: {df.columns}')
+
+        # normalize subtype values, replace '"' with '_inch', remove "complete"
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            Scraper.normalize_spec_fieldnames
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: x.replace('"', '_inch').replace('complete_', '')
+        )
+        # mountain bike subtypes
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'dirt_jump' if 'dirt_jump' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'dirt_jump' if 'park_dirt' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'cross_country' if 'cross_country' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'cross_country' if 'xc' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'downhill' if 'downhill' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'fat' if 'fat' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'trail' if 'trail' in x and 'xc' not in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'hardtail' if 'hardtail' in x and 'xc' not in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'hardtail' if 'hard_tail' in x and 'xc' not in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'enduro' if 'enduro' in x else x
+        )
+        # road bike subtypes
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'triathlon' if 'triathlon' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'time_trail' if 'time_trial' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'endurance' if 'endurance' in x and 'gravel' not in x
+                                     and 'race' not in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'endurance' if 'gran_fondo' in x or 'fondo' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'racing' if 'performance' in x and 'gravel' not in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'racing' if 'racing' in x or 'race_bikes' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'racing' if 'race' in x and 'gr' not in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'racing' if 'elite_road' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'racing' if 'road_sport_riding' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'fitness' if 'active' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'track' if 'track' in x else x
+        )
+        # adventure bike subtypes
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'gravel' if 'gravel' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'gravel' if 'all_road' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'gravel' if 'gr300' in x or 'gr_race' in x
+                                  or 'pro_gr' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'cyclocross' if 'cyclocross' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'touring' if 'touring' in x else x
+        )
+        # city/urban bike subtypes
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'fixie' if 'single_speed' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'fixie' if 'fixed' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'fitness' if 'fitness' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'fitness' if 'active' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'fitness' if 'leisure' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'fitness' if 'recreation' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'fitness' if 'allroad' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'fitness' if 'onroad' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'cruiser' if 'cruiser' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'comfort' if 'comfort' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'commuter' if 'commuter' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'hybrid' if 'hybrid' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'hybrid' if 'dual_sport' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'commuter' if 'multi_speed' in x else x
+        )
+        # standardize bike type similar values used as subtype
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'adventure' if 'adventure' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'road' if 'road' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'mountain' if 'mountain' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'mountain' if 'mtb' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'specialty' if 'utility' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'city_urban' if 'city' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'city_urban' if 'urban' in x else x
+        )
+        # # specialty bike subtypes
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'cargo' if 'cargo' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'folding' if 'folding' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'tandem' if 'tandem' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'electric' if 'ebike' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'electric' if 'e_bike' in x else x
+        )
+        # collapse mountain bikes wheel sizes
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: '27_5_inch' if '650b' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: '26_inch' if '26_inch' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: '29ers' if '29_inch' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: '29ers' if '29_mountain' in x else x
+        )
+        # collapse mountain bikes by suspension type
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'front_suspension' if 'front_suspension' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'full_suspension' if 'full_suspension' in x else x
+        )
+        df.loc[:, 'subtype'] = df.subtype.apply(
+            lambda x: 'rigid' if 'rigid' in x else x
+        )
+        return df
+
+    def _get_subtype_to_bike_types(self, include_biketypes=True) -> dict:
+        """Return mapping of subtypes to their respective bike type."""
+        map_dict = dict()
+        for bike_type, subtypes in self._BIKE_TYPE_TO_SUBTYPE.items():
+            # map bike_type to itself
+            if include_biketypes:
+                map_dict[bike_type] = bike_type
+            for subtype in subtypes:
+                map_dict[subtype] = bike_type
+        return map_dict
+
+    def _bike_type_subtype_cleanup(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Returns a new dataframe with normalized bike_type and subtypes."""
+        # Copy then normalize subtypes followed by bike_types
+        # and then regroup subtypes into correct bike_type parent
+        norm_df = df.copy()
+        norm_df = self._standardize_subtypes(df=norm_df)
+        norm_df = self._standardize_bike_types(df=norm_df)
+        valid_subtypes = set(self._get_subtype_to_bike_types(
+            include_biketypes=False
+        ).keys())
+
+        # remove electric since it isn't a true subtype more
+        # of a catch all for ebikes
+        valid_subtypes.discard('electric')
+        # identify master list of invalid subtypes that need reconciling
+        invalid_subtypes = set(norm_df.subtype.unique()) - valid_subtypes
+        # use 'description' column to update invalid subtypes
+        for i in norm_df.loc[norm_df.subtype.isin(invalid_subtypes), ].index:
+            for valid in valid_subtypes:
+                desc = norm_df.description[i].lower()
+                # look for whole word cases of valid
+                regex = r'\b' + re.escape(valid) + r'\b'
+                if re.search(regex, desc, re.IGNORECASE):
+                    norm_df.loc[i, 'subtype'] = valid
+                    continue
+
+        # map subtypes to correct bike_types
+        subtypes_to_biketypes_dict = self._get_subtype_to_bike_types()
+        for subtype, bike_type in subtypes_to_biketypes_dict.items():
+            norm_df.loc[norm_df.subtype == subtype, 'bike_type'] = bike_type
+        return norm_df
 
     @staticmethod
     def _normalize_brands(df: pd.DataFrame) -> pd.DataFrame:
@@ -800,10 +1136,11 @@ class Cleaner(object):
         """
         # Initialize munged df with normalized base fields
         munged_df = merged_df.iloc[:, :8]
-        munged_df = self._normalize_brands(munged_df)
-        munged_df = self._fill_missing_bike_types(munged_df)
-        munged_df = self._normalize_bike_type_values(munged_df)
-        munged_df['model_year'] = self._parse_model_year(munged_df.description)
+        munged_df = self._normalize_brands(df=munged_df)
+        munged_df = self._bike_type_subtype_cleanup(df=munged_df)
+        munged_df['model_year'] = self._parse_model_year(
+            desc=munged_df.description
+        )
 
         # Populate other fields
         munged_df['frame_material'] = self._parse_material(merged_df.frame)

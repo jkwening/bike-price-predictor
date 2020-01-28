@@ -50,13 +50,13 @@ class BikeDoctor(Scraper):
         # Get all categories
         for c in cats:
             bike_cat = dict()
-            title = self._normalize_spec_fieldnames(c.a['title']).replace("'", "")
+            title = self.normalize_spec_fieldnames(c.a['title']).replace("'", "")
             if title in exclude:  # skip categories in exclude list
                 continue
             bike_cat['href'] = c.a['href']
             bike_cat['filter_par'] = c.a['data-filterparameter']
             bike_cat['filter_val'] = int(c.a['data-filtervalue'])
-            bike_cat['count'] = int(self._normalize_spec_fieldnames(
+            bike_cat['count'] = int(self.normalize_spec_fieldnames(
                 c.span.contents[0]))
             categories[title] = bike_cat
             # print(f'[{len(categories)}] New category {title}: ', bike_cat)
@@ -204,7 +204,7 @@ class BikeDoctor(Scraper):
             for spec in specs:
                 name = spec.th.contents[0]
                 value = spec.td.contents[0]
-                spec_name = self._normalize_spec_fieldnames(name)
+                spec_name = self.normalize_spec_fieldnames(name)
                 prod_specs[spec_name] = value.strip()
                 self._specs_fieldnames.add(spec_name)
 

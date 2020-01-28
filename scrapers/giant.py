@@ -42,14 +42,14 @@ class Giant(Scraper):
 
         for col in cols:
             title = col.h3.a.text.strip()
-            title = self._normalize_spec_fieldnames(title)
+            title = self.normalize_spec_fieldnames(title)
             if title in exclude:
                 continue
             subtypes = dict()
             a_tags = col.find('ul').find_all('a')
             for a_tag in a_tags:
                 subtype = a_tag.string.strip()
-                subtype = self._normalize_spec_fieldnames(subtype)
+                subtype = self.normalize_spec_fieldnames(subtype)
                 if subtype in exclude:
                     continue
                 subtypes[subtype] = a_tag['href']
@@ -142,7 +142,7 @@ class Giant(Scraper):
         try:
             for tr in trs:
                 spec = tr.th.string.strip()
-                spec = self._normalize_spec_fieldnames(spec)
+                spec = self.normalize_spec_fieldnames(spec)
                 value = tr.td.string.strip()
                 prod_specs[spec] = value
                 self._specs_fieldnames.add(spec)

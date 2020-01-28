@@ -32,7 +32,7 @@ class CompetitiveCyclist(Scraper):
         for a in nav_a:
             href = a['href']
             bike_type = a.string.strip()
-            bike_type = self._normalize_spec_fieldnames(bike_type)
+            bike_type = self.normalize_spec_fieldnames(bike_type)
             if bike_type in exclude:
                 continue
             categories[bike_type] = href
@@ -59,7 +59,7 @@ class CompetitiveCyclist(Scraper):
 
             for a_tag in a_tags:
                 subtype = a_tag['title']
-                subtype = self._normalize_spec_fieldnames(subtype)
+                subtype = self.normalize_spec_fieldnames(subtype)
                 href = a_tag['href']
                 tmp_dict[subtype] = href
             subtypes[bike_type] = tmp_dict
@@ -149,7 +149,7 @@ class CompetitiveCyclist(Scraper):
             for spec_row in tech_spec_rows:
                 spec_name = \
                     spec_row.find('b', class_='tech-specs__name').contents[0]
-                spec_name = self._normalize_spec_fieldnames(spec_name)
+                spec_name = self.normalize_spec_fieldnames(spec_name)
                 spec_value = \
                     spec_row.find('span', class_='tech-specs__value').contents[
                         0]

@@ -35,7 +35,7 @@ class NashBar(Scraper):
         # Get all categories
         for c in cats:
             bike_cat = dict()
-            title = self._normalize_spec_fieldnames(c['title']).replace("'", "")
+            title = self.normalize_spec_fieldnames(c['title']).replace("'", "")
             if title in exclude:
                 continue
             categories[title] = c['href']
@@ -57,7 +57,7 @@ class NashBar(Scraper):
 
             for cat in cat_names:
                 subtype = cat.a['title']
-                subtype = self._normalize_spec_fieldnames(subtype)
+                subtype = self.normalize_spec_fieldnames(subtype)
                 subtypes[subtype] = cat.a['href']
             bikes[bike_type] = subtypes
         return bikes
@@ -134,7 +134,7 @@ class NashBar(Scraper):
                     if not spec:
                         continue
                     name, value = spec.split(':')
-                    name = self._normalize_spec_fieldnames(name)
+                    name = self.normalize_spec_fieldnames(name)
                     prod_spec[name] = value.strip()
                     self._specs_fieldnames.add(name)
                 except ValueError:

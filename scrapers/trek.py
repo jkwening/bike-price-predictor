@@ -50,7 +50,7 @@ class Trek(Scraper):
         a_cats = div_cat.find_all('a')
 
         for a in a_cats:
-            title = self._normalize_spec_fieldnames(a.text.strip())
+            title = self.normalize_spec_fieldnames(a.text.strip())
             if title in exclude:
                 continue
             categories[title] = a['href']
@@ -213,7 +213,7 @@ class Trek(Scraper):
 
         for dl in dls:
             spec = dl.find('dt').string.strip()
-            spec = self._normalize_spec_fieldnames(spec)
+            spec = self.normalize_spec_fieldnames(spec)
             value = dl.find('dd').string.strip()
             prod_specs[spec] = value
             self._specs_fieldnames.add(spec)
@@ -234,7 +234,7 @@ class Trek(Scraper):
                 value = prod_specs[spec] + '_'  # extend prev value str
             else:
                 spec = spec.string.strip()
-                spec = self._normalize_spec_fieldnames(spec)
+                spec = self.normalize_spec_fieldnames(spec)
                 spec_prev = spec
                 value = ''  # init empty value str
             value += tr.find('td').text.strip()

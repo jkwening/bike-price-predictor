@@ -57,8 +57,8 @@ class Canyon(Scraper):
                 tmp = href.strip('/').replace('en-us/', '')
                 main_cat, subtype, model_name = tmp.split('/')
                 # normalize subtype and model_name keys
-                subtype = self._normalize_spec_fieldnames(subtype)
-                model_name = self._normalize_spec_fieldnames(model_name)
+                subtype = self.normalize_spec_fieldnames(subtype)
+                model_name = self.normalize_spec_fieldnames(model_name)
                 # get subtype dict values or add as new and return empty dict
                 subtype_val_dict = subtypes.get(subtype, dict())
                 # add model_name: href pair as subtype value & update subtypes
@@ -161,7 +161,7 @@ class Canyon(Scraper):
 
             for li in spec_li:
                 spec = li.find(class_='allComponentsSpecItem__title').string.strip()
-                spec = self._normalize_spec_fieldnames(spec)
+                spec = self.normalize_spec_fieldnames(spec)
 
                 # accumulate multiple values for specs
                 value = ''

@@ -61,14 +61,14 @@ class LiteSpeed(Scraper):
         blocks = sidebar.find_all('div', class_='sidebar-block')
         for block in blocks:
             bike_type = block.h4.text.strip()
-            bike_type = self._normalize_spec_fieldnames(bike_type)
+            bike_type = self.normalize_spec_fieldnames(bike_type)
             if bike_type in exclude:
                 continue
             lis = block.ul.find_all('li')
             subtypes = dict()
             for li in lis:
                 subtype = li.a.string.strip()
-                subtype = self._normalize_spec_fieldnames(subtype)
+                subtype = self.normalize_spec_fieldnames(subtype)
                 if subtype in exclude:
                     continue
                 subtypes[subtype] = li.a['href']
@@ -114,7 +114,7 @@ class LiteSpeed(Scraper):
             product['description'] = title.strip()
 
             # Generate prod id
-            prod_id = self._normalize_spec_fieldnames(title)
+            prod_id = self.normalize_spec_fieldnames(title)
             product['product_id'] = prod_id
 
             # Parse price
@@ -170,7 +170,7 @@ class LiteSpeed(Scraper):
                         tds = row.find_all('td')
                         # Parse spec field names
                         spec = tds[0].text.strip()
-                        spec = self._normalize_spec_fieldnames(spec)
+                        spec = self.normalize_spec_fieldnames(spec)
                         # Parse spec value
                         value = tds[1].string
                         if value is None:

@@ -42,7 +42,7 @@ class Rei(Scraper):
             bike_type = a.text.strip().lower().split(':')[1]
             bike_type, count = bike_type.split('(')
             bike_type = bike_type.replace('bikes', '').strip()
-            bike_type = self._normalize_spec_fieldnames(bike_type)
+            bike_type = self.normalize_spec_fieldnames(bike_type)
             if bike_type in exclude:
                 continue
             count = int(count.strip(')').strip())
@@ -173,7 +173,7 @@ class Rei(Scraper):
             for spec in specs:
                 name = spec['name']
                 value = spec['values'][0]
-                spec_name = self._normalize_spec_fieldnames(name)
+                spec_name = self.normalize_spec_fieldnames(name)
                 prod_specs[spec_name] = value
                 self._specs_fieldnames.add(spec_name)
 

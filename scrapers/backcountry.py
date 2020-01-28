@@ -40,7 +40,7 @@ class BackCountry(Scraper):
         input_cats = div_items.find_all('input')
 
         for tag in input_cats:
-            title = self._normalize_spec_fieldnames(tag['title'])
+            title = self.normalize_spec_fieldnames(tag['title'])
             if title in exclude:  # skip categories in exclude list
                 continue
             categories[title] = tag['data-filter-url']
@@ -163,7 +163,7 @@ class BackCountry(Scraper):
         )
         rows = div_tech_specs.find_all('div', class_='tr')
         for row in rows:
-            spec = self._normalize_spec_fieldnames(row.find(
+            spec = self.normalize_spec_fieldnames(row.find(
                 'div', class_='product-details-accordion__techspec-name').string)
             value = row.find('div',
                              class_='product-details-accordion__techspec-value'

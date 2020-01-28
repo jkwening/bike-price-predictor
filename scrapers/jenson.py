@@ -46,7 +46,7 @@ class Jenson(Scraper):
 
         # Get all categories
         for a_tag in cats:
-            title = self._normalize_spec_fieldnames(a_tag.text)
+            title = self.normalize_spec_fieldnames(a_tag.text)
             if title in exlude:
                 continue
             href = a_tag['href'].replace(self._BASE_URL, '')
@@ -70,12 +70,12 @@ class Jenson(Scraper):
                 if a_tag is None:
                     continue
                 leaf_name = a_tag.text.strip()
-                leaf_name = self._normalize_spec_fieldnames(leaf_name)
+                leaf_name = self.normalize_spec_fieldnames(leaf_name)
                 if leaf_name == 'intended_use':
                     lvl1 = div.find('div', class_='filter-level1')
                     tags = lvl1.find_all('a', class_='filter-option-link')
                     for tag in tags:
-                        subtype = self._normalize_spec_fieldnames(tag['title'])
+                        subtype = self.normalize_spec_fieldnames(tag['title'])
                         href = tag['href']
                         subtypes[subtype] = href
             bike_subtypes[bike_type] = subtypes
@@ -201,7 +201,7 @@ class Jenson(Scraper):
             for spec in specs:
                 name = spec.th.string
                 value = spec.td.text
-                spec_name = self._normalize_spec_fieldnames(name)
+                spec_name = self.normalize_spec_fieldnames(name)
                 prod_specs[spec_name] = value.strip()
                 self._specs_fieldnames.add(spec_name)
 

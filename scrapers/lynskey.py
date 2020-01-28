@@ -44,7 +44,7 @@ class Lynskey(Scraper):
 
         for drop_down in drop_downs:
             bike_type = drop_down.a.text.strip()
-            bike_type = self._normalize_spec_fieldnames(bike_type)
+            bike_type = self.normalize_spec_fieldnames(bike_type)
             if bike_type in ['clearance', 'parts']:
                 continue
             nav_menu2 = drop_down.find('ul', class_='nav-submenu')
@@ -54,7 +54,7 @@ class Lynskey(Scraper):
             for sub_menu in sub_menus:
                 models = dict()
                 subtype = sub_menu.a.text.strip()
-                subtype = self._normalize_spec_fieldnames(subtype)
+                subtype = self.normalize_spec_fieldnames(subtype)
                 if 'all' in subtype:
                     continue
                 nav_menu3 = sub_menu.find('ul', class_='nav-submenu')
@@ -66,7 +66,7 @@ class Lynskey(Scraper):
                     items = sub_menu.find_all('li', class_='nav-submenu-item')
                     for item in items:
                         model = item.a.text.strip()
-                        model = self._normalize_spec_fieldnames(model)
+                        model = self.normalize_spec_fieldnames(model)
                         if 'all' in model:
                             continue
                         models[model] = item.a['href']
@@ -178,7 +178,7 @@ class Lynskey(Scraper):
         for prod in prod_list:
             title = prod.find(class_='form-field-title').text.strip()
             title = title.replace('Select Your', '').strip()
-            title = self._normalize_spec_fieldnames(title)
+            title = self.normalize_spec_fieldnames(title)
             opt_list = list()
             items = prod.find_all('label', class_='product-picklist-item')
             for item in items:
@@ -192,7 +192,7 @@ class Lynskey(Scraper):
         for prod in prod_set:
             title = prod.find(class_='form-field-title').text.strip()
             title = title.replace('Select Your', '').strip()
-            title = self._normalize_spec_fieldnames(title)
+            title = self.normalize_spec_fieldnames(title)
             opt_list = list()
             items = prod.find_all('option')
             for item in items:
@@ -232,14 +232,14 @@ class Lynskey(Scraper):
                 # 'label' is in thead
                 thead = specs_table.find('thead')
                 label = thead.find_all('th')[-1]
-                label = self._normalize_spec_fieldnames(label.text.strip())
+                label = self.normalize_spec_fieldnames(label.text.strip())
                 prods['bike_subtype'] = label
                 prod_specs.append(prods)
             else:
                 div_specs = div_tabs.find_all('div', class_='tab')
                 for tab in div_specs:
                     label = tab.find('label', class_='tab-label')
-                    label = self._normalize_spec_fieldnames(label.text.strip())
+                    label = self.normalize_spec_fieldnames(label.text.strip())
 
                     prods = self._parse_table_rows(table_soup=tab)
                     prods['details'] = details
@@ -258,7 +258,7 @@ class Lynskey(Scraper):
         for row in rows:
             tds = row.find_all('td')
             spec = tds[0].text.strip()
-            spec = self._normalize_spec_fieldnames(spec)
+            spec = self.normalize_spec_fieldnames(spec)
             self._specs_fieldnames.add(spec)
             value = tds[1].text.strip()
             prods[spec] = value

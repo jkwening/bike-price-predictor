@@ -50,7 +50,7 @@ class BicycleWarehouse(Scraper):
 
         for li in li_cats:
             bike_cat = dict()
-            title = self._normalize_spec_fieldnames(li.a.contents[0].strip())
+            title = self.normalize_spec_fieldnames(li.a.contents[0].strip())
             if title in exclude:  # skip categories in exclude list
                 continue
             bike_cat['href'] = li.a['href']
@@ -75,7 +75,7 @@ class BicycleWarehouse(Scraper):
         for li in li_cats:
             # get main bike type category
             cat = li.find('a', class_='navmenu-link-parent').text.strip()
-            cat = self._normalize_spec_fieldnames(cat)
+            cat = self.normalize_spec_fieldnames(cat)
             if cat in exclude:  # skip categories in exclude list
                 continue
 
@@ -84,7 +84,7 @@ class BicycleWarehouse(Scraper):
             ul_sub_menu = li.find('ul', class_='navmenu-submenu')
             links = ul_sub_menu.find_all('a', class_='navmenu-link')
             for link in links:
-                subtype = self._normalize_spec_fieldnames(link.text.strip())
+                subtype = self.normalize_spec_fieldnames(link.text.strip())
                 if 'view_all' in subtype or subtype == 'stand_up_bikes':  # skip 'view all' urls
                     continue
                 subtypes[subtype] = link['href']
@@ -246,7 +246,7 @@ class BicycleWarehouse(Scraper):
             except ValueError:
                 continue
             spec = spec.strip()
-            spec = self._normalize_spec_fieldnames(spec)
+            spec = self.normalize_spec_fieldnames(spec)
             self._specs_fieldnames.add(spec)
             prod_specs[spec] = value.strip()
 
@@ -269,14 +269,14 @@ class BicycleWarehouse(Scraper):
                     spec = text
                     value = ''
                 spec = spec.strip()
-                spec = self._normalize_spec_fieldnames(spec)
+                spec = self.normalize_spec_fieldnames(spec)
                 self._specs_fieldnames.add(spec)
                 value = value.strip()
             else:
                 # process child tags in batches of two as spec_name:value pairs
                 for i in range(0, len(tds), 2):
                     spec = tds[i].text.strip()
-                    spec = self._normalize_spec_fieldnames(spec)
+                    spec = self.normalize_spec_fieldnames(spec)
                     self._specs_fieldnames.add(spec)
                     # handle empty value cell
                     try:
@@ -297,7 +297,7 @@ class BicycleWarehouse(Scraper):
             counter = 1
             cur_spec = ''  # track recently found spec_name
             for s in strings:
-                spec = self._normalize_spec_fieldnames(s)
+                spec = self.normalize_spec_fieldnames(s)
                 if not spec:  # skip empty lines
                     continue
                 # determine whether spec or value string
@@ -326,7 +326,7 @@ class BicycleWarehouse(Scraper):
                     except AttributeError:
                         counter += 1
                         continue
-                    spec = self._normalize_spec_fieldnames(spec)
+                    spec = self.normalize_spec_fieldnames(spec)
                     self._specs_fieldnames.add(spec)
                     counter += 1
                     next_is_val = True
@@ -337,7 +337,7 @@ class BicycleWarehouse(Scraper):
                     except AttributeError:
                         counter += 1
                         continue
-                    spec = self._normalize_spec_fieldnames(spec)
+                    spec = self.normalize_spec_fieldnames(spec)
                     self._specs_fieldnames.add(spec)
                     value = sp.find('p').string.strip()
                 else:
@@ -370,7 +370,7 @@ class BicycleWarehouse(Scraper):
                     spec = spec.strip()
                     value = value.strip()
                 # store specs data
-                spec = self._normalize_spec_fieldnames(spec)
+                spec = self.normalize_spec_fieldnames(spec)
                 self._specs_fieldnames.add(spec)
                 prod_specs[spec] = value
 
