@@ -1371,21 +1371,21 @@ class Cleaner(object):
         merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
         merged_df.handlebar.fillna(merged_df.handlebars, inplace=True)
         merged_df.cassette.fillna(merged_df.cog, inplace=True)
-        merged_df.cassette.fillna(merged_df.freewheel_cassette, inplace=True)
-        merged_df.cassette.fillna(merged_df.drivetrain, inplace=True)
+        # merged_df.cassette.fillna(merged_df.freewheel_cassette, inplace=True)
+        # merged_df.cassette.fillna(merged_df.drivetrain, inplace=True)
         merged_df.cassette.fillna(merged_df.cogset, inplace=True)
-        merged_df.crankset.fillna(merged_df.crank_set, inplace=True)
+        # merged_df.crankset.fillna(merged_df.crank_set, inplace=True)
         merged_df.crankset.fillna(merged_df.cranks, inplace=True)
         merged_df.crankset.fillna(merged_df.crank_arm_set, inplace=True)
         merged_df.crankset.fillna(merged_df.chainrings, inplace=True)
-        merged_df.crankset.fillna(merged_df.drivetrain, inplace=True)
-        merged_df.front_derailleur.fillna(merged_df.drivetrain, inplace=True)
-        merged_df.rear_derailleur.fillna(merged_df.drivetrain, inplace=True)
-        merged_df.shifters.fillna(merged_df.shifter, inplace=True)
+        # merged_df.crankset.fillna(merged_df.drivetrain, inplace=True)
+        # merged_df.front_derailleur.fillna(merged_df.drivetrain, inplace=True)
+        # merged_df.rear_derailleur.fillna(merged_df.drivetrain, inplace=True)
+        # merged_df.shifters.fillna(merged_df.shifter, inplace=True)
         merged_df.shifters.fillna(merged_df.shift_levers, inplace=True)
-        merged_df.shifters.fillna(merged_df.derailleur_shifters, inplace=True)
+        # merged_df.shifters.fillna(merged_df.derailleur_shifters, inplace=True)
         merged_df['seatpost'] = merged_df.seat_post
-        merged_df.frame.fillna(merged_df.material, inplace=True)
+        # merged_df.frame.fillna(merged_df.material, inplace=True)
 
         munged_df = self._create_munged_df(merged_df=merged_df)
 
@@ -1468,7 +1468,7 @@ class Cleaner(object):
         # Preliminary fill some NaNs from redundant columns
         merged_df['brake_type'] = merged_df.brakes
         merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
-        merged_df.brake_type.fillna(merged_df.brake_compatibility, inplace=True)
+        # merged_df.brake_type.fillna(merged_df.brake_compatibility, inplace=True)
         merged_df['handlebar'] = merged_df.handlebars
         merged_df['cassette'] = merged_df.rear_cogs  # map to std field name
         merged_df.cassette.fillna(merged_df.cassette_rear_cogs, inplace=True)
@@ -1561,7 +1561,7 @@ class Cleaner(object):
         merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
         merged_df.brake_type.fillna(merged_df.brake_lever, inplace=True)
         merged_df.brake_type.fillna(merged_df.brake, inplace=True)
-        merged_df.brake_type.fillna(merged_df.brakes_r, inplace=True)
+        merged_df.brake_type.fillna(merged_df.brake_rotors, inplace=True)
         merged_df.cassette.fillna(merged_df.cog, inplace=True)
         merged_df.cassette.fillna(merged_df.cog_set, inplace=True)
         merged_df.cassette.fillna(merged_df.cogset, inplace=True)
@@ -1569,17 +1569,17 @@ class Cleaner(object):
                                   inplace=True)
         merged_df.cassette.fillna(merged_df.cogset_causette_freewheel,
                                   inplace=True)
-        merged_df.cassette.fillna(merged_df.freewheel_cassette,
-                                  inplace=True)
+        # merged_df.cassette.fillna(merged_df.freewheel_cassette,
+        #                           inplace=True)
         merged_df.crankset.fillna(merged_df.cranks, inplace=True)
         merged_df.front_derailleur.fillna(merged_df.derailleur_front, inplace=True)
         merged_df.front_derailleur.fillna(merged_df.derailleur_rear, inplace=True)
         merged_df.front_derailleur.fillna(merged_df.ffront_derailleur, inplace=True)
-        merged_df.front_derailleur.fillna(merged_df.front, inplace=True)
-        merged_df.rear_derailleur.fillna(merged_df.rear, inplace=True)
+        # merged_df.front_derailleur.fillna(merged_df.front, inplace=True)
+        # merged_df.rear_derailleur.fillna(merged_df.rear, inplace=True)
         merged_df.fork.fillna(merged_df.fork_type, inplace=True)
         merged_df.seatpost.fillna(merged_df.seat_post, inplace=True)
-        merged_df.seatpost.fillna(merged_df.seatposts, inplace=True)
+        merged_df.seatpost.fillna(merged_df.seatpost, inplace=True)
         merged_df.shifters.fillna(merged_df.shifter, inplace=True)
         merged_df.shifters.fillna(merged_df.front_shifter, inplace=True)
 
@@ -1597,15 +1597,15 @@ class Cleaner(object):
         merged_df.brake_type.fillna(merged_df.brake_calipers, inplace=True)
         merged_df.brake_type.fillna(merged_df.brakes, inplace=True)
         merged_df.brake_type.fillna(merged_df.brake_system, inplace=True)
-        merged_df.brake_type.fillna(merged_df.brake, inplace=True)
+        # merged_df.brake_type.fillna(merged_df.brake, inplace=True)
         merged_df.brake_type.fillna(merged_df.front_rear_brakes, inplace=True)
-        merged_df.brake_type.fillna(merged_df.rear_brake, inplace=True)
+        # merged_df.brake_type.fillna(merged_df.rear_brake, inplace=True)
         merged_df.brake_type.fillna(merged_df.brake_shift_levers, inplace=True)
         merged_df.brake_type.fillna(merged_df.brakes_shift_levers, inplace=True)
-        merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
+        # merged_df.brake_type.fillna(merged_df.brake_levers, inplace=True)
         # handle multiple crankset data columns
         merged_df.crankset.fillna(merged_df.chainset, inplace=True)
-        merged_df.crankset.fillna(merged_df.crank_set, inplace=True)
+        # merged_df.crankset.fillna(merged_df.crank_set, inplace=True)
         merged_df.crankset.fillna(merged_df.crank, inplace=True)
         merged_df.crankset.fillna(merged_df.cranks, inplace=True)
         merged_df.crankset.fillna(merged_df.groupset, inplace=True)
@@ -1642,10 +1642,10 @@ class Cleaner(object):
         merged_df.shifters.fillna(merged_df.brakes_shift_levers, inplace=True)
         merged_df.shifters.fillna(merged_df.shifters_brake_levers, inplace=True)
         merged_df.shifters.fillna(merged_df.gear_shifters, inplace=True)
-        merged_df.shifters.fillna(merged_df.gear_shifter, inplace=True)
+        # merged_df.shifters.fillna(merged_df.gear_shifter, inplace=True)
         # handle multiple seatpost data
         merged_df.seatpost.fillna(merged_df.seat_post, inplace=True)
-        merged_df.seatpost.fillna(merged_df.seat_seatpost, inplace=True)
+        # merged_df.seatpost.fillna(merged_df.seat_seatpost, inplace=True)
         # handle multiple handlebar data
         merged_df.handlebar.fillna(merged_df.handlebars, inplace=True)
 
