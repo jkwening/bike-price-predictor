@@ -191,9 +191,13 @@ class Spokes(Scraper):
         prod_specs = dict()
 
         # parse details/description section
-        div_details = soup.find(id='ProductDetailsContent')
-        details = div_details.find('p', attrs={'itemprop': 'description'})
-        prod_specs['details'] = details.text.strip()
+        try:
+            div_details = soup.find(id='ProductDetailsContent')
+            details = div_details.find('p', class_='seProductPrimaryDescription')
+            prod_specs['details'] = details.text.strip()
+        except AttributeError as err:
+            print(f'\tError: {err}')
+            prod_specs['details'] = 'This item is no longer available in our catalog'
 
         # parse specifications
         try:

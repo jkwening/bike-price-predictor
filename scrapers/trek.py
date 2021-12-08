@@ -32,11 +32,12 @@ class Trek(Scraper):
 
     @staticmethod
     def _next_page(soup) -> tuple:
-        nav_page = soup.find('nav', class_='pagination')
-        next_a = nav_page.find(id='search-page-next')
-        if next_a is None:
+        try:
+            nav_page = soup.find('nav', class_='pagination')
+            next_a = nav_page.find(id='search-page-next')
+            return True, next_a['href']
+        except (KeyError, AttributeError):
             return False, ''
-        return True, next_a['href']
 
     def _parse_categories(self, soup, exclude) -> dict:
         categories = dict()

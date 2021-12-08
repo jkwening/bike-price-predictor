@@ -208,10 +208,10 @@ class Lynskey(Scraper):
 
         # parse tech specifications for each component option
         prod_specs = list()
+        prods = {'frame_material': 'titanium'}
         try:
             div_tabs = div_details.find('div', class_='tabs')
             div_specs = div_tabs.find_all('div', class_='tab')
-            prods = {'frame_material': 'titanium'}
             for tab in div_specs:
                 label = tab.find('label', class_='tab-label')
                 label = self._normalize_spec_fieldnames(label.text.strip())
@@ -219,11 +219,12 @@ class Lynskey(Scraper):
                 rows = tab.find_all('tr')
                 for row in rows:
                     tds = row.find_all('td')
-                    spec = tds[0].text.strip()
-                    spec = self._normalize_spec_fieldnames(spec)
-                    self._specs_fieldnames.add(spec)
-                    value = tds[1].text.strip()
-                    prods[spec] = value
+                    if len(tds) == 2:  # only parse valid spec, value pairs
+                        spec = tds[0].text.strip()
+                        spec = self._normalize_spec_fieldnames(spec)
+                        self._specs_fieldnames.add(spec)
+                        value = tds[1].text.strip()
+                        prods[spec] = value
                 prods['details'] = details
                 prods['upgrade_options'] = upgrade_options
                 prods['bike_subtype'] = label
@@ -232,5 +233,6 @@ class Lynskey(Scraper):
             print(f'[{len(prod_specs)}] Product specs: ', prod_specs)
         except AttributeError as err:
             print(f'\tError: {err}')
+            prod_specs.append(prods)
 
         return prod_specs

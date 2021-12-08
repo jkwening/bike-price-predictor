@@ -182,7 +182,10 @@ class Manifest(object):
 
     def get_filepath_for_row(self, row: dict) -> str:
         """Returns the absolute filepath for the data in manifest row."""
-        return os.path.join(self._DATA_PATH, row['timestamp'], row['filename'])
+        year, month, day = row['timestamp'].split('-')
+        return os.path.join(
+            self._DATA_PATH, year, month, day, row['filename']
+        )
 
     def get_table_pairs(self) -> dict:
         """For each site, bike_type get filepath for prods and specs data.

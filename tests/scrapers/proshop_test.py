@@ -71,8 +71,10 @@ class ProshopTestCase(unittest.TestCase):
         self._scraper._write_prod_listings_to_csv()
 
     def test_parse_specs(self):
-        prods_csv_path = os.path.join(DATA_PATH, TIMESTAMP,
-                                      'proshop_prods_all.csv')
+        month, year, day = TIMESTAMP.split('-')
+        prods_csv_path = os.path.join(
+            DATA_PATH, month, year, day, 'proshop_prods_all.csv'
+        )
         # Verify parsing product specs
         specs = self._scraper.get_product_specs(get_prods_from=prods_csv_path,
                                                 bike_type=self._bike_type,

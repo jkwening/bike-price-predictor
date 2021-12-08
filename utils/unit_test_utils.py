@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-TIMESTAMP = datetime.now().strftime('%m%d%Y')
+TIMESTAMP = datetime.now().strftime('%Y-%m-%d')
 TESTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir,
                                          'tests'))
 DATA_PATH = os.path.abspath(os.path.join(TESTS_DIR, 'data'))

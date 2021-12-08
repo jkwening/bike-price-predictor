@@ -9,14 +9,18 @@ DATA_PATH = os.path.join(ROOT_PATH, 'data')
 RAW_DATA_PATH = os.path.join(DATA_PATH, 'raw_data')
 MUNGED_DATA_PATH = os.path.join(DATA_PATH, 'munged_data')
 COMBINED_MUNGED_PATH = os.path.join(MUNGED_DATA_PATH, 'combined')
-TIMESTAMP = datetime.now().strftime('%m%d%Y')
+TIMESTAMP = datetime.now().strftime('%Y-%m-%d')
 CONFIG_FILE = os.path.join(ROOT_PATH, 'config.ini')
 SOURCES = [
-    'backcountry', 'bicycle_warehouse', 'bike_doctor', 'canyon', 'citybikes',
-    'competitive', 'contebikes', 'eriks', 'giant',
-    'jenson', 'litespeed', 'lynskey', 'nashbar', 'proshop',
-    'rei', 'specialized', 'spokes', 'trek', 'wiggle'
+    'bike_doctor', 'citybikes', 'contebikes', 'jenson',
+    'litespeed', 'lynskey', 'proshop', 'spokes', 'trek'
 ]
+# SOURCES = [
+#     'backcountry', 'bicycle_warehouse', 'bike_doctor', 'canyon', 'citybikes',
+#     'competitive', 'contebikes', 'eriks', 'giant',
+#     'jenson', 'litespeed', 'lynskey', 'nashbar', 'proshop',
+#     'rei', 'specialized', 'spokes', 'trek', 'wiggle'
+# ]
 SOURCES_EXCLUDE = [
     'foxvalley'
 ]

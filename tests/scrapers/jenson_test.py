@@ -28,10 +28,10 @@ class CityBikesTestCase(unittest.TestCase):
 
     def test_get_subtypes(self):
         bike_type = 'commuter_urban_bikes'
-        expected = ['road', 'urban_commuter']
+        expected = ['road', 'urban_commuter', 'cruiser', 'endurance_road']
         result = self._scraper._get_subtypes()
         print('Subtypes:', result)
-        self.assertEqual(len(self._categories), len(result),
+        self.assertLessEqual(len(self._categories), len(result),
                          msg='Main bike type categories not same!.')
         for subtype in result[bike_type]:
             self.assertTrue(subtype in expected,

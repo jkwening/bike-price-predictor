@@ -80,12 +80,27 @@ class Scraper(ABC):
         """
         pass
 
+    def _create_file_name(
+            self, bike_type, specs=False
+    ) -> tuple:
+
+        if specs:
+            fname = f'{self._SOURCE}_specs_{bike_type}.csv'
+        else:
+            fname = f'{self._SOURCE}_prods_{bike_type}.csv'
+
+        year, month, day = self._TIMESTAMP.split('-')
+        path = os.path.join(
+            self._DATA_PATH, year, month, day, fname
+        )
+        create_directory_if_missing(path)
+        return fname, path
+
     def _write_prod_listings_to_csv(self) -> dict:
         """Save available bike products to csv file."""
-        fname = f'{self._SOURCE}_prods_{self._bike_type}.csv'
-        path = os.path.join(self._DATA_PATH, self._TIMESTAMP, fname)
-
-        create_directory_if_missing(path)
+        fname, path = self._create_file_name(
+            bike_type=self._bike_type, specs=False
+        )
 
         with open(file=path, mode='w', newline='', encoding='utf-8') as csvfile:
             prod_descs = list(self._products.keys())
@@ -110,10 +125,9 @@ class Scraper(ABC):
         if not bike_type:
             bike_type = self._bike_type
 
-        fname = f'{self._SOURCE}_specs_{bike_type}.csv'
-        path = os.path.join(self._DATA_PATH, self._TIMESTAMP, fname)
-
-        create_directory_if_missing(path)
+        fname, path = self._create_file_name(
+            bike_type=bike_type, specs=True
+        )
 
         with open(file=path, mode='w', newline='', encoding='utf-8') as csvfile:
             writer = DictWriter(csvfile, fieldnames=self._specs_fieldnames)

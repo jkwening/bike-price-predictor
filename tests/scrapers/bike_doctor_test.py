@@ -21,10 +21,10 @@ class BikeDoctorTestCase(unittest.TestCase):
     def test_get_categories(self):
         result = self._scraper._get_categories()
         print('\nCategories:', result)
-        self.assertEqual(len(self._categories), len(result))
-        for key in result.keys():
-            self.assertTrue(key in self._categories,
-                            msg=f'{key} not in {self._categories}')
+        self.assertLessEqual(len(self._categories), len(result))
+        for key in self._categories:
+            self.assertTrue(key in result,
+                            msg=f'{key} not in {result.keys()}')
 
     def test_get_subtypes(self):
         bike_type = 'mountain'
@@ -37,12 +37,12 @@ class BikeDoctorTestCase(unittest.TestCase):
 
         result = self._scraper._get_subtypes()
         print('\nSubtypes:', result)
-        self.assertEqual(len(self._categories), len(result),
+        self.assertLessEqual(len(self._categories), len(result),
                          msg=f'Expected {len(self._categories)};\
                           result {len(result)}')
-        for key in result:
-            self.assertTrue(key in self._categories,
-                            msg=f'{key} is not in {self._categories}!')
+        for key in self._categories:
+            self.assertTrue(key in result,
+                            msg=f'{key} is not in {result.keys()}!')
         for key in result[bike_type]:
             self.assertTrue(key in mtb_subtypes,
                             msg=f'{key} is not in {mtb_subtypes}!')
