@@ -9,7 +9,9 @@ DATA_PATH = os.path.join(ROOT_PATH, 'data')
 RAW_DATA_PATH = os.path.join(DATA_PATH, 'raw_data')
 MUNGED_DATA_PATH = os.path.join(DATA_PATH, 'munged_data')
 COMBINED_MUNGED_PATH = os.path.join(MUNGED_DATA_PATH, 'combined')
+MERGED_RAW_PATH = os.path.join(DATA_PATH, 'merged_raw_data')
 TIMESTAMP = datetime.now().strftime('%Y-%m-%d')
+DATE_YEAR, DATE_MON, DATE_DAY = TIMESTAMP.split('-')
 CONFIG_FILE = os.path.join(ROOT_PATH, 'config.ini')
 SOURCES = [
     'bike_doctor', 'citybikes', 'contebikes', 'jenson',

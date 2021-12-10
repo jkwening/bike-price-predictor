@@ -26,10 +26,18 @@ def main(args):
         for source in args.sources:
             MEDIATOR.transform_raw_data(source=source, bike_type='all')
 
+    if args.ETL == 'merge':
+        for source in args.sources:
+            # TODO: check to make sure prods/specs on same day or specs after
+            if MEDIATOR.merge_prod_specs_data(source):
+                print(f'Successfully merged products with specs for {source}!')
+            else:
+                print(f'Failed to merge products with specs for {source}!')
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ETL workflow module.')
-    parser.add_argument('ETL', choices=['collect', 'clean', 'extract'],
+    parser.add_argument('ETL', choices=['collect', 'clean', 'extract', 'merge'],
                         help='ETL workflow step to complete.')
     parser.add_argument('-s', dest='sources', nargs='+', default=SOURCES,
                         help='Site sources to process. Defaults to all sources if none provided.')

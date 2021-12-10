@@ -7,7 +7,9 @@ from ingestion.ingest import Ingest
 from ingestion.cleaner import Cleaner
 from ingestion.manifest import Manifest, MungedManifest
 from utils.utils import TIMESTAMP, RAW_DATA_PATH, MUNGED_DATA_PATH
-from utils.utils import COMBINED_MUNGED_PATH
+from utils.utils import COMBINED_MUNGED_PATH, MERGED_RAW_PATH
+from utils.utils import create_directory_if_missing
+from utils.utils import DATE_YEAR, DATE_MON, DATE_DAY
 
 
 class IngestionMediator:
@@ -213,3 +215,21 @@ class IngestionMediator:
     def update_munged_manifest(self, rows: list) -> bool:
         """Update munged manifest with new row data."""
         return self._munged_manifest.update(from_list=rows)
+
+    def merge_prod_specs_data(self, source: str) -> bool:
+        """Merge products to their related specs from raw data."""
+        rows = self._manifest.get_rows_matching(sources=[source])
+        # TODO: deal with general case instead of current perfect case where
+        # files were generated on the same day.
+        prods_df = pd.read_csv(self._manifest.get_filepath_for_row(rows[0]))
+        specs_df = pd.read_csv(self._manifest.get_filepath_for_row(rows[1]))
+        merged_df = pd.merge(
+            prods_df, specs_df, how='right', on=['product_id', 'site']
+        )
+        save_path = os.path.join(
+            MERGED_RAW_PATH, DATE_YEAR, DATE_MON, DATE_DAY,
+            f'{source}_merged.csv'
+        )
+        create_directory_if_missing(save_path)
+        merged_df.to_csv(save_path, index=False)
+        return True
